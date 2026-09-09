@@ -31,10 +31,8 @@
     <Folder Include="DTOs\Matching\" />
     <Folder Include="DTOs\Applications\" />
     <Folder Include="DTOs\ContactRequests\" />
-    <Folder Include="DTOs\Admin\" />
     <Folder Include="DTOs\Notifications\" />
     <Folder Include="DTOs\Skills\" />
-    <Folder Include="DTOs\Users\" />
     <Folder Include="Migrations\" />
     <Folder Include="ProtectedFiles\CVs\" />
   </ItemGroup>
