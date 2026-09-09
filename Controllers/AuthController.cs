@@ -15,9 +15,12 @@ namespace SmartRecruitment.API.Controllers
             _authService = authService;
         }
 
+        // ==========================================
         // POST: api/Auth/register
+        // ==========================================
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        public async Task<IActionResult> Register(
+            [FromBody] RegisterDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -37,9 +40,12 @@ namespace SmartRecruitment.API.Controllers
             return Ok(result);
         }
 
+        // ==========================================
         // POST: api/Auth/login
+        // ==========================================
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        public async Task<IActionResult> Login(
+            [FromBody] LoginDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -57,6 +63,90 @@ namespace SmartRecruitment.API.Controllers
             }
 
             return Ok(result);
+        }
+
+        // ==========================================
+        // POST: api/Auth/forgot-password
+        // ==========================================
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(
+            [FromBody] ForgotPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _authService.ForgotPasswordAsync(dto);
+
+            if (!result)
+            {
+                return NotFound(new
+                {
+                    message = "User not found or account is inactive."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "OTP generated successfully."
+            });
+        }
+
+        // ==========================================
+        // POST: api/Auth/verify-otp
+        // ==========================================
+        [HttpPost("verify-otp")]
+        public async Task<IActionResult> VerifyOtp(
+            [FromBody] VerifyOtpDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _authService.VerifyOtpAsync(dto);
+
+            if (!result)
+            {
+                return BadRequest(new
+                {
+                    message = "Invalid or expired OTP."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "OTP verified successfully."
+            });
+        }
+
+        // ==========================================
+        // POST: api/Auth/reset-password
+        // ==========================================
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+            [FromBody] ResetPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _authService.ResetPasswordAsync(dto);
+
+            if (!result)
+            {
+                return BadRequest(new
+                {
+                    message = "Invalid OTP, OTP expired, or OTP not verified."
+                });
+            }
+
+            return Ok(new
+            {
+                message = "Password reset successfully."
+            });
         }
     }
 }

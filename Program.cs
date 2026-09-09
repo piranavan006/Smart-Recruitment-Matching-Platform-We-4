@@ -81,6 +81,23 @@ namespace SmartRecruitment.API
                 );
             }
 
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+            if (string.IsNullOrWhiteSpace(jwtIssuer))
+            {
+                throw new InvalidOperationException(
+                    "JWT Issuer is missing. Please add Jwt:Issuer in appsettings.json."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(jwtAudience))
+            {
+                throw new InvalidOperationException(
+                    "JWT Audience is missing. Please add Jwt:Audience in appsettings.json."
+                );
+            }
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme =
@@ -101,8 +118,11 @@ namespace SmartRecruitment.API
                                 Encoding.UTF8.GetBytes(jwtKey)
                             ),
 
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtIssuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = jwtAudience,
 
                         ValidateLifetime = true,
 
