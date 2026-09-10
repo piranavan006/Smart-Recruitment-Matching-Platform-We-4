@@ -1,5 +1,6 @@
 ﻿using SmartRecruitment.API.DTOs.ContactRequests;
 using SmartRecruitment.API.Models;
+﻿
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
 
@@ -13,6 +14,11 @@ namespace SmartRecruitment.API.Services
 
         public ContactRequestService(
             IContactRequestRepository repository)
+    public class ContactRequestService : IContactRequestService
+    {
+        private readonly IContactRequestRepository _repository;
+
+        public ContactRequestService(IContactRequestRepository repository)
         {
             _repository = repository;
         }
@@ -159,5 +165,6 @@ namespace SmartRecruitment.API.Services
                     request.CreatedAt
             };
         }
+        // Interface methods இங்கே இருக்க வேண்டும்
     }
 }

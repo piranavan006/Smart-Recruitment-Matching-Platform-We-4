@@ -13,5 +13,6 @@
         public string Status { get; set; } = "Pending";
 
         public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
