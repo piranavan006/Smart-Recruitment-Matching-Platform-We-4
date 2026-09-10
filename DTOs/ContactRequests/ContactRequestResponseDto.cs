@@ -1,6 +1,6 @@
-﻿namespace SmartRecruitment.API.Models
+﻿namespace SmartRecruitment.API.DTOs.ContactRequests
 {
-    public class ContactRequest
+    public class ContactRequestResponseDto
     {
         public int ContactRequestId { get; set; }
 
@@ -10,9 +10,8 @@
 
         public string Message { get; set; } = string.Empty;
 
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
