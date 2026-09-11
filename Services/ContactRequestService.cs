@@ -1,32 +1,23 @@
 ﻿using SmartRecruitment.API.DTOs.ContactRequests;
 using SmartRecruitment.API.Models;
-﻿
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Services
 {
-    public class ContactRequestService
-        : IContactRequestService
-    {
-        private readonly IContactRequestRepository
-            _repository;
-
-        public ContactRequestService(
-            IContactRequestRepository repository)
     public class ContactRequestService : IContactRequestService
     {
         private readonly IContactRequestRepository _repository;
 
-        public ContactRequestService(IContactRequestRepository repository)
+        public ContactRequestService(
+            IContactRequestRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<ContactRequestResponseDto>
-            CreateAsync(
-                int senderId,
-                ContactRequestCreateDto dto)
+        public async Task<ContactRequestResponseDto> CreateAsync(
+            int senderId,
+            ContactRequestCreateDto dto)
         {
             if (dto.ReceiverId <= 0)
             {
@@ -60,13 +51,9 @@ namespace SmartRecruitment.API.Services
             var request = new ContactRequest
             {
                 SenderId = senderId,
-
                 ReceiverId = dto.ReceiverId,
-
                 Message = dto.Message.Trim(),
-
                 Status = "Pending",
-
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -76,35 +63,32 @@ namespace SmartRecruitment.API.Services
             return MapToDto(result);
         }
 
-        public async Task<List<ContactRequestResponseDto>>
-            GetSentAsync(int senderId)
+        public async Task<List<ContactRequestResponseDto>> GetSentAsync(
+            int senderId)
         {
             var requests =
-                await _repository
-                    .GetBySenderIdAsync(senderId);
+                await _repository.GetBySenderIdAsync(senderId);
 
             return requests
                 .Select(MapToDto)
                 .ToList();
         }
 
-        public async Task<List<ContactRequestResponseDto>>
-            GetReceivedAsync(int receiverId)
+        public async Task<List<ContactRequestResponseDto>> GetReceivedAsync(
+            int receiverId)
         {
             var requests =
-                await _repository
-                    .GetByReceiverIdAsync(receiverId);
+                await _repository.GetByReceiverIdAsync(receiverId);
 
             return requests
                 .Select(MapToDto)
                 .ToList();
         }
 
-        public async Task<ContactRequestResponseDto?>
-            RespondAsync(
-                int requestId,
-                int receiverId,
-                ContactRequestStatusUpdateDto dto)
+        public async Task<ContactRequestResponseDto?> RespondAsync(
+            int requestId,
+            int receiverId,
+            ContactRequestStatusUpdateDto dto)
         {
             if (dto.Status != "Accepted" &&
                 dto.Status != "Declined")
@@ -114,8 +98,7 @@ namespace SmartRecruitment.API.Services
             }
 
             var request =
-                await _repository
-                    .GetByIdAsync(requestId);
+                await _repository.GetByIdAsync(requestId);
 
             if (request == null)
             {
@@ -141,30 +124,18 @@ namespace SmartRecruitment.API.Services
             return MapToDto(request);
         }
 
-        private static ContactRequestResponseDto
-            MapToDto(ContactRequest request)
+        private static ContactRequestResponseDto MapToDto(
+            ContactRequest request)
         {
             return new ContactRequestResponseDto
             {
-                ContactRequestId =
-                    request.ContactRequestId,
-
-                SenderId =
-                    request.SenderId,
-
-                ReceiverId =
-                    request.ReceiverId,
-
-                Message =
-                    request.Message,
-
-                Status =
-                    request.Status,
-
-                CreatedAt =
-                    request.CreatedAt
+                ContactRequestId = request.ContactRequestId,
+                SenderId = request.SenderId,
+                ReceiverId = request.ReceiverId,
+                Message = request.Message,
+                Status = request.Status,
+                CreatedAt = request.CreatedAt
             };
         }
-        // Interface methods இங்கே இருக்க வேண்டும்
     }
 }
