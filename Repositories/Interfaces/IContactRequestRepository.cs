@@ -4,20 +4,31 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 {
     public interface IContactRequestRepository
     {
-        Task<ContactRequest?> GetByIdAsync(int contactRequestId);
+        Task<ContactRequest?> GetByIdAsync(
+            int contactRequestId);
 
         Task<List<ContactRequest>> GetAllAsync();
 
-        Task<List<ContactRequest>> GetBySenderIdAsync(int senderId);
+        Task<List<ContactRequest>> GetBySenderIdAsync(
+            int senderId);
 
-        Task<List<ContactRequest>> GetByReceiverIdAsync(int receiverId);
+        Task<List<ContactRequest>> GetByReceiverIdAsync(
+            int receiverId);
 
-        Task<ContactRequest> AddAsync(ContactRequest contactRequest);
+        Task<bool> ExistsPendingAsync(
+            int senderId,
+            int receiverId);
 
-        Task UpdateAsync(ContactRequest contactRequest);
+        Task<ContactRequest> AddAsync(
+            ContactRequest contactRequest);
 
-        Task DeleteAsync(int contactRequestId);
+        Task UpdateAsync(
+            ContactRequest contactRequest);
 
-        Task<bool> ExistsByIdAsync(int contactRequestId);
+        Task DeleteAsync(
+            int contactRequestId);
+
+        Task<bool> ExistsByIdAsync(
+            int contactRequestId);
     }
 }

@@ -29,6 +29,7 @@
     <Folder Include="DTOs\Employers\" />
     <Folder Include="DTOs\Jobs\" />
     <Folder Include="DTOs\Matching\" />
+    <Folder Include="DTOs\Admin\" />
     <Folder Include="DTOs\Applications\" />
     <Folder Include="DTOs\ContactRequests\" />
     <Folder Include="DTOs\Notifications\" />
