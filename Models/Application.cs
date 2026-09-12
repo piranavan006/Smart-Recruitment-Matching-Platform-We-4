@@ -23,6 +23,20 @@
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        public int JobSeekerId { get; set; }
+
+        
+
+        public decimal? MatchScore { get; set; }
+
+        
+
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        
+        // Navigation properties
+        public Job? Job { get; set; }
+
         public JobSeekerProfile? JobSeeker { get; set; }
     }
 }
