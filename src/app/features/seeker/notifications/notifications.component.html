@@ -1,0 +1,119 @@
+<div class="notifications-page">
+
+  <div class="notifications-container">
+
+    <!-- Header -->
+    <div class="notifications-header">
+
+      <div>
+        <span class="page-badge">JOB SEEKER</span>
+
+        <h1>Notifications</h1>
+
+        <p>
+          Stay updated with your latest recruitment activities.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="back-button"
+        routerLink="/seeker">
+        ← Dashboard
+      </button>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-card">
+
+      <div class="summary-icon">🔔</div>
+
+      <div>
+        <h2>Recent Updates</h2>
+        <p>
+          You have
+          <strong>{{ getUnreadCount() }}</strong>
+          unread notification(s).
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-section">
+
+      <div class="section-header">
+        <h2>All Notifications</h2>
+
+        <button
+          type="button"
+          class="mark-button"
+          (click)="markAllAsRead()">
+          Mark All as Read
+        </button>
+      </div>
+
+      <div class="notifications-list">
+
+        <div
+          class="notification-card"
+          *ngFor="let notification of notifications"
+          [class.unread]="!notification.isRead">
+
+          <div class="notification-icon">
+            {{ notification.icon }}
+          </div>
+
+          <div class="notification-content">
+
+            <div class="notification-top">
+
+              <h3>
+                {{ notification.title }}
+              </h3>
+
+              <span>
+                {{ notification.time }}
+              </span>
+
+            </div>
+
+            <p>
+              {{ notification.message }}
+            </p>
+
+            <button
+              type="button"
+              class="read-button"
+              *ngIf="!notification.isRead"
+              (click)="markAsRead(notification)">
+              Mark as Read
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div
+        class="empty-state"
+        *ngIf="notifications.length === 0">
+
+        <div class="empty-icon">🔔</div>
+
+        <h3>No notifications</h3>
+
+        <p>
+          You don't have any notifications at the moment.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

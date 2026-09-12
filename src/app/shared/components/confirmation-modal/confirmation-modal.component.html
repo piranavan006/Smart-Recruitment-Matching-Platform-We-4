@@ -1,0 +1,52 @@
+<div
+  class="modal-overlay"
+  *ngIf="visible"
+  (click)="cancel()">
+
+  <div
+    class="confirmation-modal"
+    (click)="$event.stopPropagation()">
+
+    <div class="modal-icon">
+      <span *ngIf="type === 'danger'">⚠️</span>
+      <span *ngIf="type === 'primary'">❓</span>
+    </div>
+
+    <div class="modal-content">
+
+      <h2>
+        {{ title }}
+      </h2>
+
+      <p>
+        {{ message }}
+      </p>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="cancel-button"
+        (click)="cancel()">
+
+        {{ cancelText }}
+
+      </button>
+
+      <button
+        type="button"
+        class="confirm-button"
+        [class.danger-button]="type === 'danger'"
+        (click)="confirm()">
+
+        {{ confirmText }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

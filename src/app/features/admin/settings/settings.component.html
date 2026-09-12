@@ -1,0 +1,583 @@
+<div class="settings-page">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-logo">S</div>
+
+      <div>
+        <h2>SmartRecruitment</h2>
+        <span>ADMIN CONTROL</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section-title">
+        MAIN MENU
+      </div>
+
+      <a class="nav-item" routerLink="/admin">
+        <span>📊</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/user-management">
+        <span>👥</span>
+        <span>User Management</span>
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/job-management">
+        <span>💼</span>
+        <span>Job Management</span>
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/analytics">
+        <span>📈</span>
+        <span>Analytics</span>
+      </a>
+
+      <div class="nav-section-title system-title">
+        SYSTEM
+      </div>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/notifications">
+        <span>🔔</span>
+        <span>Notifications</span>
+      </a>
+
+      <a class="nav-item active">
+        <span>⚙️</span>
+        <span>Settings</span>
+      </a>
+
+    </nav>
+
+    <div class="admin-profile">
+
+      <div class="profile-avatar">
+        AD
+      </div>
+
+      <div>
+        <strong>Administrator</strong>
+        <span>System Admin</span>
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ================= MAIN ================= -->
+  <main class="admin-main">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+
+      <div>
+        <span class="breadcrumb">
+          CONTROL CENTER / SETTINGS
+        </span>
+
+        <h1>System Settings</h1>
+
+        <p>
+          Configure platform behaviour, security and matching preferences.
+        </p>
+      </div>
+
+      <div class="system-status">
+        <span class="status-dot"></span>
+        SYSTEM ACTIVE
+      </div>
+
+    </header>
+
+
+    <!-- ================= SETTINGS GRID ================= -->
+    <section class="settings-grid">
+
+      <!-- PLATFORM SETTINGS -->
+      <div class="settings-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon">
+            🏢
+          </div>
+
+          <div>
+            <h2>Platform Settings</h2>
+            <p>General platform configuration.</p>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Platform Name
+          </label>
+
+          <input
+            type="text"
+            [(ngModel)]="platformName">
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Administrator Email
+          </label>
+
+          <input
+            type="email"
+            [(ngModel)]="platformEmail">
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Maintenance Mode</strong>
+
+            <span>
+              Temporarily restrict platform access.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="toggle"
+            [class.enabled]="maintenanceMode"
+            (click)="toggleMaintenance()">
+
+            <span></span>
+
+          </button>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Allow New Registrations</strong>
+
+            <span>
+              Allow users to create new accounts.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="toggle"
+            [class.enabled]="allowNewRegistrations"
+            (click)="toggleRegistrations()">
+
+            <span></span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- NOTIFICATION SETTINGS -->
+      <div class="settings-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon">
+            🔔
+          </div>
+
+          <div>
+            <h2>Notification Settings</h2>
+            <p>Control platform notification behaviour.</p>
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Email Notifications</strong>
+
+            <span>
+              Send important system notifications.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="emailNotifications">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Application Notifications</strong>
+
+            <span>
+              Notify users about application updates.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="applicationNotifications">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Matching Notifications</strong>
+
+            <span>
+              Notify users about new job matches.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="matchingNotifications">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- SECURITY SETTINGS -->
+      <div class="settings-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon">
+            🔐
+          </div>
+
+          <div>
+            <h2>Security Settings</h2>
+            <p>Configure account security policies.</p>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Session Timeout
+          </label>
+
+          <div class="input-with-unit">
+
+            <input
+              type="number"
+              min="5"
+              [(ngModel)]="sessionTimeout">
+
+            <span>minutes</span>
+
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Minimum Password Length
+          </label>
+
+          <input
+            type="number"
+            min="6"
+            [(ngModel)]="minimumPasswordLength">
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Strong Password Policy</strong>
+
+            <span>
+              Require secure password combinations.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="requireStrongPassword">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Login Protection</strong>
+
+            <span>
+              Enable additional login security.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="enableLoginProtection">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- MATCHING SETTINGS -->
+      <div class="settings-card">
+
+        <div class="card-heading">
+
+          <div class="heading-icon">
+            ⭐
+          </div>
+
+          <div>
+            <h2>Matching Settings</h2>
+            <p>Configure job matching visibility.</p>
+          </div>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Minimum Match Score
+          </label>
+
+          <div class="score-input">
+
+            <input
+              type="number"
+              min="0"
+              max="100"
+              [(ngModel)]="minimumMatchScore">
+
+            <span>%</span>
+
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Employer Match Score</strong>
+
+            <span>
+              Allow employers to view matching scores.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="showMatchScoreToEmployer">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div>
+            <strong>Seeker Match Score</strong>
+
+            <span>
+              Allow job seekers to view their scores.
+            </span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              [(ngModel)]="showMatchScoreToSeeker">
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="matching-notice">
+
+          <span>🛡️</span>
+
+          <p>
+            Matching scores are generated by the recruitment
+            matching service and are not manually edited by administrators.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= SYSTEM INFORMATION ================= -->
+    <section class="system-info-card">
+
+      <div class="system-info-header">
+
+        <div>
+          <span class="section-label">
+            PLATFORM INFORMATION
+          </span>
+
+          <h2>System Information</h2>
+        </div>
+
+        <span class="healthy-badge">
+          ● Healthy
+        </span>
+
+      </div>
+
+
+      <div class="system-info-grid">
+
+        <div class="info-item">
+
+          <span>Platform Version</span>
+          <strong>{{ systemVersion }}</strong>
+
+        </div>
+
+        <div class="info-item">
+
+          <span>Frontend</span>
+          <strong>Angular {{ angularVersion }}</strong>
+
+        </div>
+
+        <div class="info-item">
+
+          <span>Backend</span>
+          <strong>{{ backendVersion }}</strong>
+
+        </div>
+
+        <div class="info-item">
+
+          <span>Database</span>
+          <strong>{{ database }}</strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= ACTION BAR ================= -->
+    <section class="settings-actions">
+
+      <button
+        type="button"
+        class="reset-button"
+        (click)="resetSettings()">
+
+        ↺ Reset Changes
+
+      </button>
+
+
+      <button
+        type="button"
+        class="save-button"
+        (click)="saveSettings()">
+
+        ✓ Save Settings
+
+      </button>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Settings
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

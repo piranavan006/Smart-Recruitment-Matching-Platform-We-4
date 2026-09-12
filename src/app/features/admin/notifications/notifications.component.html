@@ -1,0 +1,437 @@
+<p>notifications works!</p>
+<div class="notifications-page">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-logo">S</div>
+
+      <div>
+        <h2>SmartRecruitment</h2>
+        <span>ADMIN CONTROL</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section-title">
+        MAIN MENU
+      </div>
+
+      <a
+        class="nav-item"
+        routerLink="/admin">
+
+        <span>📊</span>
+        <span>Dashboard</span>
+
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/user-management">
+
+        <span>👥</span>
+        <span>User Management</span>
+
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/job-management">
+
+        <span>💼</span>
+        <span>Job Management</span>
+
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/analytics">
+
+        <span>📈</span>
+        <span>Analytics</span>
+
+      </a>
+
+      <div class="nav-section-title system-title">
+        SYSTEM
+      </div>
+
+      <a
+        class="nav-item active">
+
+        <span>🔔</span>
+        <span>Notifications</span>
+
+        <span
+          class="sidebar-badge"
+          *ngIf="getUnreadCount() > 0">
+
+          {{ getUnreadCount() }}
+
+        </span>
+
+      </a>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/settings"
+  routerLinkActive="active">
+
+  <span>⚙️</span>
+  <span>Settings</span>
+
+</a>
+
+    </nav>
+
+    <div class="admin-profile">
+
+      <div class="profile-avatar">
+        AD
+      </div>
+
+      <div>
+        <strong>Administrator</strong>
+        <span>System Admin</span>
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="admin-main">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+
+      <div>
+
+        <span class="breadcrumb">
+          CONTROL CENTER / NOTIFICATIONS
+        </span>
+
+        <h1>System Notifications</h1>
+
+        <p>
+          Monitor important platform activity and system alerts.
+        </p>
+
+      </div>
+
+      <div class="notification-status">
+
+        <span class="status-dot"></span>
+
+        SYSTEM ACTIVE
+
+      </div>
+
+    </header>
+
+
+    <!-- ================= NOTIFICATION SUMMARY ================= -->
+    <section class="notification-summary">
+
+      <div class="summary-card">
+
+        <div class="summary-icon total-icon">
+          🔔
+        </div>
+
+        <div>
+          <span>Total Notifications</span>
+
+          <strong>
+            {{ getTotalCount() }}
+          </strong>
+
+          <small>
+            Platform activity alerts
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon unread-icon">
+          ✉️
+        </div>
+
+        <div>
+          <span>Unread Notifications</span>
+
+          <strong>
+            {{ getUnreadCount() }}
+          </strong>
+
+          <small>
+            Require attention
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="summary-card">
+
+        <div class="summary-icon system-icon">
+          🛡️
+        </div>
+
+        <div>
+          <span>System Status</span>
+
+          <strong class="operational-text">
+            Operational
+          </strong>
+
+          <small>
+            All services running
+          </small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= NOTIFICATION CONTENT ================= -->
+    <section class="notifications-card">
+
+      <!-- HEADER -->
+      <div class="notifications-header">
+
+        <div>
+
+          <span class="section-label">
+            ACTIVITY CENTER
+          </span>
+
+          <h2>Recent Notifications</h2>
+
+          <p>
+            Review alerts and recent platform events.
+          </p>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="mark-all-button"
+          (click)="markAllAsRead()"
+          [disabled]="getUnreadCount() === 0">
+
+          ✓ Mark All as Read
+
+        </button>
+
+      </div>
+
+
+      <!-- FILTERS -->
+      <div class="filter-wrapper">
+
+        <div class="filter-label">
+          Filter notifications
+        </div>
+
+        <div class="filter-list">
+
+          <button
+            type="button"
+            *ngFor="let filter of filters"
+            [class.active-filter]="selectedFilter === filter"
+            (click)="changeFilter(filter)">
+
+            {{ filter }}
+
+            <span
+              *ngIf="filter === 'Unread'"
+              class="filter-count">
+
+              {{ getUnreadCount() }}
+
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- NOTIFICATION LIST -->
+      <div
+        class="notification-list"
+        *ngIf="filteredNotifications.length > 0; else emptyNotifications">
+
+
+        <div
+          class="notification-item"
+          *ngFor="let notification of filteredNotifications"
+          [class.unread]="!notification.isRead">
+
+
+          <!-- ICON -->
+          <div
+            class="notification-icon">
+
+            {{ notification.icon }}
+
+          </div>
+
+
+          <!-- CONTENT -->
+          <div class="notification-content">
+
+            <div class="notification-title-row">
+
+              <div>
+
+                <span class="notification-type">
+                  {{ notification.type }}
+                </span>
+
+                <h3>
+                  {{ notification.title }}
+                </h3>
+
+              </div>
+
+              <span class="notification-time">
+                {{ notification.time }}
+              </span>
+
+            </div>
+
+            <p>
+              {{ notification.message }}
+            </p>
+
+
+            <div class="notification-actions">
+
+              <button
+                type="button"
+                class="read-button"
+                *ngIf="!notification.isRead"
+                (click)="markAsRead(notification)">
+
+                ✓ Mark as Read
+
+              </button>
+
+              <span
+                class="read-label"
+                *ngIf="notification.isRead">
+
+                ✓ Read
+
+              </span>
+
+              <button
+                type="button"
+                class="remove-button"
+                (click)="removeNotification(notification)">
+
+                Remove
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- UNREAD INDICATOR -->
+          <span
+            class="unread-dot"
+            *ngIf="!notification.isRead">
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- EMPTY STATE -->
+      <ng-template #emptyNotifications>
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            🔕
+          </div>
+
+          <h3>
+            No Notifications Found
+          </h3>
+
+          <p>
+            There are no notifications matching the selected filter.
+          </p>
+
+          <button
+            type="button"
+            (click)="changeFilter('All')">
+
+            View All Notifications
+
+          </button>
+
+        </div>
+
+      </ng-template>
+
+
+    </section>
+
+
+    <!-- ================= ADMIN NOTICE ================= -->
+    <section class="admin-notice">
+
+      <div class="notice-icon">
+        🛡️
+      </div>
+
+      <div>
+
+        <strong>
+          Administrator Notification Center
+        </strong>
+
+        <p>
+          Notifications provide visibility into important platform
+          events such as new users, vacancies, applications and
+          system activity.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Notifications
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

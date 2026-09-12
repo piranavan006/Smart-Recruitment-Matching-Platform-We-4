@@ -1,0 +1,229 @@
+<div class="applicants-page">
+
+  <div class="applicants-container">
+
+    <!-- Header -->
+    <div class="applicants-header">
+
+      <div>
+        <span class="page-badge">EMPLOYER</span>
+
+        <h1>Applicants</h1>
+
+        <p>
+          Review candidates ranked by their matching score.
+        </p>
+      </div>
+
+      <a
+        routerLink="/employer"
+        class="back-button">
+        ← Dashboard
+      </a>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+
+        <div>
+          <span>Total Applicants</span>
+          <strong>{{ applicants.length }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+
+        <div>
+          <span>Top Match</span>
+          <strong>{{ getTopMatch() }}%</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+
+        <div>
+          <span>Pending</span>
+          <strong>{{ getCount('Pending') }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+
+        <div>
+          <span>Accepted</span>
+          <strong>{{ getCount('Accepted') }}</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Applicants Section -->
+    <div class="applicants-section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Ranked Applicants</h2>
+
+          <p>
+            Candidates are displayed according to the match score
+            returned by the system.
+          </p>
+        </div>
+
+        <select
+          class="job-select"
+          [(ngModel)]="selectedJob">
+
+          <option value="">All Vacancies</option>
+          <option value="Software Engineer">
+            Software Engineer
+          </option>
+          <option value="Frontend Developer">
+            Frontend Developer
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- Applicant List -->
+      <div class="applicants-list">
+
+        <div
+          class="applicant-card"
+          *ngFor="let applicant of applicants">
+
+          <div class="rank-number">
+            #{{ applicant.rank }}
+          </div>
+
+          <div class="candidate-avatar">
+            {{ applicant.initials }}
+          </div>
+
+          <div class="candidate-info">
+
+            <h3>{{ applicant.name }}</h3>
+
+            <p class="candidate-role">
+              {{ applicant.jobTitle }}
+            </p>
+
+            <div class="candidate-details">
+
+              <span>
+                📍 {{ applicant.location }}
+              </span>
+
+              <span>
+                💼 {{ applicant.experience }} years experience
+              </span>
+
+              <span>
+                📅 Applied {{ applicant.appliedDate }}
+              </span>
+
+            </div>
+
+            <div class="skills-list">
+
+              <span
+                class="skill-tag"
+                *ngFor="let skill of applicant.skills">
+                {{ skill }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <!-- Match Score -->
+          <div class="match-section">
+
+            <span class="match-label">
+              Match Score
+            </span>
+
+            <strong>
+              {{ applicant.matchScore }}%
+            </strong>
+
+            <div class="score-bar">
+              <div
+                class="score-progress"
+                [ngStyle]="{
+                  width: applicant.matchScore + '%'
+                }">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Status -->
+          <div class="applicant-actions">
+
+            <span
+              class="status-badge"
+              [ngClass]="applicant.status.toLowerCase()">
+              {{ applicant.status }}
+            </span>
+
+            <select
+              class="status-select"
+              [(ngModel)]="applicant.status">
+
+              <option value="Pending">Pending</option>
+              <option value="Accepted">Accepted</option>
+              <option value="Rejected">Rejected</option>
+
+            </select>
+
+            <button
+              type="button"
+              class="view-button">
+              View Profile
+            </button>
+
+            <button
+              type="button"
+              class="contact-button">
+              Contact
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div
+        class="empty-state"
+        *ngIf="applicants.length === 0">
+
+        <div class="empty-icon">
+          👥
+        </div>
+
+        <h3>No applicants yet</h3>
+
+        <p>
+          Applicants will appear here when candidates apply
+          for your vacancies.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
