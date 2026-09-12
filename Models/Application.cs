@@ -6,16 +6,6 @@
 
         public int JobId { get; set; }
 
-        public int JobSeekerProfileId { get; set; }
-
-        public string Status { get; set; } = "Applied";
-
-        public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
-
-        // Navigation properties
-        public Job? Job { get; set; }
-
-        public JobSeekerProfile? JobSeekerProfile { get; set; }
         public int JobSeekerId { get; set; }
 
         
@@ -27,6 +17,8 @@
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         
+        // Navigation properties
+        public Job? Job { get; set; }
 
         public JobSeekerProfile? JobSeeker { get; set; }
     }
