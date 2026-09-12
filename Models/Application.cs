@@ -8,14 +8,15 @@
 
         public int JobSeekerId { get; set; }
 
-        public string Status { get; set; } = "Pending";
+        
 
         public decimal? MatchScore { get; set; }
 
-        public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
+        
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        
         // Navigation properties
         public Job? Job { get; set; }
 
