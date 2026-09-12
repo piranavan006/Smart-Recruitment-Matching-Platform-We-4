@@ -51,7 +51,7 @@ namespace SmartRecruitment.API
             // ================================
             // Skill Repository & Service
             // ================================
-            builder.Services.AddScoped<ISkillRepository, ISkillRepository>();
+            builder.Services.AddScoped<ISkillRepository, SkillRepository>();
             builder.Services.AddScoped<ISkillService, SkillService>();
 
 
