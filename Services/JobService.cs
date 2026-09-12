@@ -18,6 +18,9 @@ namespace SmartRecruitment.API.Services
             _employerRepository = employerRepository;
         }
 
+        // =========================================================
+        // CREATE JOB
+        // =========================================================
         public async Task<JobResponseDto> CreateAsync(
             string userId,
             CreateJobDto dto)
@@ -46,20 +49,46 @@ namespace SmartRecruitment.API.Services
 
             var job = new Job
             {
-                EmployerProfileId = employer.Id,
-                Title = dto.Title.Trim(),
-                Description = dto.Description.Trim(),
-                Location = dto.Location?.Trim(),
-                Education = dto.Education?.Trim(),
-                MinExperienceYears = dto.MinExperienceYears,
-                MaxExperienceYears = dto.MaxExperienceYears,
-                SalaryMin = dto.SalaryMin,
-                SalaryMax = dto.SalaryMax,
+                EmployerProfileId =
+                    employer.EmployerProfileId,
+
+                Title =
+                    dto.Title.Trim(),
+
+                Description =
+                    dto.Description.Trim(),
+
+                Location =
+                    dto.Location?.Trim(),
+
+                Education =
+                    dto.Education?.Trim(),
+
+                MinExperienceYears =
+                    dto.MinExperienceYears,
+
+                MaxExperienceYears =
+                    dto.MaxExperienceYears,
+
+                SalaryMin =
+                    dto.SalaryMin,
+
+                SalaryMax =
+                    dto.SalaryMax,
+
                 ApplicationDeadline =
                     dto.ApplicationDeadline,
-                IsClosed = false
+
+                IsClosed = false,
+
+                CreatedAt = DateTime.UtcNow,
+
+                UpdatedAt = DateTime.UtcNow
             };
 
+            // =====================================================
+            // ADD REQUIRED SKILLS
+            // =====================================================
             if (dto.RequiredSkills != null)
             {
                 foreach (var skill in dto.RequiredSkills)
@@ -70,7 +99,7 @@ namespace SmartRecruitment.API.Services
                         continue;
                     }
 
-                    job.RequiredSkills.Add(
+                    job.JobSkills.Add(
                         new JobSkill
                         {
                             SkillName =
@@ -84,12 +113,18 @@ namespace SmartRecruitment.API.Services
                 }
             }
 
+            // =====================================================
+            // SAVE JOB
+            // =====================================================
             var created =
-                await _jobRepository.CreateAsync(job);
+                await _jobRepository.AddAsync(job);
 
             return MapToDto(created);
         }
 
+        // =========================================================
+        // GET JOB BY ID
+        // =========================================================
         public async Task<JobResponseDto?> GetByIdAsync(
             int id)
         {
@@ -110,6 +145,9 @@ namespace SmartRecruitment.API.Services
             return MapToDto(job);
         }
 
+        // =========================================================
+        // GET MY JOBS
+        // =========================================================
         public async Task<List<JobResponseDto>> GetMyJobsAsync(
             string userId)
         {
@@ -130,13 +168,16 @@ namespace SmartRecruitment.API.Services
 
             var jobs =
                 await _jobRepository.GetByEmployerIdAsync(
-                    employer.Id);
+                    employer.EmployerProfileId);
 
             return jobs
                 .Select(MapToDto)
                 .ToList();
         }
 
+        // =========================================================
+        // UPDATE JOB
+        // =========================================================
         public async Task<JobResponseDto?> UpdateAsync(
             string userId,
             int id,
@@ -151,6 +192,12 @@ namespace SmartRecruitment.API.Services
             if (dto == null)
             {
                 throw new ArgumentNullException(nameof(dto));
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException(
+                    "Invalid job ID.");
             }
 
             ValidateJob(dto);
@@ -172,18 +219,28 @@ namespace SmartRecruitment.API.Services
                 return null;
             }
 
-            if (job.EmployerProfileId != employer.Id)
+            // =====================================================
+            // CHECK JOB OWNERSHIP
+            // =====================================================
+            if (job.EmployerProfileId !=
+                employer.EmployerProfileId)
             {
                 throw new UnauthorizedAccessException(
                     "You are not allowed to update this job.");
             }
 
+            // =====================================================
+            // CLOSED JOB CHECK
+            // =====================================================
             if (job.IsClosed)
             {
                 throw new InvalidOperationException(
                     "Closed jobs cannot be updated.");
             }
 
+            // =====================================================
+            // UPDATE BASIC DETAILS
+            // =====================================================
             job.Title =
                 dto.Title.Trim();
 
@@ -214,7 +271,10 @@ namespace SmartRecruitment.API.Services
             job.UpdatedAt =
                 DateTime.UtcNow;
 
-            job.RequiredSkills.Clear();
+            // =====================================================
+            // UPDATE JOB SKILLS
+            // =====================================================
+            job.JobSkills.Clear();
 
             if (dto.RequiredSkills != null)
             {
@@ -226,10 +286,12 @@ namespace SmartRecruitment.API.Services
                         continue;
                     }
 
-                    job.RequiredSkills.Add(
+                    job.JobSkills.Add(
                         new JobSkill
                         {
-                            JobId = job.Id,
+                            JobId =
+                                job.Id,
+
                             SkillName =
                                 skill.SkillName.Trim(),
 
@@ -241,12 +303,18 @@ namespace SmartRecruitment.API.Services
                 }
             }
 
+            // =====================================================
+            // SAVE UPDATE
+            // =====================================================
             var updated =
                 await _jobRepository.UpdateAsync(job);
 
             return MapToDto(updated);
         }
 
+        // =========================================================
+        // CLOSE JOB
+        // =========================================================
         public async Task<bool> CloseAsync(
             string userId,
             int id)
@@ -255,6 +323,12 @@ namespace SmartRecruitment.API.Services
             {
                 throw new UnauthorizedAccessException(
                     "User ID is required.");
+            }
+
+            if (id <= 0)
+            {
+                throw new ArgumentException(
+                    "Invalid job ID.");
             }
 
             var employer =
@@ -274,25 +348,37 @@ namespace SmartRecruitment.API.Services
                 return false;
             }
 
-            if (job.EmployerProfileId != employer.Id)
+            // =====================================================
+            // CHECK JOB OWNERSHIP
+            // =====================================================
+            if (job.EmployerProfileId !=
+                employer.EmployerProfileId)
             {
                 throw new UnauthorizedAccessException(
                     "You are not allowed to close this job.");
             }
 
+            // =====================================================
+            // ALREADY CLOSED
+            // =====================================================
             if (job.IsClosed)
             {
                 return true;
             }
 
             job.IsClosed = true;
-            job.UpdatedAt = DateTime.UtcNow;
+
+            job.UpdatedAt =
+                DateTime.UtcNow;
 
             await _jobRepository.UpdateAsync(job);
 
             return true;
         }
 
+        // =========================================================
+        // SEARCH JOBS
+        // =========================================================
         public async Task<List<JobResponseDto>> SearchAsync(
             JobSearchDto dto)
         {
@@ -316,6 +402,9 @@ namespace SmartRecruitment.API.Services
                 .ToList();
         }
 
+        // =========================================================
+        // VALIDATE CREATE JOB
+        // =========================================================
         private static void ValidateJob(
             CreateJobDto dto)
         {
@@ -329,6 +418,9 @@ namespace SmartRecruitment.API.Services
                 dto.ApplicationDeadline);
         }
 
+        // =========================================================
+        // VALIDATE UPDATE JOB
+        // =========================================================
         private static void ValidateJob(
             UpdateJobDto dto)
         {
@@ -342,6 +434,9 @@ namespace SmartRecruitment.API.Services
                 dto.ApplicationDeadline);
         }
 
+        // =========================================================
+        // VALIDATE COMMON JOB VALUES
+        // =========================================================
         private static void ValidateJobValues(
             string title,
             string description,
@@ -390,12 +485,16 @@ namespace SmartRecruitment.API.Services
             }
         }
 
+        // =========================================================
+        // MAP JOB TO RESPONSE DTO
+        // =========================================================
         private static JobResponseDto MapToDto(
             Job job)
         {
             return new JobResponseDto
             {
-                Id = job.Id,
+                Id =
+                    job.Id,
 
                 EmployerProfileId =
                     job.EmployerProfileId,
@@ -440,15 +539,14 @@ namespace SmartRecruitment.API.Services
                     job.UpdatedAt,
 
                 RequiredSkills =
-                    job.RequiredSkills
+                    job.JobSkills
                         .Select(skill =>
                             new JobSkillDto
                             {
                                 SkillName =
                                     skill.SkillName,
 
-                                Weight =
-                                    skill.Weight
+                                Weight = (int)skill.Weight
                             })
                         .ToList()
             };

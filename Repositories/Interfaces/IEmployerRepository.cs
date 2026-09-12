@@ -4,31 +4,30 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 {
     public interface IEmployerRepository
     {
-        Task<EmployerProfile?> GetByIdAsync(int id);
-
+        // Get employer by user ID
         Task<EmployerProfile?> GetByUserIdAsync(string userId);
 
-        Task<bool> ExistsByUserIdAsync(string userId);
+        // Get employer by profile ID
+        Task<EmployerProfile?> GetByIdAsync(
+            int employerProfileId);
 
+        // Get all employer profiles
+        Task<List<EmployerProfile>> GetAllAsync();
+
+        // Create employer profile
         Task<EmployerProfile> CreateAsync(
             EmployerProfile employer);
 
+        // Update employer profile
         Task<EmployerProfile> UpdateAsync(
             EmployerProfile employer);
 
-        Task<bool> HasJobsAsync(int employerProfileId);
-        Task<EmployerProfile?> GetByIdAsync(int employerProfileId);
+        // Delete employer profile
+        Task DeleteAsync(
+            int employerProfileId);
 
-        Task<EmployerProfile?> GetByUserIdAsync(int userId);
-
-        Task<List<EmployerProfile>> GetAllAsync();
-
-        Task<EmployerProfile> AddAsync(EmployerProfile profile);
-
-        Task UpdateAsync(EmployerProfile profile);
-
-        Task DeleteAsync(int employerProfileId);
-
-        Task<bool> ExistsByUserIdAsync(int userId);
+        // Check whether employer exists
+        Task<bool> ExistsByUserIdAsync(
+            string userId);
     }
 }

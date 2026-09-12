@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-﻿
 namespace SmartRecruitment.API.Models
 {
     public class Job
@@ -26,6 +25,8 @@ namespace SmartRecruitment.API.Models
         [MaxLength(100)]
         public string? Education { get; set; }
 
+        public string? EmploymentType { get; set; }
+
         [Range(0, 100)]
         public int MinExperienceYears { get; set; }
 
@@ -41,40 +42,13 @@ namespace SmartRecruitment.API.Models
 
         public bool IsClosed { get; set; } = false;
 
+        public string Status { get; set; } = "Open";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        public ICollection<JobSkill> RequiredSkills { get; set; }
+        public ICollection<JobSkill> JobSkills { get; set; }
             = new List<JobSkill>();
-        public int JobId { get; set; }
-
-        public int EmployerProfileId { get; set; }
-
-        public string Title { get; set; } = string.Empty;
-
-        public string Description { get; set; } = string.Empty;
-
-        public string Location { get; set; } = string.Empty;
-
-        public string EmploymentType { get; set; } = string.Empty;
-
-        public int MinExperience { get; set; }
-
-        public int MaxExperience { get; set; }
-
-        public decimal MinSalary { get; set; }
-
-        public decimal MaxSalary { get; set; }
-
-        public string Status { get; set; } = "Open";
-
-        public DateTime PostedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime? ClosingDate { get; set; }
-
-        public EmployerProfile? EmployerProfile { get; set; }
-
-        public ICollection<JobSkill> JobSkills { get; set; } = new List<JobSkill>();
     }
 }

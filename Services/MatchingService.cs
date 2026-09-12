@@ -23,57 +23,42 @@ namespace SmartRecruitment.API.Services
             _profileProvider = profileProvider;
         }
 
-        public async Task<List<MatchResultDto>>
-            GetMatchesForJobAsync(int jobId)
+        public async Task<List<MatchResultDto>> GetMatchesForJobAsync(int jobId)
         {
-            var job =
-                await _jobRepository.GetByIdAsync(jobId);
+            var job = await _jobRepository.GetByIdAsync(jobId);
 
             if (job == null)
-            {
-                throw new KeyNotFoundException(
-                    "Job not found.");
-            }
+                throw new KeyNotFoundException("Job not found.");
 
-            var profiles =
-                await _profileProvider
-                    .GetAllProfilesAsync();
+            var profiles = await _profileProvider.GetAllProfilesAsync();
 
             return profiles
-                .Select(profile =>
-                    CalculateMatch(job, profile))
+                .Select(profile => CalculateMatch(job, profile))
                 .OrderByDescending(x => x.MatchScore)
                 .ThenBy(x => x.JobSeekerId)
                 .ToList();
         }
 
-        public async Task<List<MatchResultDto>>
-            GetMatchesForJobSeekerAsync(
-                int jobSeekerId)
+        public async Task<List<MatchResultDto>> GetMatchesForJobSeekerAsync(
+            int jobSeekerId)
         {
-            var profile =
-                await _profileProvider
-                    .GetProfileAsync(jobSeekerId);
+            var profile = await _profileProvider.GetProfileAsync(jobSeekerId);
 
             if (profile == null)
-            {
                 throw new KeyNotFoundException(
                     "Job seeker profile not found.");
-            }
 
-            var jobs =
-                await _jobRepository.SearchAsync(
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null);
+            var jobs = await _jobRepository.SearchAsync(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
 
             return jobs
-                .Select(job =>
-                    CalculateMatch(job, profile))
+                .Select(job => CalculateMatch(job, profile))
                 .OrderByDescending(x => x.MatchScore)
                 .ThenBy(x => x.JobId)
                 .ToList();
@@ -83,59 +68,43 @@ namespace SmartRecruitment.API.Services
             Job job,
             JobSeekerMatchingProfile profile)
         {
-            var candidateSkills =
-                new HashSet<string>(
-                    profile.Skills
-                        .Where(skill =>
-                            !string.IsNullOrWhiteSpace(skill))
-                        .Select(Normalize),
-                    StringComparer.OrdinalIgnoreCase);
+            var candidateSkills = new HashSet<string>(
+                profile.Skills
+                    .Where(skill => !string.IsNullOrWhiteSpace(skill))
+                    .Select(Normalize),
+                StringComparer.OrdinalIgnoreCase);
 
-            var requiredSkills =
-                job.RequiredSkills
-                    .Where(skill =>
-                        !string.IsNullOrWhiteSpace(
-                            skill.SkillName))
-                    .ToList();
+            var requiredSkills = job.JobSkills
+                .Where(skill =>
+                    !string.IsNullOrWhiteSpace(skill.SkillName))
+                .ToList();
 
-            double totalSkillWeight =
-                requiredSkills.Sum(
-                    skill =>
-                        Math.Max(1, skill.Weight));
+            double totalSkillWeight = requiredSkills.Sum(
+    skill => Math.Max(1, (double)skill.Weight)
+);
 
-            double matchedSkillWeight =
-                requiredSkills
-                    .Where(skill =>
-                        candidateSkills.Contains(
-                            Normalize(skill.SkillName)))
-                    .Sum(skill =>
-                        Math.Max(1, skill.Weight));
+            double matchedSkillWeight = requiredSkills
+                .Where(skill =>
+                    candidateSkills.Contains(
+                        Normalize(skill.SkillName)))
+                .Sum(skill => Math.Max(1, (double)skill.Weight));
 
-            double skillScore =
-                totalSkillWeight == 0
-                    ? 0
-                    : matchedSkillWeight /
-                      totalSkillWeight *
-                      100;
+            double skillScore = totalSkillWeight == 0
+                ? 0
+                : matchedSkillWeight / totalSkillWeight * 100;
 
-            var missingSkills =
-                requiredSkills
-                    .Where(skill =>
-                        !candidateSkills.Contains(
-                            Normalize(skill.SkillName)))
-                    .Select(skill =>
-                        skill.SkillName)
-                    .Distinct(
-                        StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(skill => skill)
-                    .ToList();
+            var missingSkills = requiredSkills
+                .Where(skill =>
+                    !candidateSkills.Contains(
+                        Normalize(skill.SkillName)))
+                .Select(skill => skill.SkillName)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(skill => skill)
+                .ToList();
 
             bool experienceMatched =
-                profile.ExperienceYears >=
-                    job.MinExperienceYears
-                &&
-                profile.ExperienceYears <=
-                    job.MaxExperienceYears;
+                profile.ExperienceYears >= job.MinExperienceYears &&
+                profile.ExperienceYears <= job.MaxExperienceYears;
 
             double experienceScore;
 
@@ -143,18 +112,15 @@ namespace SmartRecruitment.API.Services
             {
                 experienceScore = 100;
             }
-            else if (
-                profile.ExperienceYears <
-                job.MinExperienceYears)
+            else if (profile.ExperienceYears < job.MinExperienceYears)
             {
                 int gap =
                     job.MinExperienceYears -
                     profile.ExperienceYears;
 
-                experienceScore =
-                    Math.Max(
-                        0,
-                        100 - gap * 20);
+                experienceScore = Math.Max(
+                    0,
+                    100 - gap * 20);
             }
             else
             {
@@ -162,93 +128,50 @@ namespace SmartRecruitment.API.Services
             }
 
             bool educationMatched =
-                string.IsNullOrWhiteSpace(
-                    job.Education)
-                ||
+                string.IsNullOrWhiteSpace(job.Education) ||
                 string.Equals(
                     Normalize(job.Education),
                     Normalize(profile.Education),
                     StringComparison.OrdinalIgnoreCase);
 
-            double educationScore =
-                educationMatched
-                    ? 100
-                    : 0;
+            double educationScore = educationMatched ? 100 : 0;
 
             bool locationMatched =
-                string.IsNullOrWhiteSpace(
-                    job.Location)
-                ||
-                string.IsNullOrWhiteSpace(
-                    profile.Location)
-                ||
+                string.IsNullOrWhiteSpace(job.Location) ||
+                string.IsNullOrWhiteSpace(profile.Location) ||
                 string.Equals(
                     Normalize(job.Location),
                     Normalize(profile.Location),
                     StringComparison.OrdinalIgnoreCase);
 
-            double locationScore =
-                locationMatched
-                    ? 100
-                    : 0;
+            double locationScore = locationMatched ? 100 : 0;
 
             double finalScore =
-                (skillScore *
-                    SkillWeight / 100)
-                +
-                (experienceScore *
-                    ExperienceWeight / 100)
-                +
-                (educationScore *
-                    EducationWeight / 100)
-                +
-                (locationScore *
-                    LocationWeight / 100);
+                (skillScore * SkillWeight / 100) +
+                (experienceScore * ExperienceWeight / 100) +
+                (educationScore * EducationWeight / 100) +
+                (locationScore * LocationWeight / 100);
 
-            finalScore =
-                Math.Round(
-                    Math.Clamp(
-                        finalScore,
-                        0,
-                        100),
-                    2);
+            finalScore = Math.Round(
+                Math.Clamp(finalScore, 0, 100),
+                2);
 
             return new MatchResultDto
             {
-                JobId =
-                    job.Id,
-
-                JobSeekerId =
-                    profile.JobSeekerId,
-
-                JobTitle =
-                    job.Title,
-
-                CandidateName =
-                    profile.FullName,
-
-                MatchScore =
-                    finalScore,
-
-                MissingSkills =
-                    missingSkills,
-
-                SkillsMatched =
-                    missingSkills.Count == 0,
-
-                ExperienceMatched =
-                    experienceMatched,
-
-                EducationMatched =
-                    educationMatched,
-
-                LocationMatched =
-                    locationMatched
+                JobId = job.Id,
+                JobSeekerId = profile.JobSeekerId,
+                JobTitle = job.Title,
+                CandidateName = profile.FullName,
+                MatchScore = finalScore,
+                MissingSkills = missingSkills,
+                SkillsMatched = missingSkills.Count == 0,
+                ExperienceMatched = experienceMatched,
+                EducationMatched = educationMatched,
+                LocationMatched = locationMatched
             };
         }
 
-        private static string Normalize(
-            string? value)
+        private static string Normalize(string? value)
         {
             return (value ?? string.Empty)
                 .Trim()
