@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Models;
 
 namespace SmartRecruitment.API.Data
@@ -121,7 +121,7 @@ namespace SmartRecruitment.API.Data
 
             modelBuilder.Entity<JobSkill>()
                 .HasOne(js => js.Job)
-                .WithMany()
+                .WithMany(j => j.JobSkills)
                 .HasForeignKey(js => js.JobId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -208,6 +208,16 @@ namespace SmartRecruitment.API.Data
 
             modelBuilder.Entity<Job>()
                 .Property(j => j.SalaryMax)
+                .HasPrecision(18, 2);
+
+
+            modelBuilder.Entity<JobSkill>()
+                .Property(js => js.Weight)
+                .HasPrecision(18, 2);
+
+
+            modelBuilder.Entity<JobSeekerSkill>()
+                .Property(jss => jss.Weight)
                 .HasPrecision(18, 2);
         }
     }

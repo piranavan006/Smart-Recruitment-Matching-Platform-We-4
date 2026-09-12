@@ -70,6 +70,63 @@ namespace SmartRecruitment.API
 
 
             // ================================
+            // Employer Repository & Service
+            // ================================
+            builder.Services.AddScoped<IEmployerRepository, EmployerRepository>();
+            builder.Services.AddScoped<IEmployerService, EmployerService>();
+
+
+            // ================================
+            // Job Repository & Service
+            // ================================
+            builder.Services.AddScoped<IJobRepository, JobRepository>();
+            builder.Services.AddScoped<IJobService, JobService>();
+
+
+            // ================================
+            // Job Seeker Repository & Service
+            // ================================
+            builder.Services.AddScoped<IJobSeekerRepository, JobSeekerRepository>();
+            builder.Services.AddScoped<IJobSeekerService, JobSeekerService>();
+
+
+            // ================================
+            // Application Repository & Service
+            // ================================
+            builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+            builder.Services.AddScoped<IApplicationService, ApplicationService>();
+
+
+            // ================================
+            // CV Repository, Helper & Service
+            // ================================
+            builder.Services.AddScoped<ICVRepository, CVRepository>();
+            builder.Services.AddScoped<FileStorageHelper>();
+            builder.Services.AddScoped<ICVService, CVService>();
+
+
+            // ================================
+            // Matching Provider & Service
+            // ================================
+            builder.Services.AddScoped<IJobSeekerMatchingProvider, JobSeekerMatchingProvider>();
+            builder.Services.AddScoped<IMatchingService, MatchingService>();
+
+
+            // ================================
+            // CORS
+            // ================================
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+                });
+            });
+
+
+            // ================================
             // JWT Authentication
             // ================================
             var jwtKey = builder.Configuration["Jwt:Key"];
@@ -164,6 +221,9 @@ namespace SmartRecruitment.API
             // HTTPS
             app.UseHttpsRedirection();
 
+
+            // CORS
+            app.UseCors("AllowAll");
 
             // Authentication MUST come before Authorization
             app.UseAuthentication();

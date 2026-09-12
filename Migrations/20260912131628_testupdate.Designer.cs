@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartRecruitment.API.Data;
 
@@ -11,9 +12,11 @@ using SmartRecruitment.API.Data;
 namespace SmartRecruitment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260912131628_testupdate")]
+    partial class testupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -302,7 +305,6 @@ namespace SmartRecruitment.API.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Weight")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("JobSeekerSkillId");
@@ -334,7 +336,6 @@ namespace SmartRecruitment.API.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Weight")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
