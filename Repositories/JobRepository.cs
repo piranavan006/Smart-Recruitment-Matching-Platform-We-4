@@ -9,78 +9,54 @@ namespace SmartRecruitment.API.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public JobRepository(
-            ApplicationDbContext context)
         public JobRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Job?> GetByIdAsync(
-            int id)
+        // Get Job by ID
+        public async Task<Job?> GetByIdAsync(int jobId)
         {
             return await _context.Jobs
                 .Include(j => j.EmployerProfile)
-                .Include(j => j.RequiredSkills)
-                .FirstOrDefaultAsync(j => j.Id == id);
+                .Include(j => j.JobSkills)
+                .FirstOrDefaultAsync(j => j.Id == jobId);
         }
 
+        // Get All Jobs
+        public async Task<List<Job>> GetAllAsync()
+        {
+            return await _context.Jobs
+                .Include(j => j.EmployerProfile)
+                .Include(j => j.JobSkills)
+                .ToListAsync();
+        }
+
+        // Get Jobs by Employer
         public async Task<List<Job>> GetByEmployerIdAsync(
             int employerProfileId)
         {
             return await _context.Jobs
                 .Include(j => j.EmployerProfile)
-                .Include(j => j.RequiredSkills)
+                .Include(j => j.JobSkills)
                 .Where(j =>
-                    j.EmployerProfileId ==
-                    employerProfileId)
+                    j.EmployerProfileId == employerProfileId)
                 .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
         }
 
-        public async Task<Job> CreateAsync(
-            Job job)
+        // Get Active Jobs
+        public async Task<List<Job>> GetActiveJobsAsync()
         {
-            _context.Jobs.Add(job);
-
-            await _context.SaveChangesAsync();
-
             return await _context.Jobs
                 .Include(j => j.EmployerProfile)
-                .Include(j => j.RequiredSkills)
-                .FirstAsync(j => j.Id == job.Id);
+                .Include(j => j.JobSkills)
+                .Where(j => !j.IsClosed)
+                .OrderByDescending(j => j.CreatedAt)
+                .ToListAsync();
         }
 
-        public async Task<Job> UpdateAsync(
-            Job job)
-        {
-            _context.Jobs.Update(job);
-
-            await _context.SaveChangesAsync();
-
-            return await _context.Jobs
-                .Include(j => j.EmployerProfile)
-                .Include(j => j.RequiredSkills)
-                .FirstAsync(j => j.Id == job.Id);
-        }
-
-        public async Task<bool> CloseAsync(
-            int id)
-        {
-            var job = await _context.Jobs
-                .FirstOrDefaultAsync(j => j.Id == id);
-
-            if (job == null)
-                return false;
-
-            job.IsClosed = true;
-            job.UpdatedAt = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
+        // Search Jobs
         public async Task<List<Job>> SearchAsync(
             string? keyword,
             string? location,
@@ -92,51 +68,43 @@ namespace SmartRecruitment.API.Repositories
         {
             var query = _context.Jobs
                 .Include(j => j.EmployerProfile)
-                .Include(j => j.RequiredSkills)
+                .Include(j => j.JobSkills)
                 .AsQueryable();
 
-            // Only active jobs
+            // Active jobs only
             query = query.Where(j => !j.IsClosed);
 
             // Keyword search
             if (!string.IsNullOrWhiteSpace(keyword))
             {
-                var search =
-                    keyword.Trim().ToLower();
+                var search = keyword.Trim().ToLower();
 
                 query = query.Where(j =>
-                    j.Title.ToLower()
-                        .Contains(search)
-                    ||
-                    j.Description.ToLower()
-                        .Contains(search));
+                    j.Title.ToLower().Contains(search) ||
+                    j.Description.ToLower().Contains(search));
             }
 
-            // Location
+            // Location filter
             if (!string.IsNullOrWhiteSpace(location))
             {
-                var search =
-                    location.Trim().ToLower();
+                var search = location.Trim().ToLower();
 
                 query = query.Where(j =>
                     j.Location != null &&
-                    j.Location.ToLower()
-                        .Contains(search));
+                    j.Location.ToLower().Contains(search));
             }
 
-            // Education
+            // Education filter
             if (!string.IsNullOrWhiteSpace(education))
             {
-                var search =
-                    education.Trim().ToLower();
+                var search = education.Trim().ToLower();
 
                 query = query.Where(j =>
                     j.Education != null &&
-                    j.Education.ToLower()
-                        .Contains(search));
+                    j.Education.ToLower().Contains(search));
             }
 
-            // Minimum experience filter
+            // Minimum experience
             if (minExperienceYears.HasValue)
             {
                 query = query.Where(j =>
@@ -144,7 +112,7 @@ namespace SmartRecruitment.API.Repositories
                     minExperienceYears.Value);
             }
 
-            // Maximum experience filter
+            // Maximum experience
             if (maxExperienceYears.HasValue)
             {
                 query = query.Where(j =>
@@ -152,83 +120,83 @@ namespace SmartRecruitment.API.Repositories
                     maxExperienceYears.Value);
             }
 
-            // Minimum salary filter
+            // Minimum salary
             if (salaryMin.HasValue)
             {
                 query = query.Where(j =>
                     j.SalaryMax.HasValue &&
-                    j.SalaryMax.Value >=
-                    salaryMin.Value);
+                    j.SalaryMax.Value >= salaryMin.Value);
             }
 
-            // Maximum salary filter
+            // Maximum salary
             if (salaryMax.HasValue)
             {
                 query = query.Where(j =>
                     j.SalaryMin.HasValue &&
-                    j.SalaryMin.Value <=
-                    salaryMax.Value);
+                    j.SalaryMin.Value <= salaryMax.Value);
             }
 
             return await query
                 .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
-        public async Task<Job?> GetByIdAsync(int jobId)
-        {
-            return await _context.Jobs
-                .FirstOrDefaultAsync(j => j.JobId == jobId);
         }
 
-        public async Task<List<Job>> GetAllAsync()
-        {
-            return await _context.Jobs
-                .ToListAsync();
-        }
-
-        public async Task<List<Job>> GetByEmployerIdAsync(int employerProfileId)
-        {
-            return await _context.Jobs
-                .Where(j => j.EmployerProfileId == employerProfileId)
-                .ToListAsync();
-        }
-
-        public async Task<List<Job>> GetActiveJobsAsync()
-        {
-            return await _context.Jobs
-                .Where(j => j.Status == "Open")
-                .ToListAsync();
-        }
-
+        // Add Job
         public async Task<Job> AddAsync(Job job)
         {
             await _context.Jobs.AddAsync(job);
+
             await _context.SaveChangesAsync();
 
             return job;
         }
 
-        public async Task UpdateAsync(Job job)
+        // Update Job
+        public async Task<Job> UpdateAsync(Job job)
         {
             _context.Jobs.Update(job);
+
             await _context.SaveChangesAsync();
+
+            return job;
         }
 
+        // Delete Job
         public async Task DeleteAsync(int jobId)
         {
             var job = await _context.Jobs
-                .FirstOrDefaultAsync(j => j.JobId == jobId);
+                .FirstOrDefaultAsync(j => j.Id == jobId);
 
             if (job == null)
                 return;
 
             _context.Jobs.Remove(job);
+
             await _context.SaveChangesAsync();
         }
 
+        // Check Job Exists
         public async Task<bool> ExistsByIdAsync(int jobId)
         {
             return await _context.Jobs
-                .AnyAsync(j => j.JobId == jobId);
+                .AnyAsync(j => j.Id == jobId);
+        }
+
+        // Close Job
+        public async Task<bool> CloseAsync(int jobId)
+        {
+            var job = await _context.Jobs
+                .FirstOrDefaultAsync(j => j.Id == jobId);
+
+            if (job == null)
+                return false;
+
+            job.IsClosed = true;
+            job.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

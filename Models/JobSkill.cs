@@ -1,31 +1,46 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartRecruitment.API.Models
 {
     public class JobSkill
     {
+        [Key]
         public int Id { get; set; }
 
-        [Required]
+
+        // =====================
+        // Job Foreign Key
+        // =====================
+
+        [ForeignKey(nameof(Job))]
         public int JobId { get; set; }
 
-        public Job? Job { get; set; }
+
+        // =====================
+        // Skill Foreign Key
+        // =====================
+
+        [ForeignKey(nameof(Skill))]
+        public int SkillId { get; set; }
+
+
+        // =====================
+        // Skill Details
+        // =====================
 
         [Required]
         [MaxLength(100)]
         public string SkillName { get; set; } = string.Empty;
 
-        [Range(1, 100)]
-        public int Weight { get; set; } = 1;
-        public int JobSkillId { get; set; }
 
-        public int JobId { get; set; }
+        public decimal Weight { get; set; } = 1;
 
-        public int SkillId { get; set; }
 
-        public decimal Weight { get; set; }
+        // =====================
+        // Navigation Properties
+        // =====================
 
-        // Navigation properties
         public Job? Job { get; set; }
 
         public Skill? Skill { get; set; }

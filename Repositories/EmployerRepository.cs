@@ -9,21 +9,25 @@ namespace SmartRecruitment.API.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public EmployerRepository(
-            ApplicationDbContext context)
         public EmployerRepository(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<EmployerProfile?> GetByIdAsync(
-            int id)
+        // =====================================================
+        // GET BY ID
+        // =====================================================
+        public async Task<EmployerProfile?> GetByIdAsync(int id)
         {
             return await _context.EmployerProfiles
                 .Include(e => e.Jobs)
-                .FirstOrDefaultAsync(e => e.Id == id);
+                .FirstOrDefaultAsync(
+                    e => e.EmployerProfileId == id);
         }
 
+        // =====================================================
+        // GET BY USER ID
+        // =====================================================
         public async Task<EmployerProfile?> GetByUserIdAsync(
             string userId)
         {
@@ -33,6 +37,20 @@ namespace SmartRecruitment.API.Repositories
                     e => e.UserId == userId);
         }
 
+        // =====================================================
+        // GET ALL EMPLOYERS
+        // =====================================================
+        public async Task<List<EmployerProfile>> GetAllAsync()
+        {
+            return await _context.EmployerProfiles
+                .Include(e => e.Jobs)
+                .OrderByDescending(e => e.CreatedAt)
+                .ToListAsync();
+        }
+
+        // =====================================================
+        // EXISTS BY USER ID
+        // =====================================================
         public async Task<bool> ExistsByUserIdAsync(
             string userId)
         {
@@ -40,6 +58,9 @@ namespace SmartRecruitment.API.Repositories
                 .AnyAsync(e => e.UserId == userId);
         }
 
+        // =====================================================
+        // CREATE
+        // =====================================================
         public async Task<EmployerProfile> CreateAsync(
             EmployerProfile employer)
         {
@@ -50,6 +71,9 @@ namespace SmartRecruitment.API.Repositories
             return employer;
         }
 
+        // =====================================================
+        // UPDATE
+        // =====================================================
         public async Task<EmployerProfile> UpdateAsync(
             EmployerProfile employer)
         {
@@ -60,6 +84,30 @@ namespace SmartRecruitment.API.Repositories
             return employer;
         }
 
+        // =====================================================
+        // DELETE
+        // =====================================================
+        public async Task DeleteAsync(int employerProfileId)
+        {
+            var employer =
+                await _context.EmployerProfiles
+                    .FirstOrDefaultAsync(
+                        e => e.EmployerProfileId ==
+                             employerProfileId);
+
+            if (employer == null)
+            {
+                return;
+            }
+
+            _context.EmployerProfiles.Remove(employer);
+
+            await _context.SaveChangesAsync();
+        }
+
+        // =====================================================
+        // HAS JOBS
+        // =====================================================
         public async Task<bool> HasJobsAsync(
             int employerProfileId)
         {
@@ -67,58 +115,6 @@ namespace SmartRecruitment.API.Repositories
                 .AnyAsync(j =>
                     j.EmployerProfileId ==
                     employerProfileId);
-        public async Task<EmployerProfile?> GetByIdAsync(int employerProfileId)
-        {
-            return await _context.EmployerProfiles
-                .FirstOrDefaultAsync(e =>
-                    e.EmployerProfileId == employerProfileId);
-        }
-
-        public async Task<EmployerProfile?> GetByUserIdAsync(int userId)
-        {
-            return await _context.EmployerProfiles
-                .FirstOrDefaultAsync(e =>
-                    e.UserId == userId);
-        }
-
-        public async Task<List<EmployerProfile>> GetAllAsync()
-        {
-            return await _context.EmployerProfiles
-                .ToListAsync();
-        }
-
-        public async Task<EmployerProfile> AddAsync(
-            EmployerProfile profile)
-        {
-            await _context.EmployerProfiles.AddAsync(profile);
-            await _context.SaveChangesAsync();
-
-            return profile;
-        }
-
-        public async Task UpdateAsync(EmployerProfile profile)
-        {
-            _context.EmployerProfiles.Update(profile);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(int employerProfileId)
-        {
-            var profile = await _context.EmployerProfiles
-                .FirstOrDefaultAsync(e =>
-                    e.EmployerProfileId == employerProfileId);
-
-            if (profile == null)
-                return;
-
-            _context.EmployerProfiles.Remove(profile);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<bool> ExistsByUserIdAsync(int userId)
-        {
-            return await _context.EmployerProfiles
-                .AnyAsync(e => e.UserId == userId);
         }
     }
 }

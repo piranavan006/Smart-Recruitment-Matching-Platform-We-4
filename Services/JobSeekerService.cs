@@ -1,12 +1,3 @@
-﻿namespace SmartRecruitment.API.Services.Interfaces
-{
-    public interface IJobSeekerMatchingProvider
-    {
-        Task<List<JobSeekerMatchingProfile>>
-            GetAllProfilesAsync();
-
-        Task<JobSeekerMatchingProfile?>
-            GetProfileAsync(int jobSeekerId);
 ﻿using SmartRecruitment.API.DTOs.JobSeekers;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
@@ -72,10 +63,13 @@ namespace SmartRecruitment.API.Services
             int userId,
             UpdateProfileDto dto)
         {
-            var profile = await _repository.GetByUserIdAsync(userId);
+            var profile =
+                await _repository.GetByUserIdAsync(userId);
 
             if (profile == null)
+            {
                 return null;
+            }
 
             profile.Summary = dto.Summary ?? string.Empty;
             profile.Skills = dto.Skills ?? string.Empty;
@@ -92,10 +86,13 @@ namespace SmartRecruitment.API.Services
         public async Task<bool> DeleteByUserIdAsync(
             int userId)
         {
-            var profile = await _repository.GetByUserIdAsync(userId);
+            var profile =
+                await _repository.GetByUserIdAsync(userId);
 
             if (profile == null)
+            {
                 return false;
+            }
 
             await _repository.DeleteAsync(
                 profile.JobSeekerProfileId);
@@ -107,23 +104,8 @@ namespace SmartRecruitment.API.Services
         public async Task<bool> ExistsByUserIdAsync(
             int userId)
         {
-            return await _repository.ExistsByUserIdAsync(userId);
+            return await _repository
+                .ExistsByUserIdAsync(userId);
         }
-    }
-
-    public class JobSeekerMatchingProfile
-    {
-        public int JobSeekerId { get; set; }
-
-        public string? FullName { get; set; }
-
-        public List<string> Skills { get; set; }
-            = new List<string>();
-
-        public int ExperienceYears { get; set; }
-
-        public string? Education { get; set; }
-
-        public string? Location { get; set; }
     }
 }
