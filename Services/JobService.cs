@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs;
+using SmartRecruitment.API.DTOs;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
@@ -51,6 +51,9 @@ namespace SmartRecruitment.API.Services
             {
                 EmployerProfileId =
                     employer.EmployerProfileId,
+
+                EmployerProfile =
+                    employer,
 
                 Title =
                     dto.Title.Trim(),
