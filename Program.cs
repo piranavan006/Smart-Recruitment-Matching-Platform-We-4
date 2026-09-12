@@ -1,3 +1,15 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+
+using SmartRecruitment.API.Data;
+using SmartRecruitment.API.Helpers;
+using SmartRecruitment.API.Repositories;
+using SmartRecruitment.API.Repositories.Interfaces;
+using SmartRecruitment.API.Services;
+using SmartRecruitment.API.Services.Interfaces;
+
+using System.Text;
 
 namespace SmartRecruitment.API
 {
@@ -7,29 +19,162 @@ namespace SmartRecruitment.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // ================================
+            // Controllers
+            // ================================
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
+            // ================================
+            // Database
+            // ================================
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection")
+                ));
+
+
+            // ================================
+            // User Repository & Service
+            // ================================
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+
+            // ================================
+            // Authentication
+            // ================================
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<JwtHelper>();
+
+
+            // ================================
+            // Skill Repository & Service
+            // ================================
+            builder.Services.AddScoped<ISkillRepository, SkillRepository>();
+            builder.Services.AddScoped<ISkillService, SkillService>();
+
+
+            // ================================
+            // Contact Request Repository & Service
+            // ================================
+            builder.Services.AddScoped<IContactRequestRepository, ContactRequestRepository>();
+            builder.Services.AddScoped<IContactRequestService, ContactRequestService>();
+
+
+            // ================================
+            // Notification Repository & Service
+            // ================================
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
+
+            // ================================
+            // JWT Authentication
+            // ================================
+            var jwtKey = builder.Configuration["Jwt:Key"];
+
+            if (string.IsNullOrWhiteSpace(jwtKey))
+            {
+                throw new InvalidOperationException(
+                    "JWT Key is missing. Please add Jwt:Key in appsettings.json."
+                );
+            }
+
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+            if (string.IsNullOrWhiteSpace(jwtIssuer))
+            {
+                throw new InvalidOperationException(
+                    "JWT Issuer is missing. Please add Jwt:Issuer in appsettings.json."
+                );
+            }
+
+            if (string.IsNullOrWhiteSpace(jwtAudience))
+            {
+                throw new InvalidOperationException(
+                    "JWT Audience is missing. Please add Jwt:Audience in appsettings.json."
+                );
+            }
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+
+                options.DefaultChallengeScheme =
+                    JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(jwtKey)
+                            ),
+
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtIssuer,
+
+                        ValidateAudience = true,
+                        ValidAudience = jwtAudience,
+
+                        ValidateLifetime = true,
+
+                        ClockSkew = TimeSpan.Zero
+                    };
+            });
+
+
+            // ================================
+            // Authorization
+            // ================================
+            builder.Services.AddAuthorization();
+
+
+            // ================================
+            // Swagger / OpenAPI
+            // ================================
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+            // ================================
+            // Build Application
+            // ================================
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+
+            // ================================
+            // HTTP Request Pipeline
+            // ================================
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+
+            // HTTPS
             app.UseHttpsRedirection();
 
+
+            // Authentication MUST come before Authorization
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
+            // Controllers
             app.MapControllers();
 
+
+            // Run Application
             app.Run();
         }
     }
