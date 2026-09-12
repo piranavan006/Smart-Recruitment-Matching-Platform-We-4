@@ -1,16 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartRecruitment.API.Models
+namespace SmartRecruitment.API.DTOs
 {
-    public class Job
+    public class UpdateJobDto
     {
-        public int Id { get; set; }
-
-        [Required]
-        public int EmployerProfileId { get; set; }
-
-        public EmployerProfile? EmployerProfile { get; set; }
-
         [Required]
         [MaxLength(200)]
         public string Title { get; set; } = string.Empty;
@@ -31,20 +24,16 @@ namespace SmartRecruitment.API.Models
         [Range(0, 100)]
         public int MaxExperienceYears { get; set; }
 
+        [Range(0, double.MaxValue)]
         public decimal? SalaryMin { get; set; }
 
+        [Range(0, double.MaxValue)]
         public decimal? SalaryMax { get; set; }
 
         [Required]
         public DateTime ApplicationDeadline { get; set; }
 
-        public bool IsClosed { get; set; } = false;
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public ICollection<JobSkill> RequiredSkills { get; set; }
-            = new List<JobSkill>();
+        public List<JobSkillDto> RequiredSkills { get; set; }
+            = new List<JobSkillDto>();
     }
 }

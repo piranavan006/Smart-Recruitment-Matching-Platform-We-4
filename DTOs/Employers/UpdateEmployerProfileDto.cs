@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartRecruitment.API.Models
+namespace SmartRecruitment.API.DTOs
 {
-    public class EmployerProfile
+    public class UpdateEmployerProfileDto
     {
-        public int Id { get; set; }
-
-        [Required]
-        public string UserId { get; set; } = string.Empty;
-
         [Required]
         [MaxLength(150)]
         public string CompanyName { get; set; } = string.Empty;
@@ -16,6 +11,7 @@ namespace SmartRecruitment.API.Models
         [MaxLength(100)]
         public string? Industry { get; set; }
 
+        [Url]
         [MaxLength(255)]
         public string? Website { get; set; }
 
@@ -24,12 +20,5 @@ namespace SmartRecruitment.API.Models
 
         [MaxLength(150)]
         public string? Location { get; set; }
-
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        public ICollection<Job> Jobs { get; set; }
-            = new List<Job>();
     }
 }

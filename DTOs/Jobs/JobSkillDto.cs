@@ -1,16 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SmartRecruitment.API.Models
+namespace SmartRecruitment.API.DTOs
 {
-    public class JobSkill
+    public class JobSkillDto
     {
-        public int Id { get; set; }
-
-        [Required]
-        public int JobId { get; set; }
-
-        public Job? Job { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string SkillName { get; set; } = string.Empty;

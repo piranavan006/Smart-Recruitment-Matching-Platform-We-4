@@ -24,11 +24,8 @@
   <ItemGroup>
     <Folder Include="Data\Configurations\" />
     <Folder Include="Data\Seed\" />
-    <Folder Include="DTOs\JobSeekers\" />
     <Folder Include="DTOs\CV\" />
-    <Folder Include="DTOs\Employers\" />
-    <Folder Include="DTOs\Jobs\" />
-    <Folder Include="DTOs\Matching\" />
+    <Folder Include="DTOs\JobSeekers\" />
     <Folder Include="DTOs\Applications\" />
     <Folder Include="DTOs\ContactRequests\" />
     <Folder Include="DTOs\Admin\" />
