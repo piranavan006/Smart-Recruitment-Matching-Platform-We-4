@@ -121,12 +121,23 @@ export class CreateVacancyComponent implements OnInit {
     this.isLoadingProfile = true;
     this.employerService.getProfile().subscribe({
       next: (profile) => {
-        this.isApproved = !!profile?.isApproved;
+        const isStatusApproved = profile?.approvalStatus
+          ? profile.approvalStatus.toLowerCase() === 'approved'
+          : !!profile?.isApproved;
+
+        this.isApproved = !!profile?.isApproved && isStatusApproved;
         this.isLoadingProfile = false;
+
+        if (!this.isApproved) {
+          this.vacancyForm.disable();
+        } else {
+          this.vacancyForm.enable();
+        }
       },
       error: () => {
         this.isApproved = false;
         this.isLoadingProfile = false;
+        this.vacancyForm.disable();
       }
     });
   }

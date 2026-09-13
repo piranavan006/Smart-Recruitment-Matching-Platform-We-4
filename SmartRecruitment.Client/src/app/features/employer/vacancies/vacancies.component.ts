@@ -5,6 +5,8 @@ import { JobService } from '../../../core/services/job.service';
 import { ApplicationService } from '../../../core/services/application.service';
 import { JobResponse } from '../../../core/models/job.model';
 
+import { EmployerService } from '../../../core/services/employer.service';
+
 export interface EmployerVacancyView extends JobResponse {
   applicantCount?: number;
 }
@@ -22,16 +24,38 @@ export interface EmployerVacancyView extends JobResponse {
 export class VacanciesComponent implements OnInit {
   vacancies: EmployerVacancyView[] = [];
   isLoading = true;
+  isApproved = false;
+  isLoadingProfile = true;
   successMessage = '';
   errorMessage = '';
 
   constructor(
     private jobService: JobService,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private employerService: EmployerService
   ) {}
 
   ngOnInit(): void {
+    this.checkApproval();
     this.loadVacancies();
+  }
+
+  checkApproval(): void {
+    this.isLoadingProfile = true;
+    this.employerService.getProfile().subscribe({
+      next: (profile) => {
+        const isStatusApproved = profile?.approvalStatus
+          ? profile.approvalStatus.toLowerCase() === 'approved'
+          : !!profile?.isApproved;
+
+        this.isApproved = !!profile?.isApproved && isStatusApproved;
+        this.isLoadingProfile = false;
+      },
+      error: () => {
+        this.isApproved = false;
+        this.isLoadingProfile = false;
+      }
+    });
   }
 
   loadVacancies(): void {

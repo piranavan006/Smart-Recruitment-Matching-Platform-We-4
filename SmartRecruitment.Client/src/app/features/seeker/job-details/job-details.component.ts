@@ -119,9 +119,13 @@ export class JobDetailsComponent implements OnInit {
         this.isApplying = false;
         if (err.status === 409) {
           this.hasApplied = true;
-          this.errorMessage = 'You have already applied for this vacancy.';
+          this.errorMessage = err.error?.message || 'You have already applied for this vacancy.';
+        } else if (err.status === 403) {
+          this.errorMessage = 'Only registered Job Seekers can apply for vacancies.';
+        } else if (err.status === 401) {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: `/seeker/job-details/${this.jobId}` } });
         } else {
-          this.errorMessage = err.error?.message || 'Failed to submit application. Please try again.';
+          this.errorMessage = err.error?.message || (typeof err.error === 'string' ? err.error : 'Failed to submit application. Please try again.');
         }
       }
     });

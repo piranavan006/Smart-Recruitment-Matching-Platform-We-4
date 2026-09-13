@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
@@ -27,7 +27,11 @@ namespace SmartRecruitment.API.Repositories
             GetByJobSeekerIdAsync(int jobSeekerId)
         {
             return await _context.Applications
-                .Where(a => a.JobSeekerId == jobSeekerId)
+                .Include(a => a.Job)
+                .Include(a => a.JobSeekerProfile)
+                .Where(a => a.JobSeekerId == jobSeekerId ||
+                            a.JobSeekerProfileId == jobSeekerId ||
+                            (a.JobSeekerProfile != null && a.JobSeekerProfile.UserId == jobSeekerId))
                 .OrderByDescending(a => a.AppliedAt)
                 .ToListAsync();
         }
@@ -36,6 +40,8 @@ namespace SmartRecruitment.API.Repositories
             GetByJobIdAsync(int jobId)
         {
             return await _context.Applications
+                .Include(a => a.JobSeekerProfile)
+                    .ThenInclude(p => p != null ? p.User : null)
                 .Where(a => a.JobId == jobId)
                 .OrderByDescending(a => a.MatchScore)
                 .ThenByDescending(a => a.AppliedAt)
@@ -48,7 +54,9 @@ namespace SmartRecruitment.API.Repositories
         {
             return await _context.Applications
                 .AnyAsync(a =>
-                    a.JobSeekerId == jobSeekerId &&
+                    (a.JobSeekerId == jobSeekerId ||
+                     a.JobSeekerProfileId == jobSeekerId ||
+                     (a.JobSeekerProfile != null && a.JobSeekerProfile.UserId == jobSeekerId)) &&
                     a.JobId == jobId);
         }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
 import { User } from '../../../core/models/auth.model';
 
@@ -14,6 +15,7 @@ import { User } from '../../../core/models/auth.model';
 export class NavbarComponent implements OnInit {
   currentUser: User | null = null;
   mobileMenuOpen = false;
+  currentUrl = '';
 
   constructor(
     private authService: AuthService,
@@ -21,9 +23,28 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentUrl = this.router.url;
+
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.currentUrl = event.urlAfterRedirects || event.url;
+    });
+
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
+  }
+
+  get isAuthRoute(): boolean {
+    const cleanUrl = (this.currentUrl || this.router.url || '').split('?')[0].toLowerCase();
+    return cleanUrl === '/login' ||
+           cleanUrl === '/register' ||
+           cleanUrl === '/forgot-password' ||
+           cleanUrl === '/verify-otp' ||
+           cleanUrl === '/reset-password' ||
+           cleanUrl === '/' ||
+           cleanUrl === '';
   }
 
   get isJobSeeker(): boolean {
@@ -40,7 +61,7 @@ export class NavbarComponent implements OnInit {
   }
 
   get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn() && !!this.currentUser;
+    return !this.isAuthRoute && this.authService.isLoggedIn() && !!this.currentUser;
   }
 
   toggleMobileMenu(): void {

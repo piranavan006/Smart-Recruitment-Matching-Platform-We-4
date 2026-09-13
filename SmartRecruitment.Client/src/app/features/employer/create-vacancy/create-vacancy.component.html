@@ -1,33 +1,5 @@
 <div class="vacancy-page">
 
-  <!-- Header -->
-  <header class="page-header">
-
-    <div class="header-left">
-      <div class="brand-icon">S</div>
-
-      <div>
-        <h1>SmartRecruitment</h1>
-        <span>Employer Portal</span>
-      </div>
-    </div>
-
-    <div class="header-right">
-      <span class="role-badge">EMPLOYER</span>
-
-      <div class="profile-box">
-        <div class="profile-avatar">EM</div>
-
-        <div>
-          <strong>Employer</strong>
-          <small>Company Account</small>
-        </div>
-      </div>
-    </div>
-
-  </header>
-
-
   <!-- Main Content -->
   <main class="vacancy-content">
 
@@ -35,7 +7,7 @@
     <div class="page-title">
 
       <a routerLink="/employer" class="back-link">
-        ← Back to Dashboard
+        ← Return to Dashboard
       </a>
 
       <p class="page-label">VACANCY MANAGEMENT</p>
@@ -43,25 +15,22 @@
       <h2>Create a New Vacancy</h2>
 
       <p>
-        Create a job vacancy and define the skills and requirements
-        needed to find the right candidates.
+        Define role criteria, requirements, and assign AI skill weights to attract top matched candidates.
       </p>
 
     </div>
 
-
-    <!-- Messages -->
-
-    <div *ngIf="!isApproved && !isLoadingProfile" style="background: rgba(245, 158, 11, 0.12); border: 1px solid #f59e0b; color: #b45309; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 1.5rem;">🔒</span>
+    <!-- Verification Required Banner -->
+    <div *ngIf="!isApproved && !isLoadingProfile" class="verification-locked-banner" style="background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; padding: 20px 24px; border-radius: 16px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);">
+      <div style="display: flex; align-items: flex-start; gap: 14px;">
+        <span style="font-size: 1.8rem; line-height: 1;">🔒</span>
         <div>
-          <strong style="display: block; font-size: 1rem; color: #d97706;">Account Verification Required</strong>
-          <span style="font-size: 0.9rem; color: #78350f;">Your company profile must be approved by an administrator before publishing vacancies. You can prepare your vacancy details, but submission is locked until approval.</span>
+          <strong style="display: block; font-size: 1.05rem; color: #b45309; margin-bottom: 4px;">Account Verification Required to Publish Jobs</strong>
+          <span style="font-size: 0.92rem; color: #78350f; line-height: 1.5;">Your company profile has not been verified by an administrator yet. To maintain platform quality, job vacancies cannot be published until your organization is reviewed and approved.</span>
         </div>
       </div>
-      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #f59e0b; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
-        Check Profile
+      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 10px 20px; background: #d97706; color: white; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 0.88rem; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);">
+        Review Company Profile →
       </a>
     </div>
 

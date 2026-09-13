@@ -58,6 +58,21 @@
         <p>Sign in to access your personalized recruitment dashboard</p>
       </div>
 
+      <!-- Active Session Banner -->
+      <div class="active-session-banner" *ngIf="loggedInUser" style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 13px; color: #1e40af; font-weight: 600;">
+            Currently signed in as <strong>{{ loggedInUser.fullName }}</strong> ({{ loggedInUser.role }})
+          </span>
+          <button type="button" (click)="switchAccount()" style="background: transparent; border: none; color: #ef4444; font-weight: 700; font-size: 12px; cursor: pointer; text-decoration: underline;">
+            Sign Out
+          </button>
+        </div>
+        <button type="button" (click)="goToDashboard()" style="background: #2563eb; color: white; border: none; border-radius: 8px; padding: 9px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+          Continue to {{ loggedInUser.role }} Dashboard →
+        </button>
+      </div>
+
       <form
         #loginForm="ngForm"
         (ngSubmit)="onLogin(loginForm)"

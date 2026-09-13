@@ -59,6 +59,20 @@
       </div>
     </div>
 
+    <!-- Verification Pending Warning Banner -->
+    <div *ngIf="!isApproved && !isLoadingProfile" style="background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; padding: 18px 22px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.08);">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 1.6rem; line-height: 1;">🔒</span>
+        <div>
+          <strong style="display: block; font-size: 0.98rem; color: #b45309; margin-bottom: 3px;">Account Verification Required to Publish Vacancies</strong>
+          <span style="font-size: 0.88rem; color: #78350f;">Your company profile must be approved by an administrator before publishing new vacancies.</span>
+        </div>
+      </div>
+      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 9px 18px; background: #d97706; color: white; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.85rem;">
+        Check Profile →
+      </a>
+    </div>
+
     <!-- Vacancy Section -->
     <div class="vacancies-section">
       <div class="section-header">
@@ -70,8 +84,12 @@
         <button
           type="button"
           class="create-button"
-          routerLink="/employer/create-vacancy">
-          + Create Vacancy
+          routerLink="/employer/create-vacancy"
+          [disabled]="!isApproved"
+          [style.opacity]="!isApproved ? '0.55' : '1'"
+          [style.cursor]="!isApproved ? 'not-allowed' : 'pointer'"
+          [title]="!isApproved ? 'Profile verification required to post vacancies' : 'Post a new vacancy'">
+          {{ isApproved ? '+ Create Vacancy' : '🔒 Post Vacancy (Verification Required)' }}
         </button>
       </div>
 
