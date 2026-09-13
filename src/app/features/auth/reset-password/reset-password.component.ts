@@ -18,6 +18,7 @@ import { AuthService } from '../../../core/services/auth.service';
 export class ResetPasswordComponent implements OnInit {
 
   email = '';
+  otp = '';
   newPassword = '';
   confirmPassword = '';
 
@@ -32,11 +33,15 @@ export class ResetPasswordComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // Get email saved from Forgot Password
+    // Get email and OTP saved from Forgot Password / Verify OTP
     const savedEmail = localStorage.getItem('resetEmail');
+    const savedOtp = localStorage.getItem('resetOtp');
 
     if (savedEmail) {
       this.email = savedEmail;
+    }
+    if (savedOtp) {
+      this.otp = savedOtp;
     }
   }
 
@@ -58,7 +63,9 @@ export class ResetPasswordComponent implements OnInit {
 
     const resetRequest = {
       email: this.email,
-      newPassword: this.newPassword
+      otp: this.otp,
+      newPassword: this.newPassword,
+      confirmPassword: this.confirmPassword
     };
 
     this.authService.resetPassword(resetRequest).subscribe({
@@ -72,8 +79,9 @@ export class ResetPasswordComponent implements OnInit {
         this.successMessage =
           'Password reset successfully. You can now login.';
 
-        // Remove saved reset email
+        // Remove saved reset email and OTP
         localStorage.removeItem('resetEmail');
+        localStorage.removeItem('resetOtp');
 
         // Go to Login
         setTimeout(() => {

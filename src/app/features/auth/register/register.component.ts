@@ -58,6 +58,7 @@ export class RegisterComponent {
       fullName: this.registerData.fullName,
       email: this.registerData.email,
       password: this.registerData.password,
+      confirmPassword: this.registerData.confirmPassword,
       role: this.registerData.role
     };
 

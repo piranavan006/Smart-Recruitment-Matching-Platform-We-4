@@ -56,8 +56,14 @@ export class LoginComponent {
 
         this.isLoading = false;
 
-        // Temporary navigation
-        this.router.navigate(['/']);
+        // Navigate to role-specific dashboard
+        if (response.role === 'Admin') {
+          this.router.navigate(['/admin']);
+        } else if (response.role === 'Employer') {
+          this.router.navigate(['/employer']);
+        } else {
+          this.router.navigate(['/seeker']);
+        }
       },
 
       error: (error) => {

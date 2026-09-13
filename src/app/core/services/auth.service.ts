@@ -11,6 +11,7 @@ export interface RegisterRequest {
   fullName: string;
   email: string;
   password: string;
+  confirmPassword?: string;
   role: string;
 }
 
@@ -65,7 +66,9 @@ export class AuthService {
 
   resetPassword(data: {
     email: string;
+    otp: string;
     newPassword: string;
+    confirmPassword: string;
   }): Observable<any> {
 
     return this.http.post(

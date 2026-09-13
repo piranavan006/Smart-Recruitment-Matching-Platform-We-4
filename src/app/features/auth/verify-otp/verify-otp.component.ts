@@ -57,8 +57,9 @@ export class VerifyOtpComponent implements OnInit {
 
         this.isLoading = false;
 
-        // Save email for Reset Password page
+        // Save email and OTP for Reset Password page
         localStorage.setItem('resetEmail', this.email);
+        localStorage.setItem('resetOtp', this.otp);
 
         this.successMessage =
           'OTP verified successfully.';
