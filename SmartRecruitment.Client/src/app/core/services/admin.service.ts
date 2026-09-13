@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AdminDashboard, AdminEmployer, AdminUser, UpdateApprovalRequest, UpdateUserStatusRequest } from '../models/admin.model';
+import { JobResponse } from '../models/job.model';
 
 @Injectable({
   providedIn: 'root'
@@ -36,6 +37,14 @@ export class AdminService {
 
   deleteUser(userId: number): Observable<{ message: string; userId?: number }> {
     return this.http.delete<{ message: string; userId?: number }>(`${this.apiUrl}/users/${userId}`);
+  }
+
+  getJobs(): Observable<JobResponse[]> {
+    return this.http.get<JobResponse[]>(`${this.apiUrl}/jobs`);
+  }
+
+  deleteJob(jobId: number): Observable<{ message: string; jobId?: number }> {
+    return this.http.delete<{ message: string; jobId?: number }>(`${this.apiUrl}/jobs/${jobId}`);
   }
 }
 

@@ -14,15 +14,18 @@ namespace SmartRecruitment.API.Controllers
         private readonly IUserService _userService;
         private readonly IEmployerService _employerService;
         private readonly INotificationService _notificationService;
+        private readonly IJobService _jobService;
 
         public AdminController(
             IUserService userService,
             IEmployerService employerService,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IJobService jobService)
         {
             _userService = userService;
             _employerService = employerService;
             _notificationService = notificationService;
+            _jobService = jobService;
         }
 
         // GET: api/Admin/users
@@ -111,6 +114,8 @@ namespace SmartRecruitment.API.Controllers
         {
             var users = await _userService.GetAllUsersAsync();
 
+            var allJobs = await _jobService.GetAllAsync();
+
             var dashboard = new AdminDashboardDto
             {
                 TotalUsers = users.Count,
@@ -129,7 +134,7 @@ namespace SmartRecruitment.API.Controllers
 
                 InactiveUsers = users.Count(u => !u.IsActive),
 
-                TotalJobs = 0
+                TotalJobs = allJobs.Count
             };
 
             return Ok(dashboard);
@@ -203,6 +208,54 @@ namespace SmartRecruitment.API.Controllers
                 return StatusCode(500, new
                 {
                     message = "Failed to delete user: " + ex.Message
+                });
+            }
+        }
+
+        // GET: api/Admin/jobs
+        [HttpGet("jobs")]
+        public async Task<IActionResult> GetJobs()
+        {
+            try
+            {
+                var jobs = await _jobService.GetAllAsync();
+                return Ok(jobs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Failed to load vacancies: " + ex.Message
+                });
+            }
+        }
+
+        // DELETE: api/Admin/jobs/{id}
+        [HttpDelete("jobs/{id:int}")]
+        public async Task<IActionResult> DeleteJob(int id)
+        {
+            try
+            {
+                var deleted = await _jobService.DeleteAsync(id, null, isAdmin: true);
+                if (!deleted)
+                {
+                    return NotFound(new
+                    {
+                        message = "Job vacancy not found."
+                    });
+                }
+
+                return Ok(new
+                {
+                    message = "Job vacancy deleted successfully.",
+                    jobId = id
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Failed to delete vacancy: " + ex.Message
                 });
             }
         }

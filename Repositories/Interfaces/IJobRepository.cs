@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.Models;
+using SmartRecruitment.API.Models;
 
 namespace SmartRecruitment.API.Repositories.Interfaces
 {
@@ -26,7 +26,7 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 
         Task<Job> UpdateAsync(Job job);
 
-        Task DeleteAsync(int jobId);
+        Task<bool> DeleteAsync(int jobId);
 
         Task<bool> ExistsByIdAsync(int jobId);
 

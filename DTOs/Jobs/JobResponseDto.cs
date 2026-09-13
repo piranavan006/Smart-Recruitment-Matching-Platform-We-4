@@ -1,4 +1,4 @@
-﻿namespace SmartRecruitment.API.DTOs
+namespace SmartRecruitment.API.DTOs
 {
     public class JobResponseDto
     {
@@ -27,6 +27,12 @@
         public DateTime ApplicationDeadline { get; set; }
 
         public bool IsClosed { get; set; }
+
+        public int ApplicantCount { get; set; }
+
+        public bool IsEmployerActive { get; set; } = true;
+
+        public string? EmployerApprovalStatus { get; set; }
 
         public List<JobSkillDto> RequiredSkills { get; set; }
             = new List<JobSkillDto>();
