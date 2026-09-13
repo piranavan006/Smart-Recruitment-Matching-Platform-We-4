@@ -1,16 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { JobService } from '../../../core/services/job.service';
+import { ApplicationService } from '../../../core/services/application.service';
+import { JobResponse } from '../../../core/models/job.model';
 
-interface Vacancy {
-  title: string;
-  company: string;
-  location: string;
-  salary: string;
-  type: string;
-  applicants: number;
-  skills: string[];
-  status: string;
+export interface EmployerVacancyView extends JobResponse {
+  applicantCount?: number;
 }
 
 @Component({
@@ -23,52 +19,83 @@ interface Vacancy {
   templateUrl: './vacancies.component.html',
   styleUrl: './vacancies.component.css'
 })
-export class VacanciesComponent {
+export class VacanciesComponent implements OnInit {
+  vacancies: EmployerVacancyView[] = [];
+  isLoading = true;
+  successMessage = '';
+  errorMessage = '';
 
-  vacancies: Vacancy[] = [
-    {
-      title: 'Software Engineer',
-      company: 'Tech Solutions',
-      location: 'Colombo',
-      salary: 'Rs. 100,000 - 150,000',
-      type: 'Full Time',
-      applicants: 12,
-      skills: ['C#', 'ASP.NET Core', 'SQL'],
-      status: 'Active'
-    },
-    {
-      title: 'Frontend Developer',
-      company: 'Digital Innovations',
-      location: 'Jaffna',
-      salary: 'Rs. 80,000 - 120,000',
-      type: 'Full Time',
-      applicants: 8,
-      skills: ['Angular', 'TypeScript', 'CSS'],
-      status: 'Active'
-    },
-    {
-      title: 'Junior Web Developer',
-      company: 'Creative Labs',
-      location: 'Remote',
-      salary: 'Rs. 60,000 - 90,000',
-      type: 'Full Time',
-      applicants: 5,
-      skills: ['HTML', 'CSS', 'JavaScript'],
-      status: 'Closed'
-    }
-  ];
+  constructor(
+    private jobService: JobService,
+    private applicationService: ApplicationService
+  ) {}
 
-  getCount(status: string): number {
-    return this.vacancies.filter(
-      vacancy => vacancy.status === status
-    ).length;
+  ngOnInit(): void {
+    this.loadVacancies();
+  }
+
+  loadVacancies(): void {
+    this.isLoading = true;
+    this.jobService.getMyJobs().subscribe({
+      next: (data) => {
+        this.vacancies = data;
+        this.isLoading = false;
+
+        // Fetch applicant counts for each vacancy
+        this.vacancies.forEach(v => {
+          this.applicationService.getApplicationsByJob(v.id).subscribe({
+            next: (apps) => {
+              v.applicantCount = apps.length;
+            },
+            error: () => {
+              v.applicantCount = 0;
+            }
+          });
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getActiveCount(): number {
+    return this.vacancies.filter(v => !v.isClosed).length;
+  }
+
+  getClosedCount(): number {
+    return this.vacancies.filter(v => v.isClosed).length;
   }
 
   getTotalApplicants(): number {
-    return this.vacancies.reduce(
-      (total, vacancy) => total + vacancy.applicants,
-      0
-    );
+    return this.vacancies.reduce((total, v) => total + (v.applicantCount || 0), 0);
   }
 
+  closeVacancy(id: number): void {
+    if (!confirm('Are you sure you want to close this vacancy to new applications?')) return;
+
+    this.jobService.closeJob(id).subscribe({
+      next: () => {
+        this.successMessage = 'Vacancy closed successfully.';
+        this.loadVacancies();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to close vacancy.';
+      }
+    });
+  }
+
+  deleteVacancy(id: number): void {
+    if (!confirm('Are you sure you want to delete this vacancy?')) return;
+
+    this.jobService.deleteJob(id).subscribe({
+      next: () => {
+        this.successMessage = 'Vacancy deleted successfully.';
+        this.loadVacancies();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to delete vacancy.';
+      }
+    });
+  }
 }

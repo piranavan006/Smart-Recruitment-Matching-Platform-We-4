@@ -4,31 +4,30 @@
 
     <!-- Header -->
     <div class="vacancies-header">
-
       <div>
         <span class="page-badge">EMPLOYER</span>
-
         <h1>My Vacancies</h1>
-
-        <p>
-          View and manage your company's job vacancies.
-        </p>
+        <p>View, manage, and track candidate applications for all your job postings.</p>
       </div>
 
-      <a
-        routerLink="/employer"
-        class="back-button">
+      <a routerLink="/employer" class="back-button">
         ← Dashboard
       </a>
+    </div>
 
+    <!-- Feedback messages -->
+    <div *ngIf="successMessage" style="background: #dcfce7; border: 1px solid #86efac; color: #15803d; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ✓ {{ successMessage }}
+    </div>
+
+    <div *ngIf="errorMessage" style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ⚠ {{ errorMessage }}
     </div>
 
     <!-- Summary -->
     <div class="stats-grid">
-
       <div class="stat-card">
         <div class="stat-icon">📋</div>
-
         <div>
           <span>Total Vacancies</span>
           <strong>{{ vacancies.length }}</strong>
@@ -37,158 +36,117 @@
 
       <div class="stat-card">
         <div class="stat-icon">🟢</div>
-
         <div>
           <span>Active</span>
-          <strong>{{ getCount('Active') }}</strong>
+          <strong>{{ getActiveCount() }}</strong>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-icon">⏸️</div>
-
         <div>
           <span>Closed</span>
-          <strong>{{ getCount('Closed') }}</strong>
+          <strong>{{ getClosedCount() }}</strong>
         </div>
       </div>
 
       <div class="stat-card">
         <div class="stat-icon">👥</div>
-
         <div>
           <span>Total Applicants</span>
           <strong>{{ getTotalApplicants() }}</strong>
         </div>
       </div>
-
     </div>
 
     <!-- Vacancy Section -->
     <div class="vacancies-section">
-
       <div class="section-header">
-
         <div>
-          <h2>Job Vacancies</h2>
-
-          <p>
-            Manage your current and previous job postings.
-          </p>
+          <h2>Job Postings</h2>
+          <p>Manage your current and previous job openings.</p>
         </div>
 
         <button
           type="button"
-          class="create-button">
+          class="create-button"
+          routerLink="/employer/create-vacancy">
           + Create Vacancy
         </button>
+      </div>
 
+      <!-- Loading State -->
+      <div *ngIf="isLoading" style="text-align: center; padding: 3rem; color: #64748b;">
+        Loading vacancies...
       </div>
 
       <!-- Vacancy List -->
-      <div class="vacancies-list">
-
-        <div
-          class="vacancy-card"
-          *ngFor="let vacancy of vacancies">
+      <div class="vacancies-list" *ngIf="!isLoading && vacancies.length > 0">
+        <div class="vacancy-card" *ngFor="let vacancy of vacancies">
 
           <div class="vacancy-main">
-
-            <div class="vacancy-icon">
-              💼
-            </div>
+            <div class="vacancy-icon">💼</div>
 
             <div class="vacancy-info">
-
               <h3>{{ vacancy.title }}</h3>
+              <p class="company-name">{{ vacancy.companyName || 'My Organization' }}</p>
 
-              <p class="company-name">
-                {{ vacancy.company }}
-              </p>
-
-              <div class="vacancy-details">
-
-                <span>
-                  📍 {{ vacancy.location }}
-                </span>
-
-                <span>
-                  💰 {{ vacancy.salary }}
-                </span>
-
-                <span>
-                  🕒 {{ vacancy.type }}
-                </span>
-
-                <span>
-                  👥 {{ vacancy.applicants }} Applicants
-                </span>
-
+              <div class="vacancy-meta">
+                <span>📍 {{ vacancy.location || 'Location Not Specified' }}</span>
+                <span>📅 Deadline: {{ vacancy.applicationDeadline | date:'mediumDate' }}</span>
+                <span>👥 {{ vacancy.applicantCount !== undefined ? vacancy.applicantCount : 0 }} Applicants</span>
               </div>
-
-              <div class="skills-list">
-
-                <span
-                  class="skill-tag"
-                  *ngFor="let skill of vacancy.skills">
-                  {{ skill }}
-                </span>
-
-              </div>
-
             </div>
-
           </div>
 
-          <div class="vacancy-actions">
-
+          <div class="vacancy-status">
             <span
               class="status-badge"
-              [ngClass]="vacancy.status.toLowerCase()">
-              {{ vacancy.status }}
+              [class.active]="!vacancy.isClosed"
+              [class.closed]="vacancy.isClosed">
+              {{ vacancy.isClosed ? 'Closed' : 'Active' }}
             </span>
 
-            <button
-              type="button"
-              class="edit-button">
-              Edit
-            </button>
+            <div class="action-buttons" style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+              <a
+                class="view-btn"
+                [routerLink]="['/employer/applicants']"
+                [queryParams]="{ jobId: vacancy.id }"
+                style="background: #2563eb; color: white; padding: 0.4rem 0.8rem; border-radius: 6px; text-decoration: none; font-size: 0.85rem; font-weight: 600;">
+                View Applicants ({{ vacancy.applicantCount || 0 }})
+              </a>
 
-            <button
-              type="button"
-              class="close-button"
-              *ngIf="vacancy.status === 'Active'">
-              Close
-            </button>
+              <button
+                type="button"
+                *ngIf="!vacancy.isClosed"
+                (click)="closeVacancy(vacancy.id)"
+                style="background: #f1f5f9; border: 1px solid #cbd5e1; color: #475569; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                Close
+              </button>
 
+              <button
+                type="button"
+                (click)="deleteVacancy(vacancy.id)"
+                style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 0.4rem 0.6rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">
+                Delete
+              </button>
+            </div>
           </div>
 
         </div>
-
       </div>
 
       <!-- Empty State -->
-      <div
-        class="empty-state"
-        *ngIf="vacancies.length === 0">
-
-        <div class="empty-icon">
-          📋
-        </div>
-
-        <h3>No vacancies yet</h3>
-
-        <p>
-          Create your first job vacancy to start receiving
-          applications from suitable candidates.
-        </p>
-
+      <div class="empty-state" *ngIf="!isLoading && vacancies.length === 0" style="text-align: center; padding: 3rem; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📋</div>
+        <h3>No vacancies posted yet</h3>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">Post your first job vacancy to start receiving matched candidates.</p>
         <button
           type="button"
-          class="create-button">
-          + Create Your First Vacancy
+          routerLink="/employer/create-vacancy"
+          style="background: #2563eb; color: white; padding: 0.6rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">
+          Post a Vacancy Now
         </button>
-
       </div>
 
     </div>

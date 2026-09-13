@@ -206,12 +206,22 @@
 
     </section>
 
+    <!-- Feedback Alerts -->
+    <div *ngIf="successMessage" class="alert alert-success" style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 12px 16px; border-radius: 8px; margin: 20px 0;">
+      ✓ {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px 16px; border-radius: 8px; margin: 20px 0;">
+      ⚠ {{ errorMessage }}
+    </div>
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 40px; color: #94a3b8;">
+      Loading users directory...
+    </div>
 
     <!-- =========================
          STATISTICS
     ========================== -->
-
-    <section class="user-stats">
+    <section class="user-stats" *ngIf="!isLoading">
 
 
       <div class="stat-card">
@@ -312,11 +322,35 @@
     </section>
 
 
+    <!-- Tab Switcher -->
+    <div class="tab-switcher" style="display: flex; gap: 12px; margin: 24px 0 16px 0;">
+      <button
+        type="button"
+        (click)="activeTab = 'users'"
+        [style.background]="activeTab === 'users' ? '#4f46e5' : '#1e293b'"
+        [style.color]="activeTab === 'users' ? '#ffffff' : '#94a3b8'"
+        style="padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <span>👥</span> All Platform Users ({{ users.length }})
+      </button>
+
+      <button
+        type="button"
+        (click)="activeTab = 'employers'"
+        [style.background]="activeTab === 'employers' ? '#4f46e5' : '#1e293b'"
+        [style.color]="activeTab === 'employers' ? '#ffffff' : '#94a3b8'"
+        style="padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        <span>🏢</span> Employer Profile Approvals ({{ employers.length }})
+        <span *ngIf="getPendingEmployerApprovals() > 0" style="background: #f59e0b; color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">
+          {{ getPendingEmployerApprovals() }} Pending
+        </span>
+      </button>
+    </div>
+
     <!-- =========================
          USER MANAGEMENT CARD
     ========================== -->
 
-    <section class="management-section">
+    <section class="management-section" *ngIf="activeTab === 'users'">
 
 
       <!-- SECTION HEADER -->
@@ -659,6 +693,165 @@
 
       </div>
 
+
+    </section>
+
+    <!-- =========================
+         EMPLOYER APPROVALS SECTION
+    ========================== -->
+    <section class="management-section" *ngIf="activeTab === 'employers'">
+
+      <div class="section-header">
+        <div>
+          <span class="section-label">EMPLOYER VERIFICATION</span>
+          <h3>Company Profile Approvals</h3>
+          <p>Review employer organizations and grant vacancy posting permissions.</p>
+        </div>
+
+        <div class="result-count">
+          <strong>{{ filteredEmployers.length }}</strong>
+          <span>companies</span>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="filter-bar">
+        <div class="search-box" style="flex: 1;">
+          <span>🔍</span>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search company by name, industry, or location...">
+        </div>
+      </div>
+
+      <div *ngIf="isLoadingEmployers" style="text-align: center; padding: 40px; color: #94a3b8;">
+        Loading employer profiles...
+      </div>
+
+      <div class="table-wrapper" *ngIf="!isLoadingEmployers">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>COMPANY</th>
+              <th>INDUSTRY</th>
+              <th>LOCATION</th>
+              <th>WEBSITE</th>
+              <th>APPROVAL STATUS</th>
+              <th>VERIFICATION CONTROL</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let emp of filteredEmployers">
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">
+                    🏢
+                  </div>
+                  <div class="user-info">
+                    <strong>{{ emp.companyName }}</strong>
+                    <span>User Account ID: #{{ emp.userId }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span style="font-size: 0.9rem; color: #cbd5e1;">{{ emp.industry || 'Not specified' }}</span>
+              </td>
+
+              <td>
+                <span style="font-size: 0.9rem; color: #cbd5e1;">{{ emp.location || 'Not specified' }}</span>
+              </td>
+
+              <td>
+                <a *ngIf="emp.website" [href]="emp.website" target="_blank" style="color: #60a5fa; text-decoration: none; font-size: 0.85rem;">
+                  {{ emp.website }} ↗
+                </a>
+                <span *ngIf="!emp.website" style="color: #64748b; font-size: 0.85rem;">None</span>
+              </td>
+
+              <td>
+                <!-- Approved -->
+                <span
+                  *ngIf="emp.isApproved || emp.approvalStatus === 'Approved'"
+                  class="status-pill status-active">
+                  <span class="status-dot"></span>
+                  Approved
+                </span>
+
+                <!-- Rejected -->
+                <span
+                  *ngIf="!emp.isApproved && emp.approvalStatus === 'Rejected'"
+                  class="status-pill status-rejected">
+                  <span class="status-dot"></span>
+                  Rejected
+                </span>
+
+                <!-- Pending Review -->
+                <span
+                  *ngIf="!emp.isApproved && emp.approvalStatus !== 'Rejected'"
+                  class="status-pill"
+                  style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);">
+                  <span class="status-dot" style="background: #f59e0b;"></span>
+                  Pending Review
+                </span>
+              </td>
+
+              <td>
+                <!-- If Approved: show Revoke Approval button -->
+                <div *ngIf="emp.isApproved || emp.approvalStatus === 'Approved'">
+                  <button
+                    type="button"
+                    class="status-button deactivate-button"
+                    (click)="revokeEmployerApproval(emp)">
+                    ⏸ Revoke Approval
+                  </button>
+                </div>
+
+                <!-- If Rejected: show Re-Approve button -->
+                <div *ngIf="!emp.isApproved && emp.approvalStatus === 'Rejected'">
+                  <button
+                    type="button"
+                    class="status-button activate-button"
+                    (click)="approveEmployer(emp)">
+                    ✓ Re-Approve
+                  </button>
+                </div>
+
+                <!-- If Pending Review: show BOTH Approve and Reject buttons -->
+                <div
+                  *ngIf="!emp.isApproved && emp.approvalStatus !== 'Rejected'"
+                  style="display: flex; gap: 8px; align-items: center;">
+                  <button
+                    type="button"
+                    class="status-button activate-button"
+                    style="min-width: 85px;"
+                    (click)="approveEmployer(emp)">
+                    ✓ Approve
+                  </button>
+                  <button
+                    type="button"
+                    class="status-button reject-button"
+                    style="min-width: 85px;"
+                    (click)="rejectEmployer(emp)">
+                    ✕ Reject
+                  </button>
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredEmployers.length === 0">
+              <td colspan="6" class="empty-cell">
+                <div class="empty-state">
+                  <div class="empty-icon">🏢</div>
+                  <h3>No Employer Profiles Found</h3>
+                  <p>Registered employers who have completed company profiles will appear here for verification.</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </section>
 

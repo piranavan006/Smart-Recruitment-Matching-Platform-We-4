@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs;
+using SmartRecruitment.API.DTOs;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
@@ -149,6 +149,39 @@ namespace SmartRecruitment.API.Services
         }
 
         // =========================
+        // SET APPROVAL
+        // =========================
+        public async Task<EmployerResponseDto?>
+            SetApprovalAsync(
+                int employerProfileId,
+                bool isApproved,
+                string? status = null)
+        {
+            var employer =
+                await _repository.GetByIdAsync(
+                    employerProfileId);
+
+            if (employer == null)
+                return null;
+
+            employer.IsApproved = isApproved;
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                employer.ApprovalStatus = status;
+            }
+            else
+            {
+                employer.ApprovalStatus = isApproved ? "Approved" : "Pending";
+            }
+            employer.UpdatedAt = DateTime.UtcNow;
+
+            var updated =
+                await _repository.UpdateAsync(employer);
+
+            return MapToDto(updated);
+        }
+
+        // =========================
         // CHECK EXISTS
         // =========================
         public async Task<bool>
@@ -187,7 +220,15 @@ namespace SmartRecruitment.API.Services
                     employer.CompanyDescription,
 
                 Location =
-                    employer.Location
+                    employer.Location,
+
+                IsApproved =
+                    employer.IsApproved,
+
+                ApprovalStatus =
+                    !string.IsNullOrWhiteSpace(employer.ApprovalStatus)
+                        ? employer.ApprovalStatus
+                        : (employer.IsApproved ? "Approved" : "Pending")
             };
         }
     }

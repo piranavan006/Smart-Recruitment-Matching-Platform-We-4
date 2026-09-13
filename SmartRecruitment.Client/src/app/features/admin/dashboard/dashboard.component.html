@@ -311,40 +311,25 @@
       </div>
 
 
-      <!-- Applications -->
-
+      <!-- Job Seekers -->
       <div class="kpi-card">
-
         <div class="kpi-top">
-
           <div class="kpi-icon applications">
-            📄
+            🎓
           </div>
-
           <span class="kpi-label">
-            APPLICATIONS
+            SEEKERS
           </span>
-
         </div>
-
         <strong class="kpi-number">
-          {{ stats.totalApplications }}
+          {{ stats.totalJobSeekers }}
         </strong>
-
         <div class="kpi-footer">
-
           <span class="positive">
-            ↑ Active
+            Active Candidates
           </span>
-
-          <span>
-            applications
-          </span>
-
         </div>
-
       </div>
-
 
     </section>
 
@@ -355,115 +340,76 @@
 
     <section class="analytics-grid">
 
-
-      <!-- Recruitment Performance -->
-
+      <!-- Platform Distribution Breakdown -->
       <div class="analytics-card performance-card">
-
         <div class="card-heading">
-
           <div>
-
             <span class="card-label">
-              RECRUITMENT
+              COMMUNITY
             </span>
-
             <h3>
-              Matching Performance
+              Platform Composition
             </h3>
-
           </div>
-
           <span class="live-badge">
             LIVE DATA
           </span>
-
         </div>
-
 
         <div class="performance-content">
-
-
           <div class="performance-circle">
-
             <div class="circle-inner">
-
               <strong>
-                {{ recruitmentStats.successfulMatches }}
+                {{ stats.totalUsers }}
               </strong>
-
               <span>
-                Matches
+                Users
               </span>
-
             </div>
-
           </div>
-
 
           <div class="performance-details">
-
-
             <div class="metric-row">
-
               <div>
                 <span class="metric-dot success"></span>
-                Successful Matches
+                Job Seekers
               </div>
-
               <strong>
-                {{ recruitmentStats.successfulMatches }}
+                {{ stats.totalJobSeekers }}
               </strong>
-
             </div>
 
-
             <div class="metric-row">
-
               <div>
                 <span class="metric-dot pending"></span>
-                Pending Applications
+                Employers
               </div>
-
               <strong>
-                {{ recruitmentStats.pendingApplications }}
+                {{ stats.totalEmployers }}
               </strong>
-
             </div>
 
-
             <div class="metric-row">
-
               <div>
                 <span class="metric-dot accepted"></span>
-                Accepted
+                Active Accounts
               </div>
-
               <strong>
-                {{ recruitmentStats.acceptedApplications }}
+                {{ stats.activeUsers }}
               </strong>
-
             </div>
-
 
             <div class="metric-row">
-
               <div>
                 <span class="metric-dot rejected"></span>
-                Rejected
+                Inactive Accounts
               </div>
-
               <strong>
-                {{ recruitmentStats.rejectedApplications }}
+                {{ stats.inactiveUsers }}
               </strong>
-
             </div>
-
-
           </div>
-
         </div>
-
       </div>
 
 
@@ -613,112 +559,53 @@
         <div class="management-grid">
 
 
-          <button
-            type="button"
-            class="management-item">
-
-            <span class="management-icon">
-              👥
-            </span>
-
+          <a
+            routerLink="/admin/user-management"
+            class="management-item"
+            style="text-decoration: none; color: inherit;">
+            <span class="management-icon">👥</span>
             <div>
-
-              <strong>
-                Manage Users
-              </strong>
-
-              <small>
-                Activate or deactivate accounts
-              </small>
-
+              <strong>Manage Users</strong>
+              <small>Activate or deactivate accounts</small>
             </div>
+            <span class="arrow">→</span>
+          </a>
 
-            <span class="arrow">
-              →
-            </span>
-
-          </button>
-
-
-          <button
-            type="button"
-            class="management-item">
-
-            <span class="management-icon">
-              💼
-            </span>
-
+          <a
+            routerLink="/admin/job-management"
+            class="management-item"
+            style="text-decoration: none; color: inherit;">
+            <span class="management-icon">💼</span>
             <div>
-
-              <strong>
-                Manage Jobs
-              </strong>
-
-              <small>
-                Review platform vacancies
-              </small>
-
+              <strong>Manage Jobs</strong>
+              <small>Review platform vacancies</small>
             </div>
+            <span class="arrow">→</span>
+          </a>
 
-            <span class="arrow">
-              →
-            </span>
-
-          </button>
-
-
-          <button
-            type="button"
-            class="management-item">
-
-            <span class="management-icon">
-              📊
-            </span>
-
+          <a
+            routerLink="/admin/analytics"
+            class="management-item"
+            style="text-decoration: none; color: inherit;">
+            <span class="management-icon">📊</span>
             <div>
-
-              <strong>
-                View Analytics
-              </strong>
-
-              <small>
-                Review platform statistics
-              </small>
-
+              <strong>View Analytics</strong>
+              <small>Review platform statistics</small>
             </div>
+            <span class="arrow">→</span>
+          </a>
 
-            <span class="arrow">
-              →
-            </span>
-
-          </button>
-
-
-          <button
-            type="button"
-            class="management-item">
-
-            <span class="management-icon">
-              🔔
-            </span>
-
+          <a
+            routerLink="/admin/notifications"
+            class="management-item"
+            style="text-decoration: none; color: inherit;">
+            <span class="management-icon">🔔</span>
             <div>
-
-              <strong>
-                Notifications
-              </strong>
-
-              <small>
-                Review system notifications
-              </small>
-
+              <strong>Notifications</strong>
+              <small>Review system notifications</small>
             </div>
-
-            <span class="arrow">
-              →
-            </span>
-
-          </button>
+            <span class="arrow">→</span>
+          </a>
 
 
         </div>

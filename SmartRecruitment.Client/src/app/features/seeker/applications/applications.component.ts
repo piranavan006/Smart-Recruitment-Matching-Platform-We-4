@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ApplicationService } from '../../../core/services/application.service';
+import { JobService } from '../../../core/services/job.service';
+import { ApplicationResponse } from '../../../core/models/application.model';
 
 @Component({
   selector: 'app-applications',
@@ -12,36 +15,50 @@ import { RouterLink } from '@angular/router';
   templateUrl: './applications.component.html',
   styleUrl: './applications.component.css'
 })
-export class ApplicationsComponent {
+export class ApplicationsComponent implements OnInit {
+  applications: ApplicationResponse[] = [];
+  isLoading = true;
 
-  applications = [
-    {
-      jobTitle: 'Software Engineer',
-      company: 'Tech Solutions',
-      location: 'Colombo',
-      appliedDate: '05 Sep 2026',
-      status: 'Pending'
-    },
-    {
-      jobTitle: 'Frontend Developer',
-      company: 'Digital Innovations',
-      location: 'Jaffna',
-      appliedDate: '02 Sep 2026',
-      status: 'Accepted'
-    },
-    {
-      jobTitle: 'Junior Web Developer',
-      company: 'Creative Labs',
-      location: 'Remote',
-      appliedDate: '28 Aug 2026',
-      status: 'Rejected'
-    }
-  ];
+  constructor(
+    private applicationService: ApplicationService,
+    private jobService: JobService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadApplications();
+  }
+
+  loadApplications(): void {
+    this.isLoading = true;
+    this.applicationService.getMyApplications().subscribe({
+      next: (data) => {
+        this.applications = data;
+        this.isLoading = false;
+
+        // Enrich with job info
+        this.applications.forEach(app => {
+          this.jobService.getJobById(app.jobId).subscribe({
+            next: (job) => {
+              app.jobTitle = job.title;
+              app.companyName = job.companyName || 'Verified Employer';
+              app.location = job.location || 'Location Not Specified';
+            },
+            error: () => {
+              app.jobTitle = `Job Position #${app.jobId}`;
+              app.companyName = 'Employer';
+            }
+          });
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
   getCount(status: string): number {
     return this.applications.filter(
-      application => application.status === status
+      application => application.status.toLowerCase() === status.toLowerCase()
     ).length;
   }
-
 }

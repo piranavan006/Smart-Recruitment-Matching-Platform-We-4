@@ -6,90 +6,169 @@
     <div class="details-header">
       <button
         class="back-button"
-        routerLink="/seeker/jobs">
-        ← Back to Jobs
+        [routerLink]="backRoute">
+        {{ backLabel }}
       </button>
+
+      <!-- Role Indicator Pill -->
+      <div *ngIf="isAdmin" class="role-view-badge admin-badge">
+        <span>🛡️</span>
+        <span>Administrator Oversight View</span>
+      </div>
+
+      <div *ngIf="isEmployer" class="role-view-badge employer-badge">
+        <span>🏢</span>
+        <span>Employer Preview Mode</span>
+      </div>
     </div>
 
-    <!-- Job Header Card -->
-    <div class="job-header-card">
-
-      <div class="company-icon">
-        💼
-      </div>
-
-      <div class="job-heading">
-        <h1>{{ job.title }}</h1>
-        <p>{{ job.company }}</p>
-
-        <div class="job-meta">
-          <span>📍 {{ job.location }}</span>
-          <span>💰 {{ job.salary }}</span>
-          <span>🕒 {{ job.type }}</span>
-        </div>
-      </div>
-
+    <!-- Feedback Banners -->
+    <div *ngIf="successMessage" style="background: #dcfce7; border: 1px solid #86efac; color: #15803d; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ✓ {{ successMessage }}
     </div>
 
-    <!-- Main Content -->
-    <div class="details-grid">
+    <div *ngIf="errorMessage" style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ⚠ {{ errorMessage }}
+    </div>
 
-      <!-- Description -->
-      <div class="details-card">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" style="text-align: center; padding: 3rem; color: #64748b;">
+      Loading vacancy details...
+    </div>
 
-        <h2>Job Description</h2>
+    <!-- Job Content -->
+    <ng-container *ngIf="!isLoading && job">
+      <!-- Job Header Card -->
+      <div class="job-header-card">
 
-        <p>
-          {{ job.description }}
-        </p>
+        <div class="company-icon">
+          💼
+        </div>
+
+        <div class="job-heading">
+          <h1>{{ job.title }}</h1>
+          <p>{{ job.companyName || 'Verified Employer' }}</p>
+
+          <div class="job-meta">
+            <span>📍 {{ job.location || 'Location Not Specified' }}</span>
+            <span>💰 {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+            <span>🕒 {{ job.minExperienceYears }} - {{ job.maxExperienceYears }} Years Experience</span>
+            <span *ngIf="job.applicationDeadline">📅 Deadline: {{ job.applicationDeadline | date:'mediumDate' }}</span>
+          </div>
+        </div>
 
       </div>
 
-      <!-- Requirements -->
-      <div class="details-card">
+      <!-- Main Content -->
+      <div class="details-grid">
 
-        <h2>Requirements</h2>
-
-        <div class="requirement-row">
-          <strong>Experience</strong>
-          <span>{{ job.experience }}</span>
+        <!-- Description -->
+        <div class="details-card">
+          <h2>Job Description</h2>
+          <p style="white-space: pre-line; line-height: 1.6;">
+            {{ job.description }}
+          </p>
         </div>
 
-        <div class="skills-section">
+        <!-- Requirements & Skills -->
+        <div class="details-card">
+          <h2>Requirements & Qualifications</h2>
 
-          <strong>Required Skills</strong>
-
-          <div class="skills-list">
-            <span
-              class="skill"
-              *ngFor="let skill of job.skills">
-              {{ skill }}
-            </span>
+          <div class="requirement-row" *ngIf="job.education">
+            <strong>Education Level:</strong>
+            <span>{{ job.education }}</span>
           </div>
 
+          <div class="requirement-row">
+            <strong>Required Experience:</strong>
+            <span>{{ job.minExperienceYears }} to {{ job.maxExperienceYears }} Years</span>
+          </div>
+
+          <div class="skills-section" style="margin-top: 1.5rem;">
+            <strong>Required Skills & Weighting</strong>
+
+            <div class="skills-list" style="margin-top: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;" *ngIf="job.requiredSkills && job.requiredSkills.length > 0">
+              <span
+                class="skill"
+                *ngFor="let s of job.requiredSkills"
+                style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <strong>{{ s.skillName }}</strong>
+                <small style="color: #64748b;">(Weight: {{ s.weight }})</small>
+              </span>
+            </div>
+
+            <p *ngIf="!job.requiredSkills || job.requiredSkills.length === 0" style="color: #94a3b8; font-size: 0.9rem;">
+              No specific skill requirements specified.
+            </p>
+          </div>
         </div>
 
       </div>
 
-    </div>
+      <!-- 1. Administrator Oversight View (NO Apply Button) -->
+      <div class="admin-oversight-card" *ngIf="isAdmin" style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #ffffff; padding: 2rem 2.5rem; border-radius: 16px; margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; box-shadow: 0 10px 25px rgba(30, 27, 75, 0.2);">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(129, 140, 248, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #c7d2fe; margin-bottom: 0.75rem;">
+            🛡️ Platform Administration
+          </div>
+          <h2 style="font-size: 1.4rem; font-weight: 700; margin: 0 0 0.4rem 0; color: #ffffff;">Platform Vacancy Inspection</h2>
+          <p style="margin: 0; color: #c7d2fe; font-size: 0.95rem;">
+            You are inspecting this vacancy as a platform administrator. Job applications are handled by registered candidate accounts.
+          </p>
+        </div>
 
-    <!-- Apply Section -->
-    <div class="apply-card">
-
-      <div>
-        <h2>Interested in this position?</h2>
-        <p>
-          Submit your application and take the next step in your career.
-        </p>
+        <div style="display: flex; gap: 10px; flex-shrink: 0;">
+          <button
+            type="button"
+            routerLink="/admin/job-management"
+            style="padding: 12px 22px; border-radius: 10px; background: #6366f1; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;">
+            ← Return to Job Directory
+          </button>
+        </div>
       </div>
 
-      <button
-  class="apply-button"
-  routerLink="/seeker/applications">
-  Apply Now
-</button>
+      <!-- 2. Employer Preview View (NO Apply Button) -->
+      <div class="employer-preview-card" *ngIf="isEmployer" style="background: linear-gradient(135deg, #1e293b, #334155); color: #ffffff; padding: 2rem 2.5rem; border-radius: 16px; margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);">
+        <div>
+          <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #fbbf24; margin-bottom: 0.75rem;">
+            🏢 Employer Preview Mode
+          </div>
+          <h2 style="font-size: 1.4rem; font-weight: 700; margin: 0 0 0.4rem 0; color: #ffffff;">Candidate View Preview</h2>
+          <p style="margin: 0; color: #cbd5e1; font-size: 0.95rem;">
+            This is how your job posting appears to candidates. Applicants can submit their profiles from the candidate portal.
+          </p>
+        </div>
 
-    </div>
+        <div style="display: flex; gap: 10px; flex-shrink: 0;">
+          <button
+            type="button"
+            routerLink="/employer/vacancies"
+            style="padding: 12px 22px; border-radius: 10px; background: #4f46e5; color: #ffffff; border: none; font-weight: 700; font-size: 0.9rem; cursor: pointer;">
+            ← Return to My Vacancies
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. Candidate Apply Section (Only for Job Seekers) -->
+      <div class="apply-card" *ngIf="isJobSeeker">
+        <div>
+          <h2>Interested in this position?</h2>
+          <p>
+            {{ hasApplied ? 'You have applied for this opportunity.' : 'Submit your application and let your profile match with the employer!' }}
+          </p>
+        </div>
+
+        <button
+          class="apply-button"
+          (click)="applyNow()"
+          [disabled]="isApplying || hasApplied"
+          [style.background]="hasApplied ? '#10b981' : ''">
+          <span *ngIf="isApplying">Submitting Application...</span>
+          <span *ngIf="!isApplying && hasApplied">✓ Application Submitted</span>
+          <span *ngIf="!isApplying && !hasApplied">Apply Now →</span>
+        </button>
+      </div>
+    </ng-container>
 
   </div>
 

@@ -1,14 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-interface NotificationItem {
-  title: string;
-  message: string;
-  time: string;
-  icon: string;
-  isRead: boolean;
-}
+import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Notification } from '../../../core/models/notification.model';
 
 @Component({
   selector: 'app-notifications',
@@ -20,53 +15,53 @@ interface NotificationItem {
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
-export class NotificationsComponent {
+export class NotificationsComponent implements OnInit {
+  notifications: Notification[] = [];
+  isLoading = true;
 
-  notifications: NotificationItem[] = [
-    {
-      title: 'Application Submitted',
-      message: 'Your application for Software Engineer at Tech Solutions was submitted successfully.',
-      time: '2 hours ago',
-      icon: '📄',
-      isRead: false
-    },
-    {
-      title: 'Application Accepted',
-      message: 'Congratulations! Your application for Frontend Developer has been accepted.',
-      time: '1 day ago',
-      icon: '🎉',
-      isRead: false
-    },
-    {
-      title: 'New Job Match',
-      message: 'A new job matching your skills is now available.',
-      time: '2 days ago',
-      icon: '⭐',
-      isRead: true
-    },
-    {
-      title: 'Profile Reminder',
-      message: 'Complete your profile to improve your job matching results.',
-      time: '3 days ago',
-      icon: '👤',
-      isRead: true
+  constructor(
+    private notificationService: NotificationService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.loadNotifications(user.userId);
+    } else {
+      this.isLoading = false;
     }
-  ];
-
-  getUnreadCount(): number {
-    return this.notifications.filter(
-      notification => !notification.isRead
-    ).length;
   }
 
-  markAsRead(notification: NotificationItem): void {
-    notification.isRead = true;
+  loadNotifications(userId: number): void {
+    this.isLoading = true;
+    this.notificationService.getUserNotifications(userId).subscribe({
+      next: (data) => {
+        this.notifications = data;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getUnreadCount(): number {
+    return this.notifications.filter(n => !n.isRead).length;
+  }
+
+  markAsRead(item: Notification): void {
+    item.isRead = true;
+    this.notificationService.markAsRead(item).subscribe({
+      error: () => {}
+    });
   }
 
   markAllAsRead(): void {
-    this.notifications.forEach(
-      notification => notification.isRead = true
-    );
+    this.notifications.forEach(item => {
+      if (!item.isRead) {
+        this.markAsRead(item);
+      }
+    });
   }
-
 }

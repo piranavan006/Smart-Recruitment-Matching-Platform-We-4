@@ -1,4 +1,4 @@
-﻿namespace SmartRecruitment.API.DTOs
+namespace SmartRecruitment.API.DTOs
 {
     public class EmployerResponseDto
     {
@@ -15,5 +15,9 @@
         public string? Description { get; set; }
 
         public string? Location { get; set; }
+
+        public bool IsApproved { get; set; }
+
+        public string ApprovalStatus { get; set; } = "Pending";
     }
 }

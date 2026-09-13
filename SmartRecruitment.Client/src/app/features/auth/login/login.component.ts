@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -16,7 +16,6 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-
   loginData = {
     email: '',
     password: ''
@@ -27,11 +26,11 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   onLogin(form: NgForm): void {
-
     if (form.invalid) {
       return;
     }
@@ -40,42 +39,32 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.authService.login(this.loginData).subscribe({
-
       next: (response) => {
-
-        console.log('Login successful:', response);
-
-        // Save JWT token
-        localStorage.setItem('token', response.token);
-
-        // Save user information
-        localStorage.setItem('userId', response.userId.toString());
-        localStorage.setItem('fullName', response.fullName);
-        localStorage.setItem('email', response.email);
-        localStorage.setItem('role', response.role);
-
         this.isLoading = false;
 
-        // Navigate to role-specific dashboard
-        if (response.role === 'Admin') {
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+          return;
+        }
+
+        const role = response.role?.toLowerCase();
+        if (role === 'admin' || role === 'administrator') {
           this.router.navigate(['/admin']);
-        } else if (response.role === 'Employer') {
+        } else if (role === 'employer') {
           this.router.navigate(['/employer']);
         } else {
           this.router.navigate(['/seeker']);
         }
       },
-
       error: (error) => {
-
-        console.error('Login error:', error);
-
         this.isLoading = false;
-
         if (error.status === 401) {
-          this.errorMessage = 'Invalid email or password.';
+          this.errorMessage = error.error?.message || 'Invalid email or password.';
+        } else if (error.status === 0) {
+          this.errorMessage = 'Cannot reach backend server. Please ensure the API is running.';
         } else {
-          this.errorMessage = 'Unable to connect to the server.';
+          this.errorMessage = error.error?.message || 'Unable to log in. Please try again.';
         }
       }
     });

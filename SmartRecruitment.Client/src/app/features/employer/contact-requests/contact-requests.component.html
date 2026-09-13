@@ -4,31 +4,22 @@
 
     <!-- Header -->
     <div class="requests-header">
-
       <div>
         <span class="page-badge">EMPLOYER</span>
-
         <h1>Contact Requests</h1>
-
-        <p>
-          Manage requests from candidates interested in connecting with you.
-        </p>
+        <p>Manage connection requests sent to candidates.</p>
       </div>
+      <a routerLink="/employer" class="back-button">← Dashboard</a>
+    </div>
 
-      <a
-        routerLink="/employer"
-        class="back-button">
-        ← Dashboard
-      </a>
-
+    <div *ngIf="errorMessage" class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;">
+      ⚠ {{ errorMessage }}
     </div>
 
     <!-- Statistics -->
     <div class="stats-grid">
-
       <div class="stat-card">
         <div class="stat-icon">📩</div>
-
         <div>
           <span>Total Requests</span>
           <strong>{{ requests.length }}</strong>
@@ -37,7 +28,6 @@
 
       <div class="stat-card">
         <div class="stat-icon">⏳</div>
-
         <div>
           <span>Pending</span>
           <strong>{{ getCount('Pending') }}</strong>
@@ -46,7 +36,6 @@
 
       <div class="stat-card">
         <div class="stat-icon">✅</div>
-
         <div>
           <span>Accepted</span>
           <strong>{{ getCount('Accepted') }}</strong>
@@ -55,131 +44,66 @@
 
       <div class="stat-card">
         <div class="stat-icon">❌</div>
-
         <div>
-          <span>Rejected</span>
-          <strong>{{ getCount('Rejected') }}</strong>
+          <span>Declined</span>
+          <strong>{{ getCount('Declined') }}</strong>
         </div>
       </div>
+    </div>
 
+    <div *ngIf="isLoading" style="text-align: center; padding: 40px; color: #94a3b8;">
+      Loading contact requests...
     </div>
 
     <!-- Requests Section -->
-    <div class="requests-section">
-
+    <div class="requests-section" *ngIf="!isLoading">
       <div class="section-header">
-
         <div>
-          <h2>Recent Contact Requests</h2>
-
-          <p>
-            Review and manage candidate contact requests.
-          </p>
+          <h2>Sent Contact Requests</h2>
+          <p>Review the outreach messages you have dispatched to candidates.</p>
         </div>
-
       </div>
 
       <!-- Request List -->
-      <div class="requests-list">
-
-        <div
-          class="request-card"
-          *ngFor="let request of requests">
-
+      <div class="requests-list" *ngIf="requests.length > 0">
+        <div class="request-card" *ngFor="let request of requests">
           <div class="candidate-avatar">
-            {{ request.initials }}
+            #{{ request.receiverId }}
           </div>
 
           <div class="request-info">
-
             <div class="request-top">
-
               <div>
-                <h3>{{ request.name }}</h3>
-
-                <p class="candidate-role">
-                  {{ request.jobTitle }}
-                </p>
+                <h3>Candidate ID: #{{ request.receiverId }}</h3>
+                <p class="candidate-role">Request Reference #{{ request.contactRequestId }}</p>
               </div>
-
               <span class="request-time">
-                {{ request.time }}
+                {{ request.createdAt | date:'medium' }}
               </span>
-
             </div>
 
             <p class="request-message">
-              {{ request.message }}
+              "{{ request.message }}"
             </p>
-
-            <div class="request-details">
-
-              <span>
-                📧 {{ request.email }}
-              </span>
-
-              <span>
-                📍 {{ request.location }}
-              </span>
-
-            </div>
-
           </div>
 
           <div class="request-actions">
-
-            <span
-              class="status-badge"
-              [ngClass]="request.status.toLowerCase()">
+            <span class="status-badge" [ngClass]="request.status.toLowerCase()">
               {{ request.status }}
             </span>
-
-            <button
-              type="button"
-              class="accept-button"
-              *ngIf="request.status === 'Pending'"
-              (click)="updateStatus(request, 'Accepted')">
-              Accept
-            </button>
-
-            <button
-              type="button"
-              class="reject-button"
-              *ngIf="request.status === 'Pending'"
-              (click)="updateStatus(request, 'Rejected')">
-              Reject
-            </button>
-
-            <button
-              type="button"
-              class="view-button">
-              View Profile
-            </button>
-
           </div>
-
         </div>
-
       </div>
 
       <!-- Empty State -->
-      <div
-        class="empty-state"
-        *ngIf="requests.length === 0">
-
-        <div class="empty-icon">
-          📩
-        </div>
-
-        <h3>No contact requests</h3>
-
-        <p>
-          Candidate contact requests will appear here when
-          someone wants to connect with your company.
-        </p>
-
+      <div class="empty-state" *ngIf="requests.length === 0">
+        <div class="empty-icon">📩</div>
+        <h3>No contact requests sent yet</h3>
+        <p>Go to your Vacancy Applicants or AI Matches to reach out to high-potential candidates.</p>
+        <a routerLink="/employer/applicants" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #6366f1; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600;">
+          Browse Applicants
+        </a>
       </div>
-
     </div>
 
   </div>

@@ -5,14 +5,11 @@
     <!-- ================================
          HEADER
     ================================= -->
-
     <div class="dashboard-header">
-
       <div>
-        <h1>Welcome to Smart Recruitment</h1>
-
+        <h1>Welcome, {{ userName || 'Job Seeker' }}!</h1>
         <p>
-          Find the right opportunities and manage your career journey.
+          Find the right opportunities, track applications, and manage your career journey.
         </p>
       </div>
 
@@ -20,261 +17,128 @@
         <span class="profile-icon">👤</span>
         <span>Job Seeker</span>
       </div>
-
     </div>
 
 
     <!-- ================================
          STATISTICS
     ================================= -->
-
     <div class="stats-grid">
-
       <!-- Available Jobs -->
-
       <div class="stat-card">
-
-        <div class="stat-icon">
-          💼
-        </div>
-
+        <div class="stat-icon">💼</div>
         <div>
           <h3>Available Jobs</h3>
-          <strong>0</strong>
+          <strong>{{ availableJobs }}</strong>
         </div>
-
       </div>
-
 
       <!-- Applications -->
-
       <div class="stat-card">
-
-        <div class="stat-icon">
-          📄
-        </div>
-
+        <div class="stat-icon">📄</div>
         <div>
           <h3>Applications</h3>
-          <strong>0</strong>
+          <strong>{{ applicationsCount }}</strong>
         </div>
-
       </div>
-
 
       <!-- Matched Jobs -->
-
       <div class="stat-card">
-
-        <div class="stat-icon">
-          ⭐
-        </div>
-
+        <div class="stat-icon">⭐</div>
         <div>
-          <h3>Matched Jobs</h3>
-          <strong>0</strong>
+          <h3>High Matches</h3>
+          <strong>{{ matchedJobsCount }}</strong>
         </div>
-
       </div>
-
 
       <!-- Notifications -->
-
       <div class="stat-card">
-
-        <div class="stat-icon">
-          🔔
-        </div>
-
+        <div class="stat-icon">🔔</div>
         <div>
-          <h3>Notifications</h3>
-          <strong>0</strong>
+          <h3>Unread Alerts</h3>
+          <strong>{{ notificationsCount }}</strong>
         </div>
-
       </div>
-
     </div>
 
 
     <!-- ================================
          QUICK ACTIONS
     ================================= -->
-
     <div class="section">
-
       <div class="section-header">
-
         <h2>Quick Actions</h2>
-
-        <p>
-          Manage your recruitment activities.
-        </p>
-
+        <p>Manage your recruitment activities.</p>
       </div>
-
 
       <div class="action-grid">
-
-
-        <!-- ============================
-             FIND JOBS
-        ============================= -->
-
+        <!-- FIND JOBS -->
         <div class="action-card">
-
-          <div class="action-icon">
-            🔎
-          </div>
-
-          <h3>
-            Find Jobs
-          </h3>
-
-          <p>
-            Search for jobs that match your skills
-            and interests.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/seeker/jobs">
-
-            Browse Jobs
-
-          </button>
-
+          <div class="action-icon">🔎</div>
+          <h3>Find Jobs</h3>
+          <p>Search for jobs that match your skills and interests.</p>
+          <button type="button" routerLink="/seeker/jobs">Browse Jobs</button>
         </div>
 
-
-        <!-- ============================
-             MY PROFILE
-        ============================= -->
-
+        <!-- MY PROFILE -->
         <div class="action-card">
-
-          <div class="action-icon">
-            👤
-          </div>
-
-          <h3>
-            My Profile
-          </h3>
-
-          <p>
-            Update your personal information and
-            professional profile.
-          </p>
-
-          <button
-                type="button"
-                routerLink="/seeker/profile">
-                View Profile
-        </button>
-
+          <div class="action-icon">👤</div>
+          <h3>My Profile</h3>
+          <p>Update your personal information, skills, and CV.</p>
+          <button type="button" routerLink="/seeker/profile">Manage Profile</button>
         </div>
 
-
-        <!-- ============================
-             MY APPLICATIONS
-        ============================= -->
-
+        <!-- MY APPLICATIONS -->
         <div class="action-card">
-
-          <div class="action-icon">
-            📄
-          </div>
-
-          <h3>
-            My Applications
-          </h3>
-
-          <p>
-            Track the status of your submitted job
-            applications.
-          </p>
-
-          <button
-                type="button"
-                routerLink="/seeker/applications">
-             View Applications
-        </button>
+          <div class="action-icon">📄</div>
+          <h3>My Applications</h3>
+          <p>Track the status of your submitted job applications.</p>
+          <button type="button" routerLink="/seeker/applications">View Applications</button>
         </div>
 
-
-        <!-- ============================
-             NOTIFICATIONS
-        ============================= -->
-
+        <!-- NOTIFICATIONS -->
         <div class="action-card">
-
-          <div class="action-icon">
-            🔔
-          </div>
-
-          <h3>
-            Notifications
-          </h3>
-
-          <p>
-            Check your latest recruitment updates
-            and alerts.
-          </p>
-
-             <button
-             type="button"
-             routerLink="/seeker/notifications">
-             View Notifications
-            </button>
-
+          <div class="action-icon">🔔</div>
+          <h3>Notifications</h3>
+          <p>Check your latest recruitment updates and alerts.</p>
+          <button type="button" routerLink="/seeker/notifications">View Notifications</button>
         </div>
-
       </div>
-
     </div>
 
 
     <!-- ================================
          RECOMMENDED JOBS
     ================================= -->
-
     <div class="section">
-
       <div class="section-header">
-
-        <h2>
-          Recommended Jobs
-        </h2>
-
-        <p>
-          Jobs recommended based on your profile.
-        </p>
-
+        <h2>Recommended Matches</h2>
+        <p>Jobs matched with your profile skills, experience, and education.</p>
       </div>
 
-
-      <div class="empty-state">
-
-        <div class="empty-icon">
-          🔍
+      <div *ngIf="recommendedJobs.length > 0" class="recommended-grid">
+        <div class="match-card" *ngFor="let match of recommendedJobs">
+          <div class="match-header">
+            <h3>{{ match.jobTitle || 'Job Position' }}</h3>
+            <span class="match-badge" [class.high]="match.matchScore >= 80" [class.medium]="match.matchScore >= 50 && match.matchScore < 80">
+              {{ match.matchScore | number:'1.0-0' }}% Match
+            </span>
+          </div>
+          <div class="match-details">
+            <span *ngIf="match.skillsMatched" class="tag success">✓ Skills Matched</span>
+            <span *ngIf="match.experienceMatched" class="tag success">✓ Experience Matched</span>
+            <span *ngIf="match.locationMatched" class="tag success">✓ Location Matched</span>
+          </div>
+          <a [routerLink]="['/seeker/job-details', match.jobId]" class="btn-view-job">View Job Details →</a>
         </div>
-
-        <h3>
-          No recommendations yet
-        </h3>
-
-        <p>
-          Complete your profile and add your skills
-          to receive personalized job recommendations.
-        </p>
-
-        <button
-          type="button"
-          routerLink="/seeker/profile">
-          Complete Profile
-        </button>
-
       </div>
 
+      <div class="empty-state" *ngIf="recommendedJobs.length === 0">
+        <div class="empty-icon">🔍</div>
+        <h3>No recommendations calculated yet</h3>
+        <p>Complete your profile and add your skills to receive personalized AI matching recommendations.</p>
+        <button type="button" routerLink="/seeker/profile">Complete Profile</button>
+      </div>
     </div>
 
   </div>

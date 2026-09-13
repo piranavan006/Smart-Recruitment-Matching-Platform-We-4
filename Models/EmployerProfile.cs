@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace SmartRecruitment.API.Models
 {
@@ -24,6 +24,11 @@ namespace SmartRecruitment.API.Models
 
         [MaxLength(255)]
         public string? Website { get; set; }
+
+        public bool IsApproved { get; set; } = false;
+
+        [MaxLength(50)]
+        public string ApprovalStatus { get; set; } = "Pending";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

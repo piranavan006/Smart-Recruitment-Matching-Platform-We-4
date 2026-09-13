@@ -2,342 +2,168 @@
 
   <!-- Header -->
   <header class="dashboard-header">
-
     <div class="header-left">
-
-      <div class="brand-icon">S</div>
-
+      <div class="brand-icon">💼</div>
       <div>
         <h1>SmartRecruitment</h1>
         <span>Employer Portal</span>
       </div>
-
     </div>
-
 
     <div class="header-right">
-
       <span class="role-badge">EMPLOYER</span>
-
       <div class="profile-box">
-
         <div class="profile-avatar">EM</div>
-
         <div>
-          <strong>Employer</strong>
-          <small>Company Account</small>
+          <strong>{{ companyName || 'Company' }}</strong>
+          <small *ngIf="isApproved" style="color: #10b981; font-weight: 600;">✓ Verified Employer</small>
+          <small *ngIf="!isApproved && hasProfile && approvalStatus === 'Rejected'" style="color: #ef4444; font-weight: 600;">✕ Verification Rejected</small>
+          <small *ngIf="!isApproved && hasProfile && approvalStatus !== 'Rejected'" style="color: #f59e0b; font-weight: 600;">⏳ Verification Pending</small>
+          <small *ngIf="!hasProfile" style="color: #94a3b8;">Profile Incomplete</small>
         </div>
-
       </div>
-
     </div>
-
   </header>
 
 
   <!-- Main Content -->
   <main class="dashboard-content">
 
+    <!-- Approval Status Alerts: Rejected -->
+    <div *ngIf="hasProfile && !isApproved && approvalStatus === 'Rejected'" class="alert-box reject-alert" style="background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: #b91c1c; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.5rem;">✕</span>
+        <div>
+          <strong style="display: block; font-size: 1rem; color: #dc2626;">Company Profile Verification Rejected</strong>
+          <span style="font-size: 0.9rem; color: #991b1b;">Your profile details did not meet platform verification criteria. Please update your company profile details to request re-evaluation.</span>
+        </div>
+      </div>
+      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #dc2626; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
+        Update Profile
+      </a>
+    </div>
+
+    <!-- Approval Status Alerts: Pending -->
+    <div *ngIf="hasProfile && !isApproved && approvalStatus !== 'Rejected'" class="alert-box pending-alert" style="background: rgba(245, 158, 11, 0.12); border: 1px solid #f59e0b; color: #b45309; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.5rem;">⏳</span>
+        <div>
+          <strong style="display: block; font-size: 1rem; color: #d97706;">Company Profile Pending Admin Approval</strong>
+          <span style="font-size: 0.9rem; color: #78350f;">Your company profile is under administrative review. Once approved, vacancy posting and candidate outreach will be unlocked automatically.</span>
+        </div>
+      </div>
+      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #f59e0b; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
+        Review Profile
+      </a>
+    </div>
+
+    <div *ngIf="!hasProfile" class="alert-box info-alert" style="background: rgba(99, 102, 241, 0.12); border: 1px solid #6366f1; color: #4338ca; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.5rem;">🏢</span>
+        <div>
+          <strong style="display: block; font-size: 1rem; color: #4f46e5;">Complete Your Company Profile</strong>
+          <span style="font-size: 0.9rem; color: #3730a3;">Submit your company details for administrator verification to unlock job posting capabilities.</span>
+        </div>
+      </div>
+      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #6366f1; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
+        Complete Profile →
+      </a>
+    </div>
 
     <!-- Welcome -->
     <section class="welcome-section">
-
       <div>
-
-        <p class="welcome-label">
-          EMPLOYER DASHBOARD
-        </p>
-
-        <h2>
-          Welcome back! 👋
-        </h2>
-
-        <p>
-          Manage your recruitment activities and find the best
-          candidates for your organization.
-        </p>
-
+        <p class="welcome-label">EMPLOYER DASHBOARD</p>
+        <h2>Welcome back, {{ fullName }}! 👋</h2>
+        <p>Manage job vacancies, review applicant matching scores, and connect with top candidates.</p>
       </div>
 
+      <button
+        routerLink="/employer/create-vacancy"
+        [disabled]="!isApproved"
+        [style.opacity]="isApproved ? '1' : '0.6'"
+        [style.cursor]="isApproved ? 'pointer' : 'not-allowed'"
+        [title]="isApproved ? 'Post a new vacancy' : 'Profile verification required to post vacancies'"
+        style="background: #2563eb; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-weight: 600;">
+        {{ isApproved ? '+ Post New Vacancy' : '🔒 Post Vacancy (Verification Required)' }}
+      </button>
     </section>
 
 
     <!-- Statistics -->
     <section class="stats-grid">
-
+      <!-- Total Vacancies -->
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div>
+          <h3>Total Vacancies</h3>
+          <strong>{{ totalVacancies }}</strong>
+        </div>
+      </div>
 
       <!-- Active Vacancies -->
       <div class="stat-card">
-
-        <div class="stat-icon">📋</div>
-
+        <div class="stat-icon">🟢</div>
         <div>
           <h3>Active Vacancies</h3>
-          <strong>0</strong>
+          <strong>{{ activeVacancies }}</strong>
         </div>
-
       </div>
-
 
       <!-- Total Applicants -->
       <div class="stat-card">
-
         <div class="stat-icon">👥</div>
-
         <div>
           <h3>Total Applicants</h3>
-          <strong>0</strong>
+          <strong>{{ totalApplicants }}</strong>
         </div>
-
       </div>
 
-
-      <!-- Matched Candidates -->
+      <!-- Pending Contact Requests -->
       <div class="stat-card">
-
-        <div class="stat-icon">⭐</div>
-
+        <div class="stat-icon">💬</div>
         <div>
-          <h3>Matched Candidates</h3>
-          <strong>0</strong>
+          <h3>Pending Requests</h3>
+          <strong>{{ pendingRequests }}</strong>
         </div>
-
       </div>
-
-
-      <!-- Contact Requests -->
-      <div class="stat-card">
-
-        <div class="stat-icon">📩</div>
-
-        <div>
-          <h3>Contact Requests</h3>
-          <strong>0</strong>
-        </div>
-
-      </div>
-
-
     </section>
 
 
     <!-- Quick Actions -->
-    <section class="quick-actions">
+    <section class="quick-actions-section" style="margin-top: 2rem;">
+      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Quick Actions</h3>
 
-      <div class="section-heading">
-
-        <div>
-
-          <h2>
-            Quick Actions
-          </h2>
-
-          <p>
-            Manage your recruitment activities.
-          </p>
-
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📝</div>
+          <h4 style="margin: 0 0 0.5rem 0;">Post a Job Vacancy</h4>
+          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Create and publish a vacancy with weighted skill requirements.</p>
+          <a routerLink="/employer/create-vacancy" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Create Vacancy →</a>
         </div>
 
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
+          <h4 style="margin: 0 0 0.5rem 0;">Manage Vacancies</h4>
+          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">View, close, or update your published job openings.</p>
+          <a routerLink="/employer/vacancies" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">View Vacancies →</a>
+        </div>
+
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
+          <h4 style="margin: 0 0 0.5rem 0;">Review Applicants</h4>
+          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Inspect candidate applications and AI matching scores.</p>
+          <a routerLink="/employer/applicants" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Review Candidates →</a>
+        </div>
+
+        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
+          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏢</div>
+          <h4 style="margin: 0 0 0.5rem 0;">Company Profile</h4>
+          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Update company overview, website, and industry details.</p>
+          <a routerLink="/employer/company-profile" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Edit Profile →</a>
+        </div>
       </div>
-
-
-      <div class="action-grid">
-
-
-        <!-- Post a Vacancy -->
-        <div class="action-card">
-
-          <div class="action-icon">➕</div>
-
-          <h3>
-            Post a Vacancy
-          </h3>
-
-          <p>
-            Create a new job vacancy and define the required skills.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/create-vacancy">
-
-            Create Vacancy
-
-          </button>
-
-        </div>
-
-
-        <!-- My Vacancies -->
-        <div class="action-card">
-
-          <div class="action-icon">📋</div>
-
-          <h3>
-            My Vacancies
-          </h3>
-
-          <p>
-            View, update and manage your existing job vacancies.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/vacancies">
-
-            View Vacancies
-
-          </button>
-
-        </div>
-
-
-        <!-- Applicants -->
-        <div class="action-card">
-
-          <div class="action-icon">👥</div>
-
-          <h3>
-            Applicants
-          </h3>
-
-          <p>
-            Review candidates ranked by their matching score.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/applicants">
-
-            View Applicants
-
-          </button>
-
-        </div>
-
-
-        <!-- Company Profile -->
-        <div class="action-card">
-
-          <div class="action-icon">🏢</div>
-
-          <h3>
-            Company Profile
-          </h3>
-
-          <p>
-            Manage your company information and employer profile.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/company-profile">
-
-            Manage Profile
-
-          </button>
-
-        </div>
-
-
-        <!-- Contact Requests -->
-        <div class="action-card">
-
-          <div class="action-icon">📩</div>
-
-          <h3>
-            Contact Requests
-          </h3>
-
-          <p>
-            Review and respond to candidate contact requests.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/contact-requests">
-
-            View Requests
-
-          </button>
-
-        </div>
-
-
-        <!-- Notifications -->
-        <div class="action-card">
-
-          <div class="action-icon">🔔</div>
-
-          <h3>
-            Notifications
-          </h3>
-
-          <p>
-            Stay updated with applications, matches and contact requests.
-          </p>
-
-          <button
-            type="button"
-            routerLink="/employer/notifications">
-
-            View Notifications
-
-          </button>
-
-        </div>
-
-
-      </div>
-
     </section>
-
-
-    <!-- Recent Activity -->
-    <section class="recent-activity">
-
-      <div class="section-heading">
-
-        <div>
-
-          <h2>
-            Recent Activity
-          </h2>
-
-          <p>
-            Keep track of your latest recruitment activities.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div class="empty-state">
-
-        <div class="empty-icon">
-          📊
-        </div>
-
-        <h3>
-          No Recent Activity
-        </h3>
-
-        <p>
-          Your recent recruitment activities will appear here.
-        </p>
-
-       <button
-  type="button"
-  routerLink="/employer/create-vacancy">
-  Post Your First Vacancy
-</button>
-
-      </div>
-
-    </section>
-
 
   </main>
-
 </div>

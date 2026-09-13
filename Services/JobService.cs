@@ -9,13 +9,16 @@ namespace SmartRecruitment.API.Services
     {
         private readonly IJobRepository _jobRepository;
         private readonly IEmployerRepository _employerRepository;
+        private readonly ISkillRepository _skillRepository;
 
         public JobService(
             IJobRepository jobRepository,
-            IEmployerRepository employerRepository)
+            IEmployerRepository employerRepository,
+            ISkillRepository skillRepository)
         {
             _jobRepository = jobRepository;
             _employerRepository = employerRepository;
+            _skillRepository = skillRepository;
         }
 
         // =========================================================
@@ -44,7 +47,13 @@ namespace SmartRecruitment.API.Services
             if (employer == null)
             {
                 throw new KeyNotFoundException(
-                    "Employer profile not found.");
+                    "Employer profile not found. Please complete your company profile first.");
+            }
+
+            if (!employer.IsApproved)
+            {
+                throw new InvalidOperationException(
+                    "Your company profile is pending administrator approval. Vacancy creation is locked until an administrator approves your profile.");
             }
 
             var job = new Job
@@ -102,12 +111,21 @@ namespace SmartRecruitment.API.Services
                         continue;
                     }
 
+                    var trimmedName = skill.SkillName.Trim();
+                    var existingSkill = await _skillRepository.GetByNameAsync(trimmedName);
+                    if (existingSkill == null)
+                    {
+                        existingSkill = await _skillRepository.AddAsync(new Skill
+                        {
+                            SkillName = trimmedName
+                        });
+                    }
+
                     job.JobSkills.Add(
                         new JobSkill
                         {
-                            SkillName =
-                                skill.SkillName.Trim(),
-
+                            SkillId = existingSkill.SkillId,
+                            SkillName = existingSkill.SkillName,
                             Weight =
                                 skill.Weight < 1
                                     ? 1
@@ -289,14 +307,27 @@ namespace SmartRecruitment.API.Services
                         continue;
                     }
 
+                    var trimmedName = skill.SkillName.Trim();
+                    var existingSkill = await _skillRepository.GetByNameAsync(trimmedName);
+                    if (existingSkill == null)
+                    {
+                        existingSkill = await _skillRepository.AddAsync(new Skill
+                        {
+                            SkillName = trimmedName
+                        });
+                    }
+
                     job.JobSkills.Add(
                         new JobSkill
                         {
                             JobId =
                                 job.Id,
 
+                            SkillId =
+                                existingSkill.SkillId,
+
                             SkillName =
-                                skill.SkillName.Trim(),
+                                existingSkill.SkillName,
 
                             Weight =
                                 skill.Weight < 1

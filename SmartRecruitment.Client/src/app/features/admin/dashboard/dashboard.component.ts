@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { AdminService } from '../../../core/services/admin.service';
+import { AdminDashboard } from '../../../core/models/admin.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 interface Activity {
   icon: string;
@@ -20,119 +23,84 @@ interface Activity {
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
+  isLoading = true;
+  errorMessage = '';
+  currentAdminName = 'Administrator';
 
-  // Platform statistics
-  stats = {
-    totalUsers: 248,
-    activeUsers: 221,
-    inactiveUsers: 27,
-    totalJobs: 86,
-    totalApplications: 634,
-    matchedCandidates: 412
+  stats: AdminDashboard = {
+    totalUsers: 0,
+    totalJobSeekers: 0,
+    totalEmployers: 0,
+    activeUsers: 0,
+    inactiveUsers: 0,
+    totalJobs: 0
   };
 
-
-  // Recruitment performance
-  recruitmentStats = {
-    successfulMatches: 68,
-    pendingApplications: 124,
-    acceptedApplications: 87,
-    rejectedApplications: 43
-  };
-
-
-  // Recent system activities
   activities: Activity[] = [
-
     {
       icon: '👤',
-      title: 'New User Registered',
-      description:
-        'A new job seeker account was created.',
-      time: '10 minutes ago',
-      type: 'user'
-    },
-
-    {
-      icon: '💼',
-      title: 'New Vacancy Posted',
-      description:
-        'A new Software Engineer vacancy was published.',
-      time: '35 minutes ago',
-      type: 'job'
-    },
-
-    {
-      icon: '⭐',
-      title: 'High Match Detected',
-      description:
-        'A candidate achieved a 94% job matching score.',
-      time: '1 hour ago',
-      type: 'match'
-    },
-
-    {
-      icon: '📄',
-      title: 'New Application',
-      description:
-        'A candidate submitted a new job application.',
-      time: '2 hours ago',
-      type: 'application'
-    },
-
-    {
-      icon: '🔔',
-      title: 'System Notification',
-      description:
-        'Platform activity has been updated.',
-      time: '3 hours ago',
+      title: 'Platform Online',
+      description: 'Platform control center initialized and ready.',
+      time: 'Just now',
       type: 'system'
+    },
+    {
+      icon: '🛡️',
+      title: 'Security Verified',
+      description: 'Role-based access token validated.',
+      time: 'Just now',
+      type: 'system'
+    },
+    {
+      icon: '⚡',
+      title: 'Matching Engine Active',
+      description: 'AI skill recommendation algorithms active.',
+      time: 'Live',
+      type: 'match'
     }
-
   ];
 
+  constructor(
+    private adminService: AdminService,
+    private authService: AuthService
+  ) {}
 
-  // Quick statistics
-  getActiveUserPercentage(): number {
-
-    if (this.stats.totalUsers === 0) {
-      return 0;
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user?.fullName) {
+      this.currentAdminName = user.fullName;
     }
-
-    return Math.round(
-      (this.stats.activeUsers / this.stats.totalUsers) * 100
-    );
-
+    this.loadDashboard();
   }
 
+  loadDashboard(): void {
+    this.isLoading = true;
+    this.adminService.getDashboard().subscribe({
+      next: (data) => {
+        if (data) {
+          this.stats = data;
+        }
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to load admin statistics.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  getActiveUserPercentage(): number {
+    if (!this.stats.totalUsers || this.stats.totalUsers === 0) {
+      return 0;
+    }
+    return Math.round((this.stats.activeUsers / this.stats.totalUsers) * 100);
+  }
 
   getInactiveUserPercentage(): number {
-
-    if (this.stats.totalUsers === 0) {
+    if (!this.stats.totalUsers || this.stats.totalUsers === 0) {
       return 0;
     }
-
-    return Math.round(
-      (this.stats.inactiveUsers / this.stats.totalUsers) * 100
-    );
-
+    return Math.round((this.stats.inactiveUsers / this.stats.totalUsers) * 100);
   }
-
-
-  getApplicationSuccessRate(): number {
-
-    if (this.stats.totalApplications === 0) {
-      return 0;
-    }
-
-    return Math.round(
-      (
-        this.recruitmentStats.acceptedApplications /
-        this.stats.totalApplications
-      ) * 100
-    );
-
-  }
-
-}
+}

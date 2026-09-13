@@ -1,13 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { Notification } from '../../../core/models/notification.model';
 
-interface NotificationItem {
+export interface EmployerNotificationItem {
+  id: number;
   title: string;
   message: string;
   time: string;
   icon: string;
   isRead: boolean;
+  raw: Notification;
 }
 
 @Component({
@@ -20,83 +25,62 @@ interface NotificationItem {
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css'
 })
-export class NotificationsComponent {
+export class NotificationsComponent implements OnInit {
+  notifications: EmployerNotificationItem[] = [];
+  isLoading = true;
 
-  notifications: NotificationItem[] = [
+  constructor(
+    private notificationService: NotificationService,
+    private authService: AuthService
+  ) {}
 
-    {
-      title: 'New Application Received',
-      message:
-        'A new candidate has applied for your Software Engineer vacancy.',
-      time: '1 hour ago',
-      icon: '📄',
-      isRead: false
-    },
-
-    {
-      title: 'New Candidate Match',
-      message:
-        'A candidate with a high matching score has been found for your vacancy.',
-      time: '3 hours ago',
-      icon: '⭐',
-      isRead: false
-    },
-
-    {
-      title: 'New Contact Request',
-      message:
-        'A candidate has sent a request to contact your company regarding a job opportunity.',
-      time: '1 day ago',
-      icon: '📩',
-      isRead: false
-    },
-
-    {
-      title: 'Application Status Updated',
-      message:
-        'An applicant status has been updated for your Frontend Developer vacancy.',
-      time: '2 days ago',
-      icon: '🔔',
-      isRead: true
-    },
-
-    {
-      title: 'Vacancy Reminder',
-      message:
-        'Your active vacancies are available for review and management.',
-      time: '3 days ago',
-      icon: '💼',
-      isRead: true
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.loadNotifications(user.userId);
+    } else {
+      this.isLoading = false;
     }
+  }
 
-  ];
+  loadNotifications(userId: number): void {
+    this.isLoading = true;
+    this.notificationService.getUserNotifications(userId).subscribe({
+      next: (data) => {
+        this.notifications = (data || []).map(n => ({
+          id: n.notificationId,
+          title: 'Notification Alert',
+          message: n.message,
+          time: n.createdAt ? new Date(n.createdAt).toLocaleDateString() : 'Recent',
+          icon: '🔔',
+          isRead: n.isRead,
+          raw: n
+        }));
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
+  }
 
-
-  // Get unread notification count
   getUnreadCount(): number {
-
-    return this.notifications.filter(
-      notification => !notification.isRead
-    ).length;
-
+    return this.notifications.filter(n => !n.isRead).length;
   }
 
-
-  // Mark one notification as read
-  markAsRead(notification: NotificationItem): void {
-
+  markAsRead(notification: EmployerNotificationItem): void {
     notification.isRead = true;
-
+    notification.raw.isRead = true;
+    this.notificationService.markAsRead(notification.raw).subscribe({
+      error: () => {}
+    });
   }
 
-
-  // Mark all notifications as read
   markAllAsRead(): void {
-
-    this.notifications.forEach(
-      notification => notification.isRead = true
-    );
-
+    this.notifications.forEach(item => {
+      if (!item.isRead) {
+        this.markAsRead(item);
+      }
+    });
   }
-
-}
+}

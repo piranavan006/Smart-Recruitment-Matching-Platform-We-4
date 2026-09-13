@@ -1,17 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-
-interface ContactRequest {
-  initials: string;
-  name: string;
-  jobTitle: string;
-  email: string;
-  location: string;
-  time: string;
-  message: string;
-  status: string;
-}
+import { ContactRequestService } from '../../../core/services/contact-request.service';
+import { ContactRequestResponse } from '../../../core/models/contact-request.model';
 
 @Component({
   selector: 'app-contact-requests',
@@ -23,52 +14,34 @@ interface ContactRequest {
   templateUrl: './contact-requests.component.html',
   styleUrl: './contact-requests.component.css'
 })
-export class ContactRequestsComponent {
+export class ContactRequestsComponent implements OnInit {
+  requests: ContactRequestResponse[] = [];
+  isLoading = true;
+  errorMessage = '';
 
-  requests: ContactRequest[] = [
-    {
-      initials: 'AK',
-      name: 'Arun Kumar',
-      jobTitle: 'Software Engineer',
-      email: 'arun@example.com',
-      location: 'Colombo',
-      time: '2 hours ago',
-      message: 'I would like to connect regarding the Software Engineer opportunity.',
-      status: 'Pending'
-    },
-    {
-      initials: 'SP',
-      name: 'Sathya Priya',
-      jobTitle: 'Frontend Developer',
-      email: 'sathya@example.com',
-      location: 'Jaffna',
-      time: '1 day ago',
-      message: 'I am interested in discussing the Frontend Developer position.',
-      status: 'Accepted'
-    },
-    {
-      initials: 'RK',
-      name: 'Ravi Kumar',
-      jobTitle: 'Software Engineer',
-      email: 'ravi@example.com',
-      location: 'Kandy',
-      time: '2 days ago',
-      message: 'I would like to learn more about the available position.',
-      status: 'Pending'
-    }
-  ];
+  constructor(private contactRequestService: ContactRequestService) {}
+
+  ngOnInit(): void {
+    this.loadRequests();
+  }
+
+  loadRequests(): void {
+    this.isLoading = true;
+    this.contactRequestService.getSent().subscribe({
+      next: (data) => {
+        this.requests = data || [];
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to load contact requests.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   getCount(status: string): number {
     return this.requests.filter(
-      request => request.status === status
+      r => r.status?.toLowerCase() === status.toLowerCase()
     ).length;
   }
-
-  updateStatus(
-    request: ContactRequest,
-    status: string
-  ): void {
-    request.status = status;
-  }
-
-}
+}

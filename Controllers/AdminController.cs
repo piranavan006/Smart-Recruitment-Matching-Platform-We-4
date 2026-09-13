@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.DTOs.Admin;
 using SmartRecruitment.API.DTOs.Users;
@@ -8,14 +8,101 @@ namespace SmartRecruitment.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = "Administrator,Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IEmployerService _employerService;
+        private readonly INotificationService _notificationService;
 
-        public AdminController(IUserService userService)
+        public AdminController(
+            IUserService userService,
+            IEmployerService employerService,
+            INotificationService notificationService)
         {
             _userService = userService;
+            _employerService = employerService;
+            _notificationService = notificationService;
+        }
+
+        // GET: api/Admin/users
+        [HttpGet("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
+        }
+
+        // GET: api/Admin/employers
+        [HttpGet("employers")]
+        public async Task<IActionResult> GetEmployers()
+        {
+            var employers = await _employerService.GetAllAsync();
+            return Ok(employers);
+        }
+
+        // PUT: api/Admin/employers/{id}/approval
+        [HttpPut("employers/{id:int}/approval")]
+        public async Task<IActionResult> UpdateEmployerApproval(
+            int id,
+            [FromBody] UpdateApprovalDto dto)
+        {
+            string status = !string.IsNullOrWhiteSpace(dto.Status)
+                ? dto.Status
+                : (dto.IsApproved ? "Approved" : "Pending");
+
+            bool isApproved = status.Equals("Approved", StringComparison.OrdinalIgnoreCase);
+
+            var updated = await _employerService.SetApprovalAsync(id, isApproved, status);
+            if (updated == null)
+            {
+                return NotFound(new
+                {
+                    message = "Employer profile not found."
+                });
+            }
+
+            if (int.TryParse(updated.UserId, out int userId))
+            {
+                try
+                {
+                    string notificationMsg;
+                    if (isApproved)
+                    {
+                        notificationMsg = $"Congratulations! Your company profile '{updated.CompanyName}' has been approved by the platform administrator. You can now post job vacancies and reach out to candidates.";
+                    }
+                    else if (status.Equals("Rejected", StringComparison.OrdinalIgnoreCase))
+                    {
+                        string reasonNote = !string.IsNullOrWhiteSpace(dto.Reason)
+                            ? $"Reason: {dto.Reason}"
+                            : "Profile details do not meet current platform verification criteria. Please update your profile information.";
+                        notificationMsg = $"Your company profile '{updated.CompanyName}' verification was not approved. {reasonNote}";
+                    }
+                    else
+                    {
+                        notificationMsg = $"Your company profile '{updated.CompanyName}' verification status has been changed to: {status}.";
+                    }
+
+                    await _notificationService.AddAsync(new Models.Notification
+                    {
+                        UserId = userId,
+                        Message = notificationMsg,
+                        IsRead = false,
+                        CreatedAt = DateTime.UtcNow
+                    });
+                }
+                catch { }
+            }
+
+            return Ok(new
+            {
+                message = isApproved
+                    ? "Employer profile approved successfully."
+                    : (status.Equals("Rejected", StringComparison.OrdinalIgnoreCase)
+                        ? "Employer profile rejected."
+                        : "Employer profile approval revoked."),
+                employer = updated
+            });
         }
 
         // GET: api/Admin/dashboard
@@ -42,7 +129,6 @@ namespace SmartRecruitment.API.Controllers
 
                 InactiveUsers = users.Count(u => !u.IsActive),
 
-                // Jobs count will be connected later
                 TotalJobs = 0
             };
 
@@ -84,4 +170,4 @@ namespace SmartRecruitment.API.Controllers
             });
         }
     }
-}
+}

@@ -4,32 +4,21 @@
 
     <!-- Header -->
     <div class="applications-header">
-
       <div>
         <span class="page-badge">JOB SEEKER</span>
-
         <h1>My Applications</h1>
-
-        <p>
-          Track and manage the jobs you have applied for.
-        </p>
+        <p>Track and manage your submitted job applications in real time.</p>
       </div>
 
-      <button
-        type="button"
-        class="back-button"
-        routerLink="/seeker">
+      <button type="button" class="back-button" routerLink="/seeker">
         ← Dashboard
       </button>
-
     </div>
 
     <!-- Statistics -->
     <div class="stats-grid">
-
       <div class="stat-card">
         <div class="stat-icon">📄</div>
-
         <div>
           <span>Total Applications</span>
           <strong>{{ applications.length }}</strong>
@@ -38,7 +27,6 @@
 
       <div class="stat-card">
         <div class="stat-icon">⏳</div>
-
         <div>
           <span>Pending</span>
           <strong>{{ getCount('Pending') }}</strong>
@@ -47,7 +35,6 @@
 
       <div class="stat-card">
         <div class="stat-icon">✅</div>
-
         <div>
           <span>Accepted</span>
           <strong>{{ getCount('Accepted') }}</strong>
@@ -56,119 +43,75 @@
 
       <div class="stat-card">
         <div class="stat-icon">❌</div>
-
         <div>
           <span>Rejected</span>
           <strong>{{ getCount('Rejected') }}</strong>
         </div>
       </div>
-
     </div>
 
     <!-- Applications -->
     <div class="applications-section">
-
       <div class="section-header">
-
         <div>
-          <h2>Recent Applications</h2>
-
-          <p>
-            View the current status of your applications.
-          </p>
+          <h2>Submitted Applications</h2>
+          <p>View the current hiring status of your applications.</p>
         </div>
-
       </div>
 
-      <!-- Application Cards -->
-      <div class="applications-list">
-
-        <div
-          class="application-card"
-          *ngFor="let application of applications">
-
-          <div class="application-main">
-
-            <div class="company-icon">
-              💼
-            </div>
-
-            <div class="application-info">
-
-              <h3>{{ application.jobTitle }}</h3>
-
-              <p class="company-name">
-                {{ application.company }}
-              </p>
-
-              <div class="application-details">
-
-                <span>
-                  📍 {{ application.location }}
-                </span>
-
-                <span>
-                  📅 Applied {{ application.appliedDate }}
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="application-status">
-
-            <span
-              class="status-badge"
-              [ngClass]="application.status.toLowerCase()">
-
-              {{ application.status }}
-
-            </span>
-
-            <button
-  type="button"
-  class="view-button"
-  routerLink="/seeker/job-details">
-
-  View Details
-
-</button>
-
-          </div>
-
-        </div>
-
+      <!-- Loading State -->
+      <div *ngIf="isLoading" style="text-align: center; padding: 2.5rem; color: #64748b;">
+        Loading your applications...
       </div>
 
       <!-- Empty State -->
-      <div
-        class="empty-state"
-        *ngIf="applications.length === 0">
-
-        <div class="empty-icon">
-          📄
-        </div>
-
-        <h3>No applications yet</h3>
-
-        <p>
-          You haven't applied for any jobs yet.
-          Start exploring available opportunities.
-        </p>
-
-        <button
-          type="button"
-          class="browse-button"
-          routerLink="/seeker/jobs">
-
-          Browse Jobs
-
+      <div *ngIf="!isLoading && applications.length === 0" style="text-align: center; padding: 3rem; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📄</div>
+        <h3>No applications submitted yet</h3>
+        <p style="color: #64748b; margin-bottom: 1.5rem;">Browse available job vacancies and apply to start your journey.</p>
+        <button type="button" routerLink="/seeker/jobs" style="background: #3b82f6; color: white; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+          Browse Jobs Now
         </button>
-
       </div>
 
+      <!-- Application Cards -->
+      <div class="applications-list" *ngIf="!isLoading && applications.length > 0">
+        <div class="application-card" *ngFor="let application of applications">
+
+          <div class="application-main">
+            <div class="company-icon">💼</div>
+
+            <div class="application-info">
+              <h3>{{ application.jobTitle || 'Job #' + application.jobId }}</h3>
+              <p class="company-name">{{ application.companyName || 'Verified Employer' }}</p>
+              <span class="location" *ngIf="application.location">📍 {{ application.location }}</span>
+              <span *ngIf="application.matchScore" style="margin-left: 0.75rem; background: #f0fdf4; color: #166534; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">
+                ⭐ {{ application.matchScore }}% Match Score
+              </span>
+            </div>
+          </div>
+
+          <div class="application-meta">
+            <div class="date">
+              <span>Applied on:</span>
+              <strong>{{ application.appliedAt | date:'mediumDate' }}</strong>
+            </div>
+
+            <span
+              class="status-badge"
+              [class.pending]="application.status.toLowerCase() === 'pending'"
+              [class.accepted]="application.status.toLowerCase() === 'accepted'"
+              [class.rejected]="application.status.toLowerCase() === 'rejected'">
+              {{ application.status }}
+            </span>
+
+            <a [routerLink]="['/seeker/job-details', application.jobId]" style="font-size: 0.85rem; color: #3b82f6; text-decoration: none; font-weight: 600; margin-left: 0.5rem;">
+              View Job →
+            </a>
+          </div>
+
+        </div>
+      </div>
     </div>
 
   </div>

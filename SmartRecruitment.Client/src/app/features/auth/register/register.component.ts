@@ -16,13 +16,12 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
-
   registerData = {
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: ''
+    role: 'JobSeeker'
   };
 
   isLoading = false;
@@ -35,7 +34,6 @@ export class RegisterComponent {
   ) {}
 
   onRegister(form: NgForm): void {
-
     if (form.invalid) {
       return;
     }
@@ -43,17 +41,13 @@ export class RegisterComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Check password confirmation
     if (this.registerData.password !== this.registerData.confirmPassword) {
-
       this.errorMessage = 'Passwords do not match.';
-
       return;
     }
 
     this.isLoading = true;
 
-    // Data sent to backend
     const registerRequest = {
       fullName: this.registerData.fullName,
       email: this.registerData.email,
@@ -62,49 +56,23 @@ export class RegisterComponent {
       role: this.registerData.role
     };
 
-    console.log('Register Request:', registerRequest);
-
     this.authService.register(registerRequest).subscribe({
-
       next: (response) => {
-
-        console.log('Registration successful:', response);
-
         this.isLoading = false;
+        this.successMessage = 'Registration successful! Redirecting to login...';
 
-        this.successMessage =
-          'Registration successful! You can now login.';
-
-        // Clear form
-        this.registerData = {
-          fullName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          role: ''
-        };
-
+        setTimeout(() => {
+          this.router.navigate(['/login']);
+        }, 1500);
       },
-
       error: (error) => {
-
-        console.error('Registration error:', error);
-
         this.isLoading = false;
-
-        if (error.status === 400) {
-
-          this.errorMessage =
-            error.error?.message ||
-            'Registration failed. Please check your details.';
-
+        if (error.status === 400 || error.status === 409) {
+          this.errorMessage = error.error?.message || 'Registration failed. Email may already be in use.';
         } else {
-
-          this.errorMessage =
-            'Unable to connect to the server. Please try again.';
+          this.errorMessage = 'Unable to connect to the server. Please try again.';
         }
       }
-
     });
   }
 }

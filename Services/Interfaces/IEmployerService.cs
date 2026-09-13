@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs;
+using SmartRecruitment.API.DTOs;
 
 namespace SmartRecruitment.API.Services.Interfaces
 {
@@ -14,5 +14,12 @@ namespace SmartRecruitment.API.Services.Interfaces
         Task<EmployerResponseDto?> UpdateProfileAsync(
             string userId,
             UpdateEmployerProfileDto dto);
+
+        Task<List<EmployerResponseDto>> GetAllAsync();
+
+        Task<EmployerResponseDto?> SetApprovalAsync(
+            int employerProfileId,
+            bool isApproved,
+            string? status = null);
     }
 }
