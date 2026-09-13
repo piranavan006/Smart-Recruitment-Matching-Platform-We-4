@@ -1,0 +1,826 @@
+<div class="admin-page">
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+
+      <div class="brand-logo">
+        S
+      </div>
+
+      <div>
+        <h1>SmartRecruitment</h1>
+        <span>ADMIN CONTROL</span>
+      </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+      <p class="nav-title">
+        MAIN MENU
+      </p>
+
+      <a class="nav-item active">
+        <span>📊</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/user-management">
+
+         <span>👥</span>
+         <span>User Management</span>
+
+    </a>
+
+      <a
+  routerLink="/admin/job-management"
+  class="nav-item">
+
+  <span>💼</span>
+  <span>Job Management</span>
+
+</a>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/analytics"
+  routerLinkActive="active">
+
+  <span>📈</span>
+  <span>Analytics</span>
+
+</a>
+
+
+      <p class="nav-title system-title">
+        SYSTEM
+      </p>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/notifications"
+  routerLinkActive="active">
+
+  <span>🔔</span>
+  <span>Notifications</span>
+
+</a>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/settings"
+  routerLinkActive="active">
+
+  <span>⚙️</span>
+  <span>Settings</span>
+
+</a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-profile">
+
+        <div class="admin-avatar">
+          AD
+        </div>
+
+        <div>
+          <strong>Administrator</strong>
+          <small>System Admin</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN AREA
+  ========================== -->
+
+  <main class="admin-main">
+
+
+    <!-- TOP BAR -->
+
+    <header class="admin-topbar">
+
+      <div>
+
+        <p class="breadcrumb">
+          CONTROL CENTER / DASHBOARD
+        </p>
+
+        <h2>
+          Platform Overview
+        </h2>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          type="button"
+          class="icon-button">
+
+          🔔
+
+          <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="top-admin">
+
+          <div class="top-avatar">
+            AD
+          </div>
+
+          <div>
+            <strong>Administrator</strong>
+            <small>Platform Manager</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         WELCOME BANNER
+    ========================== -->
+
+    <section class="admin-banner">
+
+      <div class="banner-content">
+
+        <span class="banner-label">
+          SYSTEM STATUS
+        </span>
+
+        <h3>
+          Recruitment platform is operational
+        </h3>
+
+        <p>
+          Monitor users, vacancies, applications and
+          recruitment activity from one central control center.
+        </p>
+
+      </div>
+
+
+      <div class="system-status">
+
+        <div class="status-pulse"></div>
+
+        <span>
+          All Systems Operational
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         KPI CARDS
+    ========================== -->
+
+    <section class="kpi-grid">
+
+
+      <!-- Total Users -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div class="kpi-icon users">
+            👥
+          </div>
+
+          <span class="kpi-label">
+            USERS
+          </span>
+
+        </div>
+
+        <strong class="kpi-number">
+          {{ stats.totalUsers }}
+        </strong>
+
+        <div class="kpi-footer">
+
+          <span class="positive">
+            ↑ {{ getActiveUserPercentage() }}%
+          </span>
+
+          <span>
+            active accounts
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Active Users -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div class="kpi-icon active">
+            ✓
+          </div>
+
+          <span class="kpi-label">
+            ACTIVE
+          </span>
+
+        </div>
+
+        <strong class="kpi-number">
+          {{ stats.activeUsers }}
+        </strong>
+
+        <div class="kpi-footer">
+
+          <span class="positive">
+            ● Online
+          </span>
+
+          <span>
+            user accounts
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Jobs -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div class="kpi-icon jobs">
+            💼
+          </div>
+
+          <span class="kpi-label">
+            VACANCIES
+          </span>
+
+        </div>
+
+        <strong class="kpi-number">
+          {{ stats.totalJobs }}
+        </strong>
+
+        <div class="kpi-footer">
+
+          <span class="neutral">
+            Platform
+          </span>
+
+          <span>
+            job postings
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Applications -->
+
+      <div class="kpi-card">
+
+        <div class="kpi-top">
+
+          <div class="kpi-icon applications">
+            📄
+          </div>
+
+          <span class="kpi-label">
+            APPLICATIONS
+          </span>
+
+        </div>
+
+        <strong class="kpi-number">
+          {{ stats.totalApplications }}
+        </strong>
+
+        <div class="kpi-footer">
+
+          <span class="positive">
+            ↑ Active
+          </span>
+
+          <span>
+            applications
+          </span>
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         ANALYTICS ROW
+    ========================== -->
+
+    <section class="analytics-grid">
+
+
+      <!-- Recruitment Performance -->
+
+      <div class="analytics-card performance-card">
+
+        <div class="card-heading">
+
+          <div>
+
+            <span class="card-label">
+              RECRUITMENT
+            </span>
+
+            <h3>
+              Matching Performance
+            </h3>
+
+          </div>
+
+          <span class="live-badge">
+            LIVE DATA
+          </span>
+
+        </div>
+
+
+        <div class="performance-content">
+
+
+          <div class="performance-circle">
+
+            <div class="circle-inner">
+
+              <strong>
+                {{ recruitmentStats.successfulMatches }}
+              </strong>
+
+              <span>
+                Matches
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="performance-details">
+
+
+            <div class="metric-row">
+
+              <div>
+                <span class="metric-dot success"></span>
+                Successful Matches
+              </div>
+
+              <strong>
+                {{ recruitmentStats.successfulMatches }}
+              </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+              <div>
+                <span class="metric-dot pending"></span>
+                Pending Applications
+              </div>
+
+              <strong>
+                {{ recruitmentStats.pendingApplications }}
+              </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+              <div>
+                <span class="metric-dot accepted"></span>
+                Accepted
+              </div>
+
+              <strong>
+                {{ recruitmentStats.acceptedApplications }}
+              </strong>
+
+            </div>
+
+
+            <div class="metric-row">
+
+              <div>
+                <span class="metric-dot rejected"></span>
+                Rejected
+              </div>
+
+              <strong>
+                {{ recruitmentStats.rejectedApplications }}
+              </strong>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- User Distribution -->
+
+      <div class="analytics-card">
+
+        <div class="card-heading">
+
+          <div>
+
+            <span class="card-label">
+              USER BASE
+            </span>
+
+            <h3>
+              Account Distribution
+            </h3>
+
+          </div>
+
+        </div>
+
+
+        <div class="user-distribution">
+
+
+          <div class="distribution-number">
+
+            <strong>
+              {{ stats.totalUsers }}
+            </strong>
+
+            <span>
+              Total Accounts
+            </span>
+
+          </div>
+
+
+          <div class="distribution-bars">
+
+
+            <div class="distribution-item">
+
+              <div class="distribution-info">
+
+                <span>
+                  Active Users
+                </span>
+
+                <strong>
+                  {{ stats.activeUsers }}
+                </strong>
+
+              </div>
+
+              <div class="progress-track">
+
+                <div
+                  class="progress-fill active-fill"
+                  [style.width.%]="getActiveUserPercentage()">
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="distribution-item">
+
+              <div class="distribution-info">
+
+                <span>
+                  Inactive Users
+                </span>
+
+                <strong>
+                  {{ stats.inactiveUsers }}
+                </strong>
+
+              </div>
+
+              <div class="progress-track">
+
+                <div
+                  class="progress-fill inactive-fill"
+                  [style.width.%]="getInactiveUserPercentage()">
+                </div>
+
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+        <div class="distribution-footer">
+
+          <span>
+            Active rate
+          </span>
+
+          <strong>
+            {{ getActiveUserPercentage() }}%
+          </strong>
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         MANAGEMENT + ACTIVITY
+    ========================== -->
+
+    <section class="bottom-grid">
+
+
+      <!-- Quick Management -->
+
+      <div class="management-card">
+
+        <div class="card-heading">
+
+          <div>
+
+            <span class="card-label">
+              ADMIN TOOLS
+            </span>
+
+            <h3>
+              Quick Management
+            </h3>
+
+          </div>
+
+        </div>
+
+
+        <div class="management-grid">
+
+
+          <button
+            type="button"
+            class="management-item">
+
+            <span class="management-icon">
+              👥
+            </span>
+
+            <div>
+
+              <strong>
+                Manage Users
+              </strong>
+
+              <small>
+                Activate or deactivate accounts
+              </small>
+
+            </div>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="management-item">
+
+            <span class="management-icon">
+              💼
+            </span>
+
+            <div>
+
+              <strong>
+                Manage Jobs
+              </strong>
+
+              <small>
+                Review platform vacancies
+              </small>
+
+            </div>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="management-item">
+
+            <span class="management-icon">
+              📊
+            </span>
+
+            <div>
+
+              <strong>
+                View Analytics
+              </strong>
+
+              <small>
+                Review platform statistics
+              </small>
+
+            </div>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </button>
+
+
+          <button
+            type="button"
+            class="management-item">
+
+            <span class="management-icon">
+              🔔
+            </span>
+
+            <div>
+
+              <strong>
+                Notifications
+              </strong>
+
+              <small>
+                Review system notifications
+              </small>
+
+            </div>
+
+            <span class="arrow">
+              →
+            </span>
+
+          </button>
+
+
+        </div>
+
+      </div>
+
+
+      <!-- Recent Activity -->
+
+      <div class="activity-card">
+
+        <div class="card-heading">
+
+          <div>
+
+            <span class="card-label">
+              ACTIVITY
+            </span>
+
+            <h3>
+              Recent System Activity
+            </h3>
+
+          </div>
+
+          <button
+            type="button"
+            class="view-all-btn">
+
+            View All
+
+          </button>
+
+        </div>
+
+
+        <div class="activity-list">
+
+
+          <div
+            class="activity-item"
+            *ngFor="let activity of activities">
+
+
+            <div
+              class="activity-icon"
+              [class.user-activity]="activity.type === 'user'"
+              [class.job-activity]="activity.type === 'job'"
+              [class.match-activity]="activity.type === 'match'"
+              [class.application-activity]="activity.type === 'application'"
+              [class.system-activity]="activity.type === 'system'">
+
+              {{ activity.icon }}
+
+            </div>
+
+
+            <div class="activity-details">
+
+              <strong>
+                {{ activity.title }}
+              </strong>
+
+              <p>
+                {{ activity.description }}
+              </p>
+
+              <span>
+                {{ activity.time }}
+              </span>
+
+            </div>
+
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         ADMIN FOOTER
+    ========================== -->
+
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Secure Access
+      </span>
+
+    </footer>
+
+
+  </main>
+
+</div>

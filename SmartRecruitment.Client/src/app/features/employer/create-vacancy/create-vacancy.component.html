@@ -1,0 +1,492 @@
+<div class="vacancy-page">
+
+  <!-- Header -->
+  <header class="page-header">
+
+    <div class="header-left">
+      <div class="brand-icon">S</div>
+
+      <div>
+        <h1>SmartRecruitment</h1>
+        <span>Employer Portal</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <span class="role-badge">EMPLOYER</span>
+
+      <div class="profile-box">
+        <div class="profile-avatar">EM</div>
+
+        <div>
+          <strong>Employer</strong>
+          <small>Company Account</small>
+        </div>
+      </div>
+    </div>
+
+  </header>
+
+
+  <!-- Main Content -->
+  <main class="vacancy-content">
+
+    <!-- Page Title -->
+    <div class="page-title">
+
+      <a routerLink="/employer" class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <p class="page-label">VACANCY MANAGEMENT</p>
+
+      <h2>Create a New Vacancy</h2>
+
+      <p>
+        Create a job vacancy and define the skills and requirements
+        needed to find the right candidates.
+      </p>
+
+    </div>
+
+
+    <!-- Messages -->
+
+    <div
+      class="success-message"
+      *ngIf="successMessage">
+
+      ✓ {{ successMessage }}
+
+    </div>
+
+
+    <div
+      class="error-message"
+      *ngIf="errorMessage">
+
+      ⚠ {{ errorMessage }}
+
+    </div>
+
+
+    <!-- Vacancy Form -->
+    <form
+      [formGroup]="vacancyForm"
+      (ngSubmit)="onSubmit()">
+
+
+      <!-- Basic Information -->
+      <section class="form-section">
+
+        <div class="section-title">
+
+          <div class="section-icon">💼</div>
+
+          <div>
+            <h3>Basic Information</h3>
+
+            <p>
+              Enter the main details about the job vacancy.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+          <!-- Job Title -->
+          <div class="form-group full-width">
+
+            <label for="title">
+              Job Title <span>*</span>
+            </label>
+
+            <input
+              id="title"
+              type="text"
+              formControlName="title"
+              placeholder="e.g. Software Engineer"
+            />
+
+            <small
+              class="field-error"
+              *ngIf="isInvalid('title')">
+
+              Job title is required and must contain at least
+              3 characters.
+
+            </small>
+
+          </div>
+
+
+          <!-- Location -->
+          <div class="form-group">
+
+            <label for="location">
+              Location <span>*</span>
+            </label>
+
+            <input
+              id="location"
+              type="text"
+              formControlName="location"
+              placeholder="e.g. Colombo / Remote"
+            />
+
+            <small
+              class="field-error"
+              *ngIf="isInvalid('location')">
+
+              Location is required.
+
+            </small>
+
+          </div>
+
+
+          <!-- Job Type -->
+          <div class="form-group">
+
+            <label for="jobType">
+              Job Type <span>*</span>
+            </label>
+
+            <select
+              id="jobType"
+              formControlName="jobType">
+
+              <option value="Full Time">
+                Full Time
+              </option>
+
+              <option value="Part Time">
+                Part Time
+              </option>
+
+              <option value="Contract">
+                Contract
+              </option>
+
+              <option value="Internship">
+                Internship
+              </option>
+
+              <option value="Remote">
+                Remote
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- Description -->
+          <div class="form-group full-width">
+
+            <label for="description">
+              Job Description <span>*</span>
+            </label>
+
+            <textarea
+              id="description"
+              rows="6"
+              formControlName="description"
+              placeholder="Describe the responsibilities, duties and expectations for this position...">
+            </textarea>
+
+            <small
+              class="field-error"
+              *ngIf="isInvalid('description')">
+
+              Description is required and must contain at least
+              20 characters.
+
+            </small>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Experience & Salary -->
+      <section class="form-section">
+
+        <div class="section-title">
+
+          <div class="section-icon">📊</div>
+
+          <div>
+            <h3>Experience & Salary</h3>
+
+            <p>
+              Define the experience level and expected salary range.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+          <!-- Minimum Experience -->
+          <div class="form-group">
+
+            <label for="experienceMin">
+              Minimum Experience (Years) <span>*</span>
+            </label>
+
+            <input
+              id="experienceMin"
+              type="number"
+              min="0"
+              formControlName="experienceMin"
+              placeholder="0"
+            />
+
+          </div>
+
+
+          <!-- Maximum Experience -->
+          <div class="form-group">
+
+            <label for="experienceMax">
+              Maximum Experience (Years) <span>*</span>
+            </label>
+
+            <input
+              id="experienceMax"
+              type="number"
+              min="0"
+              formControlName="experienceMax"
+              placeholder="5"
+            />
+
+          </div>
+
+
+          <!-- Experience Error -->
+          <div
+            class="range-error full-width"
+            *ngIf="isExperienceInvalid()">
+
+            Maximum experience must be greater than or equal
+            to minimum experience.
+
+          </div>
+
+
+          <!-- Minimum Salary -->
+          <div class="form-group">
+
+            <label for="salaryMin">
+              Minimum Salary (Rs.) <span>*</span>
+            </label>
+
+            <input
+              id="salaryMin"
+              type="number"
+              min="0"
+              formControlName="salaryMin"
+              placeholder="50000"
+            />
+
+          </div>
+
+
+          <!-- Maximum Salary -->
+          <div class="form-group">
+
+            <label for="salaryMax">
+              Maximum Salary (Rs.) <span>*</span>
+            </label>
+
+            <input
+              id="salaryMax"
+              type="number"
+              min="0"
+              formControlName="salaryMax"
+              placeholder="100000"
+            />
+
+          </div>
+
+
+          <!-- Salary Error -->
+          <div
+            class="range-error full-width"
+            *ngIf="isSalaryInvalid()">
+
+            Maximum salary must be greater than or equal
+            to minimum salary.
+
+          </div>
+
+
+          <!-- Deadline -->
+          <div class="form-group full-width">
+
+            <label for="applicationDeadline">
+              Application Deadline <span>*</span>
+            </label>
+
+            <input
+              id="applicationDeadline"
+              type="date"
+              formControlName="applicationDeadline"
+            />
+
+            <small
+              class="field-error"
+              *ngIf="isDeadlineInvalid()">
+
+              Application deadline must be today or a future date.
+
+            </small>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Required Skills -->
+      <section class="form-section">
+
+        <div class="section-title">
+
+          <div class="section-icon">🧠</div>
+
+          <div>
+            <h3>Required Skills</h3>
+
+            <p>
+              Add the skills required for this vacancy and assign
+              a weight to each skill.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div
+          class="skills-container"
+          formArrayName="requiredSkills">
+
+
+          <!-- Skill Rows -->
+          <div
+            class="skill-row"
+            *ngFor="
+              let skillGroup of requiredSkills.controls;
+              let i = index
+            "
+            [formGroupName]="i">
+
+
+            <!-- Skill -->
+            <div class="skill-field">
+
+              <label>
+                Skill {{ i + 1 }} <span>*</span>
+              </label>
+
+              <input
+                type="text"
+                formControlName="skill"
+                placeholder="e.g. Angular"
+              />
+
+            </div>
+
+
+            <!-- Weight -->
+            <div class="weight-field">
+
+              <label>
+                Weight (%)
+              </label>
+
+              <input
+                type="number"
+                min="1"
+                max="100"
+                formControlName="weight"
+                placeholder="10"
+              />
+
+            </div>
+
+
+            <!-- Remove -->
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removeSkill(i)"
+              [disabled]="requiredSkills.length === 1">
+
+              ✕ Remove
+
+            </button>
+
+          </div>
+
+
+          <!-- Add Skill -->
+          <button
+            type="button"
+            class="add-skill-btn"
+            (click)="addSkill()">
+
+            + Add Another Skill
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="cancel-btn"
+          routerLink="/employer">
+
+          Cancel
+
+        </button>
+
+
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isSubmitting">
+
+          <span *ngIf="!isSubmitting">
+            ✓ Create Vacancy
+          </span>
+
+          <span *ngIf="isSubmitting">
+            Creating...
+          </span>
+
+        </button>
+
+      </div>
+
+
+    </form>
+
+  </main>
+
+</div>

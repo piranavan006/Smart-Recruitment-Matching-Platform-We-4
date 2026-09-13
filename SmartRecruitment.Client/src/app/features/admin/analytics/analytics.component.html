@@ -1,0 +1,635 @@
+<div class="analytics-page">
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-logo">S</div>
+
+      <div>
+        <h2>SmartRecruitment</h2>
+        <span>ADMIN CONTROL</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section-title">
+        MAIN MENU
+      </div>
+
+      <a
+        class="nav-item"
+        routerLink="/admin">
+
+        <span>📊</span>
+        <span>Dashboard</span>
+
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/user-management">
+
+        <span>👥</span>
+        <span>User Management</span>
+
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/admin/job-management">
+
+        <span>💼</span>
+        <span>Job Management</span>
+
+      </a>
+
+      <a
+        class="nav-item active"
+        routerLink="/admin/analytics">
+
+        <span>📈</span>
+        <span>Analytics</span>
+
+      </a>
+
+      <div class="nav-section-title system-title">
+        SYSTEM
+      </div>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/notifications"
+  routerLinkActive="active">
+
+  <span>🔔</span>
+  <span>Notifications</span>
+
+</a>
+
+      <a
+  class="nav-item"
+  routerLink="/admin/settings"
+  routerLinkActive="active">
+
+  <span>⚙️</span>
+  <span>Settings</span>
+
+</a>
+
+    </nav>
+
+    <div class="admin-profile">
+
+      <div class="profile-avatar">
+        AD
+      </div>
+
+      <div>
+        <strong>Administrator</strong>
+        <span>System Admin</span>
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ================= MAIN CONTENT ================= -->
+  <main class="admin-main">
+
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+
+      <div>
+        <span class="breadcrumb">
+          CONTROL CENTER / ANALYTICS
+        </span>
+
+        <h1>Platform Analytics</h1>
+
+        <p>
+          Monitor recruitment activity, platform usage and system performance.
+        </p>
+      </div>
+
+      <div class="live-status">
+        <span class="status-dot"></span>
+        LIVE DATA
+      </div>
+
+    </header>
+
+
+    <!-- ================= OVERVIEW ================= -->
+    <section class="analytics-overview">
+
+      <div class="overview-card">
+
+        <div class="card-icon users-icon">
+          👥
+        </div>
+
+        <div class="card-content">
+          <span>Total Users</span>
+
+          <strong>
+            {{ overview.totalUsers }}
+          </strong>
+
+          <small>
+            {{ getActiveUserPercentage() }}% active accounts
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="overview-card">
+
+        <div class="card-icon jobs-icon">
+          💼
+        </div>
+
+        <div class="card-content">
+          <span>Total Vacancies</span>
+
+          <strong>
+            {{ overview.totalJobs }}
+          </strong>
+
+          <small>
+            Active platform postings
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="overview-card">
+
+        <div class="card-icon applications-icon">
+          📄
+        </div>
+
+        <div class="card-content">
+          <span>Applications</span>
+
+          <strong>
+            {{ overview.totalApplications }}
+          </strong>
+
+          <small>
+            Total applications received
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="overview-card">
+
+        <div class="card-icon match-icon">
+          ⭐
+        </div>
+
+        <div class="card-content">
+          <span>Matched Candidates</span>
+
+          <strong>
+            {{ overview.matchedCandidates }}
+          </strong>
+
+          <small>
+            {{ getMatchRate() }}% of applications
+          </small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= PERFORMANCE ================= -->
+    <section class="analytics-grid">
+
+      <!-- APPLICATION ACTIVITY -->
+      <div class="analytics-card activity-card">
+
+        <div class="section-header">
+
+          <div>
+            <span class="section-label">
+              PLATFORM ACTIVITY
+            </span>
+
+            <h2>Application Activity</h2>
+
+            <p>
+              Monthly recruitment activity across the platform.
+            </p>
+          </div>
+
+          <div class="period-selector">
+
+  <select
+    [(ngModel)]="selectedPeriod"
+    aria-label="Analytics time period">
+
+    <option
+      *ngFor="let period of periods"
+      [value]="period">
+
+      Last {{ period }}
+
+    </option>
+
+  </select>
+
+  <span class="select-arrow">⌄</span>
+
+</div>
+
+        </div>
+
+
+        <div class="chart-area">
+
+          <div class="chart-y-axis">
+            <span>150</span>
+            <span>120</span>
+            <span>90</span>
+            <span>60</span>
+            <span>30</span>
+            <span>0</span>
+          </div>
+
+
+          <div class="bar-chart">
+
+            <div
+              class="chart-column"
+              *ngFor="let data of monthlyData">
+
+              <div class="bar-value">
+                {{ data.applications }}
+              </div>
+
+              <div
+                class="chart-bar"
+                [style.height.%]="
+                  getApplicationBarHeight(data.applications)
+                ">
+              </div>
+
+              <span class="bar-label">
+                {{ data.month }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="chart-legend">
+
+          <div>
+            <span class="legend-dot users-dot"></span>
+            Users
+          </div>
+
+          <div>
+            <span class="legend-dot jobs-dot"></span>
+            Jobs
+          </div>
+
+          <div>
+            <span class="legend-dot applications-dot"></span>
+            Applications
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- MATCHING PERFORMANCE -->
+      <div class="analytics-card matching-card">
+
+        <div class="section-header">
+
+          <div>
+            <span class="section-label">
+              RECRUITMENT
+            </span>
+
+            <h2>Matching Performance</h2>
+
+            <p>
+              Overview of successful recruitment matches.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="match-highlight">
+
+          <div class="match-circle">
+            <strong>
+              {{ getSuccessRate() }}%
+            </strong>
+
+            <span>
+              Success Rate
+            </span>
+          </div>
+
+          <div class="match-summary">
+
+            <div>
+              <strong>
+                {{ overview.successfulMatches }}
+              </strong>
+
+              <span>
+                Successful Matches
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                {{ overview.matchedCandidates }}
+              </strong>
+
+              <span>
+                Matched Candidates
+              </span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="performance-list">
+
+          <div class="performance-item">
+
+            <div class="performance-info">
+              <span>Matched Candidates</span>
+              <strong>{{ overview.matchedCandidates }}</strong>
+            </div>
+
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                [style.width.%]="getMatchRate()">
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="performance-item">
+
+            <div class="performance-info">
+              <span>Successful Matches</span>
+              <strong>{{ overview.successfulMatches }}</strong>
+            </div>
+
+            <div class="progress-track">
+              <div
+                class="progress-fill success"
+                [style.width.%]="getSuccessRate()">
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="analytics-note">
+          <span>ℹ️</span>
+          Match results are generated by the recruitment matching system.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= DISTRIBUTION ================= -->
+    <section class="analytics-grid bottom-grid">
+
+      <!-- USER DISTRIBUTION -->
+      <div class="analytics-card">
+
+        <div class="section-header">
+
+          <div>
+            <span class="section-label">
+              USER BASE
+            </span>
+
+            <h2>Account Distribution</h2>
+
+            <p>
+              Platform users grouped by account type.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="distribution-list">
+
+          <div
+            class="distribution-item"
+            *ngFor="let item of userDistribution">
+
+            <div class="distribution-top">
+
+              <span>
+                {{ item.label }}
+              </span>
+
+              <strong>
+                {{ item.value }}
+              </strong>
+
+            </div>
+
+            <div class="distribution-track">
+
+              <div
+                class="distribution-fill"
+                [style.width.%]="item.percentage">
+              </div>
+
+            </div>
+
+            <small>
+              {{ item.percentage }}% of total users
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- APPLICATION STATUS -->
+      <div class="analytics-card">
+
+        <div class="section-header">
+
+          <div>
+            <span class="section-label">
+              APPLICATIONS
+            </span>
+
+            <h2>Application Status</h2>
+
+            <p>
+              Current application distribution.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="status-list">
+
+          <div
+            class="status-row"
+            *ngFor="let item of applicationStatus">
+
+            <div class="status-left">
+
+              <span class="status-indicator"></span>
+
+              <span>
+                {{ item.label }}
+              </span>
+
+            </div>
+
+            <div class="status-right">
+
+              <strong>
+                {{ item.value }}
+              </strong>
+
+              <span>
+                {{ item.percentage }}%
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="total-applications">
+
+          <span>Total Applications</span>
+
+          <strong>
+            {{ overview.totalApplications }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= SYSTEM SUMMARY ================= -->
+    <section class="system-summary">
+
+      <div class="summary-header">
+
+        <div>
+          <span class="section-label">
+            SYSTEM SUMMARY
+          </span>
+
+          <h2>Platform Health</h2>
+        </div>
+
+        <span class="health-badge">
+          ● Operational
+        </span>
+
+      </div>
+
+
+      <div class="health-items">
+
+        <div class="health-item">
+          <span class="health-icon">👥</span>
+
+          <div>
+            <strong>{{ overview.activeUsers }}</strong>
+            <span>Active Users</span>
+          </div>
+        </div>
+
+
+        <div class="health-item">
+          <span class="health-icon">💼</span>
+
+          <div>
+            <strong>{{ overview.totalJobs }}</strong>
+            <span>Job Vacancies</span>
+          </div>
+        </div>
+
+
+        <div class="health-item">
+          <span class="health-icon">📄</span>
+
+          <div>
+            <strong>{{ overview.totalApplications }}</strong>
+            <span>Applications</span>
+          </div>
+        </div>
+
+
+        <div class="health-item">
+          <span class="health-icon">⭐</span>
+
+          <div>
+            <strong>{{ overview.matchedCandidates }}</strong>
+            <span>Matched Candidates</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Analytics
+      </span>
+
+    </footer>
+
+  </main>
+
+</div>

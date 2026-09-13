@@ -1,0 +1,459 @@
+/* =========================================
+   SMART RECRUITMENT - VERIFY OTP
+========================================= */
+
+.verify-otp-page {
+  min-height: 100vh;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+  box-sizing: border-box;
+
+  background: #f4f6fb;
+
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+
+/* =========================================
+   MAIN CARD
+========================================= */
+
+.verify-otp-card {
+  position: relative;
+
+  width: 100%;
+  max-width: 1100px;
+  min-height: 620px;
+
+  box-sizing: border-box;
+
+  padding: 70px 70px 60px 48%;
+
+  background: #ffffff;
+
+  border-radius: 28px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 25px 70px rgba(15, 23, 42, 0.12);
+}
+
+
+/* =========================================
+   LEFT BRAND SECTION
+========================================= */
+
+.verify-otp-card::before {
+  content: "Smart Recruitment\A\A• Smart Matching\A• Better Careers";
+
+  white-space: pre-line;
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 43%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  padding: 50px;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.6;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(129, 140, 248, 0.45),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(192, 132, 252, 0.35),
+      transparent 35%
+    ),
+    linear-gradient(
+      145deg,
+      #172554,
+      #312e81,
+      #7c3aed
+    );
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
+.verify-otp-card h1 {
+  width: 100%;
+
+  margin: 0 0 10px;
+
+  color: #111827;
+
+  font-size: 36px;
+
+  font-weight: 800;
+
+  line-height: 1.2;
+
+  letter-spacing: -1px;
+}
+
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
+.verify-otp-card p {
+  color: #64748b;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+
+  margin-top: 0;
+}
+
+
+/* =========================================
+   FORM
+========================================= */
+
+.verify-otp-card form {
+  width: 100%;
+
+  margin-top: 30px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   FORM GROUP
+========================================= */
+
+.verify-otp-card .form-group {
+  width: 100%;
+
+  margin-bottom: 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   LABEL
+========================================= */
+
+.verify-otp-card label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #1e293b;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   INPUT
+========================================= */
+
+.verify-otp-card input {
+  width: 100%;
+
+  height: 54px;
+
+  padding: 0 17px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #dbe2ea;
+
+  border-radius: 14px;
+
+  outline: none;
+
+  background: #f8fafc;
+
+  color: #0f172a;
+
+  font-size: 15px;
+
+  transition: all 0.2s ease;
+}
+
+
+.verify-otp-card input::placeholder {
+  color: #94a3b8;
+}
+
+
+.verify-otp-card input:hover {
+  border-color: #a5b4fc;
+}
+
+
+.verify-otp-card input:focus {
+  background: #ffffff;
+
+  border-color: #6366f1;
+
+  box-shadow:
+    0 0 0 4px rgba(99, 102, 241, 0.10);
+}
+
+
+/* =========================================
+   OTP INPUT
+========================================= */
+
+.verify-otp-card input[name="otp"] {
+  letter-spacing: 6px;
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  text-align: center;
+}
+
+
+/* =========================================
+   ERROR MESSAGE
+========================================= */
+
+.verify-otp-card .error-message {
+  width: 100%;
+
+  margin-top: 5px;
+
+  padding: 10px 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #dc2626;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   SUCCESS MESSAGE
+========================================= */
+
+.verify-otp-card .success-message {
+  width: 100%;
+
+  margin-top: 5px;
+
+  padding: 10px 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  background: #f0fdf4;
+
+  border: 1px solid #bbf7d0;
+
+  color: #15803d;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   VERIFY BUTTON
+========================================= */
+
+.verify-otp-card button[type="submit"] {
+  width: 100%;
+
+  height: 54px;
+
+  margin-top: 5px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #6366f1,
+      #8b5cf6
+    );
+
+  color: #ffffff;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 10px 25px rgba(99, 102, 241, 0.25);
+
+  transition: all 0.2s ease;
+}
+
+
+.verify-otp-card button[type="submit"]:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 30px rgba(99, 102, 241, 0.30);
+}
+
+
+.verify-otp-card button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+
+.verify-otp-card button[type="submit"]:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =========================================
+   BACK LINK
+========================================= */
+
+.back-login {
+  width: 100%;
+
+  margin-top: 28px;
+
+  text-align: center;
+
+  font-size: 14px;
+}
+
+
+.back-login a {
+  color: #4f46e5;
+
+  font-weight: 700;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+
+.back-login a:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 800px) {
+
+  .verify-otp-page {
+    padding: 20px 15px;
+  }
+
+  .verify-otp-card {
+    max-width: 520px;
+
+    min-height: auto;
+
+    padding: 0 30px 40px;
+  }
+
+  .verify-otp-card::before {
+    position: relative;
+
+    width: calc(100% + 60px);
+
+    height: 180px;
+
+    margin-left: -30px;
+
+    margin-bottom: 35px;
+
+    padding: 25px;
+
+    font-size: 26px;
+
+    line-height: 1.5;
+  }
+
+  .verify-otp-card h1 {
+    font-size: 30px;
+  }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 450px) {
+
+  .verify-otp-page {
+    padding: 10px;
+  }
+
+  .verify-otp-card {
+    padding-left: 22px;
+
+    padding-right: 22px;
+  }
+
+  .verify-otp-card::before {
+    width: calc(100% + 44px);
+
+    margin-left: -22px;
+
+    font-size: 23px;
+  }
+}

@@ -1,0 +1,198 @@
+<div class="vacancies-page">
+
+  <div class="vacancies-container">
+
+    <!-- Header -->
+    <div class="vacancies-header">
+
+      <div>
+        <span class="page-badge">EMPLOYER</span>
+
+        <h1>My Vacancies</h1>
+
+        <p>
+          View and manage your company's job vacancies.
+        </p>
+      </div>
+
+      <a
+        routerLink="/employer"
+        class="back-button">
+        ← Dashboard
+      </a>
+
+    </div>
+
+    <!-- Summary -->
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+
+        <div>
+          <span>Total Vacancies</span>
+          <strong>{{ vacancies.length }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🟢</div>
+
+        <div>
+          <span>Active</span>
+          <strong>{{ getCount('Active') }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏸️</div>
+
+        <div>
+          <span>Closed</span>
+          <strong>{{ getCount('Closed') }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+
+        <div>
+          <span>Total Applicants</span>
+          <strong>{{ getTotalApplicants() }}</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Vacancy Section -->
+    <div class="vacancies-section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Job Vacancies</h2>
+
+          <p>
+            Manage your current and previous job postings.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="create-button">
+          + Create Vacancy
+        </button>
+
+      </div>
+
+      <!-- Vacancy List -->
+      <div class="vacancies-list">
+
+        <div
+          class="vacancy-card"
+          *ngFor="let vacancy of vacancies">
+
+          <div class="vacancy-main">
+
+            <div class="vacancy-icon">
+              💼
+            </div>
+
+            <div class="vacancy-info">
+
+              <h3>{{ vacancy.title }}</h3>
+
+              <p class="company-name">
+                {{ vacancy.company }}
+              </p>
+
+              <div class="vacancy-details">
+
+                <span>
+                  📍 {{ vacancy.location }}
+                </span>
+
+                <span>
+                  💰 {{ vacancy.salary }}
+                </span>
+
+                <span>
+                  🕒 {{ vacancy.type }}
+                </span>
+
+                <span>
+                  👥 {{ vacancy.applicants }} Applicants
+                </span>
+
+              </div>
+
+              <div class="skills-list">
+
+                <span
+                  class="skill-tag"
+                  *ngFor="let skill of vacancy.skills">
+                  {{ skill }}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="vacancy-actions">
+
+            <span
+              class="status-badge"
+              [ngClass]="vacancy.status.toLowerCase()">
+              {{ vacancy.status }}
+            </span>
+
+            <button
+              type="button"
+              class="edit-button">
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="close-button"
+              *ngIf="vacancy.status === 'Active'">
+              Close
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div
+        class="empty-state"
+        *ngIf="vacancies.length === 0">
+
+        <div class="empty-icon">
+          📋
+        </div>
+
+        <h3>No vacancies yet</h3>
+
+        <p>
+          Create your first job vacancy to start receiving
+          applications from suitable candidates.
+        </p>
+
+        <button
+          type="button"
+          class="create-button">
+          + Create Your First Vacancy
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,188 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(17, 20, 38, 0.58);
+
+  z-index: 9999;
+
+  animation: fadeIn 0.2s ease;
+}
+
+.confirmation-modal {
+  width: 100%;
+  max-width: 410px;
+
+  padding: 28px;
+
+  box-sizing: border-box;
+
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 25px 70px rgba(15, 20, 40, 0.22);
+
+  animation: slideUp 0.22s ease;
+}
+
+.modal-icon {
+  width: 52px;
+  height: 52px;
+
+  margin: 0 auto 17px;
+
+  border-radius: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f0efff;
+
+  font-size: 23px;
+
+  text-align: center;
+}
+
+.modal-content {
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin: 0;
+
+  color: #292f43;
+
+  font-size: 17px;
+  font-weight: 850;
+}
+
+.modal-content p {
+  margin: 9px auto 0;
+
+  max-width: 330px;
+
+  color: #858c9e;
+
+  font-size: 10px;
+
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  margin-top: 23px;
+}
+
+.cancel-button,
+.confirm-button {
+  min-width: 105px;
+  height: 38px;
+
+  padding: 0 15px;
+
+  border-radius: 9px;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+.cancel-button {
+  border: 1px solid #dfe2e9;
+
+  background: #ffffff;
+
+  color: #737b8e;
+}
+
+.cancel-button:hover {
+  background: #f7f8fa;
+}
+
+.confirm-button {
+  border: none;
+
+  background: #6252e9;
+
+  color: #ffffff;
+
+  box-shadow:
+    0 6px 15px rgba(98, 82, 233, 0.18);
+}
+
+.confirm-button:hover {
+  transform: translateY(-1px);
+}
+
+.confirm-button.danger-button {
+  background: #d95363;
+
+  box-shadow:
+    0 6px 15px rgba(217, 83, 99, 0.16);
+}
+
+.confirm-button.danger-button:hover {
+  background: #c74656;
+}
+
+
+/* ANIMATIONS */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 480px) {
+
+  .confirmation-modal {
+    padding: 22px 18px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel-button,
+  .confirm-button {
+    width: 100%;
+  }
+
+}

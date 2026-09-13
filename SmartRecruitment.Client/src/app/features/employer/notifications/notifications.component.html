@@ -1,0 +1,226 @@
+<div class="notifications-page">
+
+  <!-- Header -->
+  <header class="page-header">
+
+    <div class="header-left">
+
+      <div class="brand-icon">S</div>
+
+      <div>
+        <h1>SmartRecruitment</h1>
+        <span>Employer Portal</span>
+      </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <span class="role-badge">EMPLOYER</span>
+
+      <div class="profile-box">
+
+        <div class="profile-avatar">EM</div>
+
+        <div>
+          <strong>Employer</strong>
+          <small>Company Account</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- Main Content -->
+  <main class="notifications-content">
+
+
+    <!-- Page Title -->
+    <div class="page-title">
+
+      <a
+        routerLink="/employer"
+        class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <p class="page-label">
+        NOTIFICATION CENTER
+      </p>
+
+      <div class="title-row">
+
+        <div>
+          <h2>Notifications</h2>
+
+          <p>
+            Stay updated with applications, candidate matches
+            and contact requests.
+          </p>
+        </div>
+
+
+        <!-- Unread Count -->
+        <div class="unread-summary">
+
+          <span>Unread</span>
+
+          <strong>
+            {{ getUnreadCount() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- Notification Toolbar -->
+    <section class="notification-toolbar">
+
+      <div class="toolbar-info">
+
+        <span class="toolbar-icon">🔔</span>
+
+        <div>
+          <strong>Your Notifications</strong>
+
+          <p>
+            You have {{ getUnreadCount() }} unread notification(s).
+          </p>
+        </div>
+
+      </div>
+
+
+      <button
+        type="button"
+        class="mark-all-btn"
+        (click)="markAllAsRead()"
+        [disabled]="getUnreadCount() === 0">
+
+        ✓ Mark All as Read
+
+      </button>
+
+    </section>
+
+
+    <!-- Notification List -->
+    <section class="notification-list">
+
+
+      <!-- Notification Card -->
+      <div
+        class="notification-card"
+        *ngFor="let notification of notifications"
+        [class.unread]="!notification.isRead">
+
+
+        <!-- Icon -->
+        <div class="notification-icon">
+
+          {{ notification.icon }}
+
+        </div>
+
+
+        <!-- Content -->
+        <div class="notification-content">
+
+          <div class="notification-top">
+
+            <div>
+
+              <h3>
+                {{ notification.title }}
+              </h3>
+
+              <span
+                class="unread-badge"
+                *ngIf="!notification.isRead">
+
+                NEW
+
+              </span>
+
+            </div>
+
+            <span class="notification-time">
+              {{ notification.time }}
+            </span>
+
+          </div>
+
+
+          <p class="notification-message">
+            {{ notification.message }}
+          </p>
+
+
+          <!-- Actions -->
+          <div class="notification-actions">
+
+            <button
+              type="button"
+              class="read-btn"
+              *ngIf="!notification.isRead"
+              (click)="markAsRead(notification)">
+
+              ✓ Mark as Read
+
+            </button>
+
+            <span
+              class="read-status"
+              *ngIf="notification.isRead">
+
+              ✓ Read
+
+            </span>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+      <!-- Empty State -->
+      <div
+        class="empty-state"
+        *ngIf="notifications.length === 0">
+
+        <div class="empty-icon">
+          🔔
+        </div>
+
+        <h3>No Notifications</h3>
+
+        <p>
+          You don't have any notifications at the moment.
+        </p>
+
+        <a
+          routerLink="/employer"
+          class="back-dashboard-btn">
+
+          Back to Dashboard
+
+        </a>
+
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+</div>

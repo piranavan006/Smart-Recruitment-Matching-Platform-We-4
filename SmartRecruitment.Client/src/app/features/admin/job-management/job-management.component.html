@@ -1,0 +1,779 @@
+<div class="job-management-page">
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+
+      <div class="brand-logo">
+        S
+      </div>
+
+      <div>
+        <h1>SmartRecruitment</h1>
+        <span>ADMIN CONTROL</span>
+      </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+      <p class="nav-title">
+        MAIN MENU
+      </p>
+
+
+      <a
+        routerLink="/admin"
+        class="nav-item">
+
+        <span>📊</span>
+        <span>Dashboard</span>
+
+      </a>
+
+
+      <a
+        routerLink="/admin/user-management"
+        class="nav-item">
+
+        <span>👥</span>
+        <span>User Management</span>
+
+      </a>
+
+
+      <a
+        class="nav-item active">
+
+        <span>💼</span>
+        <span>Job Management</span>
+
+      </a>
+
+
+       <a
+  class="nav-item"
+  routerLink="/admin/analytics"
+  routerLinkActive="active">
+
+  <span>📈</span>
+  <span>Analytics</span>
+
+</a>
+
+
+      <p class="nav-title system-title">
+        SYSTEM
+      </p>
+
+
+      <a
+  class="nav-item"
+  routerLink="/admin/notifications"
+  routerLinkActive="active">
+
+  <span>🔔</span>
+  <span>Notifications</span>
+
+</a>
+
+
+      <a
+  class="nav-item"
+  routerLink="/admin/settings"
+  routerLinkActive="active">
+
+  <span>⚙️</span>
+  <span>Settings</span>
+
+</a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-profile">
+
+        <div class="admin-avatar">
+          AD
+        </div>
+
+        <div>
+
+          <strong>Administrator</strong>
+
+          <small>
+            System Admin
+          </small>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="admin-main">
+
+
+    <!-- TOP BAR -->
+
+    <header class="admin-topbar">
+
+      <div>
+
+        <p class="breadcrumb">
+          CONTROL CENTER / JOB MANAGEMENT
+        </p>
+
+        <h2>
+          Job Management
+        </h2>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          type="button"
+          class="icon-button">
+
+          🔔
+
+          <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="top-admin">
+
+          <div class="top-avatar">
+            AD
+          </div>
+
+          <div>
+
+            <strong>
+              Administrator
+            </strong>
+
+            <small>
+              Platform Manager
+            </small>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         INTRO
+    ========================== -->
+
+    <section class="page-intro">
+
+      <div>
+
+        <span class="page-label">
+          VACANCY CONTROL
+        </span>
+
+        <h3>
+          Platform Job Directory
+        </h3>
+
+        <p>
+          Monitor job vacancies posted by employers,
+          review application activity and manage vacancy status.
+        </p>
+
+      </div>
+
+
+      <div class="system-indicator">
+
+        <span class="indicator-dot"></span>
+
+        <div>
+
+          <strong>
+            Platform Jobs
+          </strong>
+
+          <small>
+            Monitoring enabled
+          </small>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         STATISTICS
+    ========================== -->
+
+    <section class="job-stats">
+
+
+      <div class="stat-card">
+
+        <div class="stat-icon">
+          💼
+        </div>
+
+        <div>
+
+          <span>
+            Total Jobs
+          </span>
+
+          <strong>
+            {{ getTotalJobs() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card active-stat">
+
+        <div class="stat-icon">
+          ✓
+        </div>
+
+        <div>
+
+          <span>
+            Active Jobs
+          </span>
+
+          <strong>
+            {{ getActiveJobs() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card closed-stat">
+
+        <div class="stat-icon">
+          ⏸
+        </div>
+
+        <div>
+
+          <span>
+            Closed Jobs
+          </span>
+
+          <strong>
+            {{ getClosedJobs() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card applicant-stat">
+
+        <div class="stat-icon">
+          👥
+        </div>
+
+        <div>
+
+          <span>
+            Total Applicants
+          </span>
+
+          <strong>
+            {{ getTotalApplicants() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card fulltime-stat">
+
+        <div class="stat-icon">
+          🕐
+        </div>
+
+        <div>
+
+          <span>
+            Full Time
+          </span>
+
+          <strong>
+            {{ getFullTimeJobs() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         JOB DIRECTORY
+    ========================== -->
+
+    <section class="jobs-section">
+
+
+      <!-- HEADER -->
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-label">
+            JOB DIRECTORY
+          </span>
+
+          <h3>
+            Platform Vacancies
+          </h3>
+
+          <p>
+            Search and monitor employer job postings.
+          </p>
+
+        </div>
+
+
+        <div class="result-count">
+
+          <strong>
+            {{ filteredJobs.length }}
+          </strong>
+
+          <span>
+            results
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           FILTER BAR
+      ========================== -->
+
+      <div class="filter-bar">
+
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+          <span>
+            🔍
+          </span>
+
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search job title, company or location...">
+
+        </div>
+
+
+        <!-- Status -->
+
+        <div class="filter-control">
+
+          <label>
+            Status
+          </label>
+
+          <select
+            [(ngModel)]="selectedStatus">
+
+            <option value="All">
+              All Status
+            </option>
+
+            <option value="Active">
+              Active
+            </option>
+
+            <option value="Closed">
+              Closed
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Type -->
+
+        <div class="filter-control">
+
+          <label>
+            Job Type
+          </label>
+
+          <select
+            [(ngModel)]="selectedType">
+
+            <option value="All">
+              All Types
+            </option>
+
+            <option value="Full Time">
+              Full Time
+            </option>
+
+            <option value="Part Time">
+              Part Time
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Reset -->
+
+        <button
+          type="button"
+          class="reset-button"
+          (click)="resetFilters()">
+
+          ↻ Reset
+
+        </button>
+
+      </div>
+
+
+      <!-- =========================
+           JOB TABLE
+      ========================== -->
+
+      <div class="table-wrapper">
+
+        <table class="jobs-table">
+
+
+          <thead>
+
+            <tr>
+
+              <th>
+                VACANCY
+              </th>
+
+              <th>
+                EMPLOYER
+              </th>
+
+              <th>
+                LOCATION
+              </th>
+
+              <th>
+                TYPE
+              </th>
+
+              <th>
+                APPLICANTS
+              </th>
+
+              <th>
+                STATUS
+              </th>
+
+              <th>
+                POSTED
+              </th>
+
+              <th>
+                CONTROL
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+
+            <!-- JOB ROW -->
+
+            <tr
+              *ngFor="let job of filteredJobs">
+
+
+              <!-- Vacancy -->
+
+              <td>
+
+                <div class="job-cell">
+
+                  <div class="job-icon">
+                    💼
+                  </div>
+
+                  <div>
+
+                    <strong>
+                      {{ job.title }}
+                    </strong>
+
+                    <span>
+                      Job ID #{{ job.id }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- Employer -->
+
+              <td>
+
+                <span class="employer-name">
+                  {{ job.company }}
+                </span>
+
+              </td>
+
+
+              <!-- Location -->
+
+              <td>
+
+                <span class="location-text">
+                  📍 {{ job.location }}
+                </span>
+
+              </td>
+
+
+              <!-- Type -->
+
+              <td>
+
+                <span class="type-pill">
+                  {{ job.type }}
+                </span>
+
+              </td>
+
+
+              <!-- Applicants -->
+
+              <td>
+
+                <div class="applicant-count">
+
+                  <span>
+                    👥
+                  </span>
+
+                  <strong>
+                    {{ job.applicants }}
+                  </strong>
+
+                </div>
+
+              </td>
+
+
+              <!-- Status -->
+
+              <td>
+
+                <span
+                  class="status-pill"
+                  [class.status-active]="job.status === 'Active'"
+                  [class.status-closed]="job.status === 'Closed'">
+
+                  <span class="status-dot"></span>
+
+                  {{ job.status }}
+
+                </span>
+
+              </td>
+
+
+              <!-- Posted -->
+
+              <td>
+
+                <span class="posted-date">
+                  {{ job.postedDate }}
+                </span>
+
+              </td>
+
+
+              <!-- Control -->
+
+              <td>
+
+
+                <button
+                  *ngIf="job.status === 'Active'"
+                  type="button"
+                  class="control-button close-button"
+                  (click)="closeJob(job)">
+
+                  ⏸ Close
+
+                </button>
+
+
+                <button
+                  *ngIf="job.status === 'Closed'"
+                  type="button"
+                  class="control-button activate-button"
+                  (click)="activateJob(job)">
+
+                  ✓ Activate
+
+                </button>
+
+
+              </td>
+
+
+            </tr>
+
+
+            <!-- EMPTY STATE -->
+
+            <tr
+              *ngIf="filteredJobs.length === 0">
+
+              <td
+                colspan="8"
+                class="empty-cell">
+
+
+                <div class="empty-state">
+
+                  <div class="empty-icon">
+                    🔍
+                  </div>
+
+                  <h3>
+                    No Jobs Found
+                  </h3>
+
+                  <p>
+                    No vacancies match your current search
+                    or filter settings.
+                  </p>
+
+                  <button
+                    type="button"
+                    class="clear-filter-button"
+                    (click)="resetFilters()">
+
+                    Clear Filters
+
+                  </button>
+
+                </div>
+
+
+              </td>
+
+            </tr>
+
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         ADMIN NOTICE
+    ========================== -->
+
+    <section class="admin-notice">
+
+      <div class="notice-icon">
+        🛡️
+      </div>
+
+
+      <div>
+
+        <strong>
+          Vacancy Monitoring Notice
+        </strong>
+
+        <p>
+          Administrators can monitor vacancy activity and
+          status. Matching scores remain controlled by the
+          server-side matching service.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Secure Access
+      </span>
+
+    </footer>
+
+
+  </main>
+
+</div>

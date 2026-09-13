@@ -1,0 +1,49 @@
+.error-message {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+
+  padding: 14px 16px;
+
+  border: 1px solid #ffd9de;
+  border-radius: 11px;
+
+  background: #fff6f7;
+}
+
+.error-icon {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffe8eb;
+
+  font-size: 16px;
+}
+
+.error-content h3 {
+  margin: 0;
+
+  color: #b83d4d;
+
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.error-content p {
+  margin: 5px 0 0;
+
+  color: #8e6970;
+
+  font-size: 9px;
+
+  line-height: 1.5;
+}

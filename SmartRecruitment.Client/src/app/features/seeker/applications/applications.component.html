@@ -1,0 +1,176 @@
+<div class="applications-page">
+
+  <div class="applications-container">
+
+    <!-- Header -->
+    <div class="applications-header">
+
+      <div>
+        <span class="page-badge">JOB SEEKER</span>
+
+        <h1>My Applications</h1>
+
+        <p>
+          Track and manage the jobs you have applied for.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="back-button"
+        routerLink="/seeker">
+        ← Dashboard
+      </button>
+
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon">📄</div>
+
+        <div>
+          <span>Total Applications</span>
+          <strong>{{ applications.length }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+
+        <div>
+          <span>Pending</span>
+          <strong>{{ getCount('Pending') }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✅</div>
+
+        <div>
+          <span>Accepted</span>
+          <strong>{{ getCount('Accepted') }}</strong>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">❌</div>
+
+        <div>
+          <span>Rejected</span>
+          <strong>{{ getCount('Rejected') }}</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Applications -->
+    <div class="applications-section">
+
+      <div class="section-header">
+
+        <div>
+          <h2>Recent Applications</h2>
+
+          <p>
+            View the current status of your applications.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Application Cards -->
+      <div class="applications-list">
+
+        <div
+          class="application-card"
+          *ngFor="let application of applications">
+
+          <div class="application-main">
+
+            <div class="company-icon">
+              💼
+            </div>
+
+            <div class="application-info">
+
+              <h3>{{ application.jobTitle }}</h3>
+
+              <p class="company-name">
+                {{ application.company }}
+              </p>
+
+              <div class="application-details">
+
+                <span>
+                  📍 {{ application.location }}
+                </span>
+
+                <span>
+                  📅 Applied {{ application.appliedDate }}
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="application-status">
+
+            <span
+              class="status-badge"
+              [ngClass]="application.status.toLowerCase()">
+
+              {{ application.status }}
+
+            </span>
+
+            <button
+  type="button"
+  class="view-button"
+  routerLink="/seeker/job-details">
+
+  View Details
+
+</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Empty State -->
+      <div
+        class="empty-state"
+        *ngIf="applications.length === 0">
+
+        <div class="empty-icon">
+          📄
+        </div>
+
+        <h3>No applications yet</h3>
+
+        <p>
+          You haven't applied for any jobs yet.
+          Start exploring available opportunities.
+        </p>
+
+        <button
+          type="button"
+          class="browse-button"
+          routerLink="/seeker/jobs">
+
+          Browse Jobs
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

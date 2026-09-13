@@ -1,0 +1,125 @@
+<div class="jobs-page">
+
+  <div class="jobs-container">
+
+    <!-- Header -->
+    <div class="jobs-header">
+      <div>
+        <h1>Find Jobs</h1>
+        <p>Discover opportunities that match your skills and interests.</p>
+      </div>
+
+      <button class="back-button" routerLink="/seeker">
+        ← Dashboard
+      </button>
+    </div>
+
+
+    <!-- Search Section -->
+    <div class="search-card">
+
+      <div class="search-group">
+        <label>Job Title</label>
+
+        <input
+          type="text"
+          placeholder="Search by job title..."
+          [(ngModel)]="searchTitle"
+        />
+      </div>
+
+      <div class="search-group">
+        <label>Location</label>
+
+        <input
+          type="text"
+          placeholder="Enter location..."
+          [(ngModel)]="searchLocation"
+        />
+      </div>
+
+      <button class="search-button" (click)="searchJobs()">
+        🔍 Search Jobs
+      </button>
+
+    </div>
+
+
+    <!-- Jobs Section -->
+    <div class="jobs-section">
+
+      <div class="section-title">
+        <h2>Available Jobs</h2>
+        <span>{{ jobs.length }} Jobs</span>
+      </div>
+
+
+      <!-- Job Cards -->
+      <div class="jobs-grid">
+
+        <div class="job-card" *ngFor="let job of jobs">
+
+          <div class="job-top">
+
+            <div class="company-icon">
+              💼
+            </div>
+
+            <div>
+              <h3>{{ job.title }}</h3>
+              <p class="company-name">
+                {{ job.company }}
+              </p>
+            </div>
+
+          </div>
+
+
+          <div class="job-details">
+
+            <span>📍 {{ job.location }}</span>
+
+            <span>💰 {{ job.salary }}</span>
+
+            <span>🕒 {{ job.type }}</span>
+
+          </div>
+
+
+          <p class="job-description">
+            {{ job.description }}
+          </p>
+
+
+          <button
+             class="view-button"
+             routerLink="/seeker/job-details">
+            View Details
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="jobs.length === 0">
+
+        <div class="empty-icon">
+          🔍
+        </div>
+
+        <h3>No jobs found</h3>
+
+        <p>
+          We couldn't find any jobs matching your search.
+          Try different keywords or locations.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
