@@ -1,0 +1,96 @@
+<div class="job-details-page">
+
+  <div class="job-details-container">
+
+    <!-- Header -->
+    <div class="details-header">
+      <button
+        class="back-button"
+        routerLink="/seeker/jobs">
+        ← Back to Jobs
+      </button>
+    </div>
+
+    <!-- Job Header Card -->
+    <div class="job-header-card">
+
+      <div class="company-icon">
+        💼
+      </div>
+
+      <div class="job-heading">
+        <h1>{{ job.title }}</h1>
+        <p>{{ job.company }}</p>
+
+        <div class="job-meta">
+          <span>📍 {{ job.location }}</span>
+          <span>💰 {{ job.salary }}</span>
+          <span>🕒 {{ job.type }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Main Content -->
+    <div class="details-grid">
+
+      <!-- Description -->
+      <div class="details-card">
+
+        <h2>Job Description</h2>
+
+        <p>
+          {{ job.description }}
+        </p>
+
+      </div>
+
+      <!-- Requirements -->
+      <div class="details-card">
+
+        <h2>Requirements</h2>
+
+        <div class="requirement-row">
+          <strong>Experience</strong>
+          <span>{{ job.experience }}</span>
+        </div>
+
+        <div class="skills-section">
+
+          <strong>Required Skills</strong>
+
+          <div class="skills-list">
+            <span
+              class="skill"
+              *ngFor="let skill of job.skills">
+              {{ skill }}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Apply Section -->
+    <div class="apply-card">
+
+      <div>
+        <h2>Interested in this position?</h2>
+        <p>
+          Submit your application and take the next step in your career.
+        </p>
+      </div>
+
+      <button
+  class="apply-button"
+  routerLink="/seeker/applications">
+  Apply Now
+</button>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,711 @@
+<div class="user-management-page">
+
+  <!-- =========================
+       SIDEBAR
+  ========================== -->
+
+  <aside class="admin-sidebar">
+
+    <div class="sidebar-brand">
+
+      <div class="brand-logo">
+        S
+      </div>
+
+      <div>
+        <h1>SmartRecruitment</h1>
+        <span>ADMIN CONTROL</span>
+      </div>
+
+    </div>
+
+
+    <nav class="sidebar-nav">
+
+      <p class="nav-title">
+        MAIN MENU
+      </p>
+
+      <a
+        routerLink="/admin"
+        class="nav-item">
+
+        <span>📊</span>
+        <span>Dashboard</span>
+
+      </a>
+
+
+      <a class="nav-item active">
+
+        <span>👥</span>
+        <span>User Management</span>
+
+      </a>
+
+
+      <a
+  routerLink="/admin/job-management"
+  class="nav-item">
+
+  <span>💼</span>
+  <span>Job Management</span>
+
+</a>
+
+
+       <a
+  class="nav-item"
+  routerLink="/admin/analytics"
+  routerLinkActive="active">
+
+  <span>📈</span>
+  <span>Analytics</span>
+
+</a>
+
+
+      <p class="nav-title system-title">
+        SYSTEM
+      </p>
+
+
+      <a
+  class="nav-item"
+  routerLink="/admin/notifications"
+  routerLinkActive="active">
+
+  <span>🔔</span>
+  <span>Notifications</span>
+
+</a>
+
+
+      <a
+  class="nav-item"
+  routerLink="/admin/settings"
+  routerLinkActive="active">
+
+  <span>⚙️</span>
+  <span>Settings</span>
+
+</a>
+
+    </nav>
+
+
+    <div class="sidebar-bottom">
+
+      <div class="admin-profile">
+
+        <div class="admin-avatar">
+          AD
+        </div>
+
+        <div>
+          <strong>Administrator</strong>
+          <small>System Admin</small>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <main class="admin-main">
+
+
+    <!-- TOP BAR -->
+
+    <header class="admin-topbar">
+
+      <div>
+
+        <p class="breadcrumb">
+          CONTROL CENTER / USER MANAGEMENT
+        </p>
+
+        <h2>
+          User Management
+        </h2>
+
+      </div>
+
+
+      <div class="topbar-actions">
+
+        <button
+          type="button"
+          class="icon-button">
+
+          🔔
+
+          <span class="notification-dot"></span>
+
+        </button>
+
+
+        <div class="top-admin">
+
+          <div class="top-avatar">
+            AD
+          </div>
+
+          <div>
+            <strong>Administrator</strong>
+            <small>Platform Manager</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         PAGE INTRO
+    ========================== -->
+
+    <section class="page-intro">
+
+      <div>
+
+        <span class="page-label">
+          ACCOUNT CONTROL
+        </span>
+
+        <h3>
+          Manage Platform Users
+        </h3>
+
+        <p>
+          Review user accounts, monitor account status and
+          activate or deactivate platform users.
+        </p>
+
+      </div>
+
+
+      <div class="security-badge">
+
+        <span>🔐</span>
+
+        <div>
+          <strong>Admin Access</strong>
+          <small>Restricted control area</small>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         STATISTICS
+    ========================== -->
+
+    <section class="user-stats">
+
+
+      <div class="stat-card">
+
+        <div class="stat-icon">
+          👥
+        </div>
+
+        <div>
+
+          <span>Total Users</span>
+
+          <strong>
+            {{ getTotalUsers() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card active-stat">
+
+        <div class="stat-icon">
+          ✓
+        </div>
+
+        <div>
+
+          <span>Active Users</span>
+
+          <strong>
+            {{ getActiveUsers() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card inactive-stat">
+
+        <div class="stat-icon">
+          ⏸
+        </div>
+
+        <div>
+
+          <span>Inactive Users</span>
+
+          <strong>
+            {{ getInactiveUsers() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card seeker-stat">
+
+        <div class="stat-icon">
+          🧑‍💻
+        </div>
+
+        <div>
+
+          <span>Job Seekers</span>
+
+          <strong>
+            {{ getJobSeekers() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="stat-card employer-stat">
+
+        <div class="stat-icon">
+          🏢
+        </div>
+
+        <div>
+
+          <span>Employers</span>
+
+          <strong>
+            {{ getEmployers() }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         USER MANAGEMENT CARD
+    ========================== -->
+
+    <section class="management-section">
+
+
+      <!-- SECTION HEADER -->
+
+      <div class="section-header">
+
+        <div>
+
+          <span class="section-label">
+            USER DIRECTORY
+          </span>
+
+          <h3>
+            Platform Accounts
+          </h3>
+
+          <p>
+            Search and manage registered users.
+          </p>
+
+        </div>
+
+
+        <div class="result-count">
+
+          <strong>
+            {{ filteredUsers.length }}
+          </strong>
+
+          <span>
+            results
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           FILTER BAR
+      ========================== -->
+
+      <div class="filter-bar">
+
+
+        <!-- Search -->
+
+        <div class="search-box">
+
+          <span>
+            🔍
+          </span>
+
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Search by name or email...">
+
+        </div>
+
+
+        <!-- Role Filter -->
+
+        <div class="filter-control">
+
+          <label>
+            Role
+          </label>
+
+          <select
+            [(ngModel)]="selectedRole">
+
+            <option value="All">
+              All Roles
+            </option>
+
+            <option value="Job Seeker">
+              Job Seeker
+            </option>
+
+            <option value="Employer">
+              Employer
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Status Filter -->
+
+        <div class="filter-control">
+
+          <label>
+            Status
+          </label>
+
+          <select
+            [(ngModel)]="selectedStatus">
+
+            <option value="All">
+              All Status
+            </option>
+
+            <option value="Active">
+              Active
+            </option>
+
+            <option value="Inactive">
+              Inactive
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Reset -->
+
+        <button
+          type="button"
+          class="reset-button"
+          (click)="resetFilters()">
+
+          ↻ Reset
+
+        </button>
+
+
+      </div>
+
+
+      <!-- =========================
+           USER TABLE
+      ========================== -->
+
+      <div class="table-wrapper">
+
+        <table class="users-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                USER
+              </th>
+
+              <th>
+                ROLE
+              </th>
+
+              <th>
+                STATUS
+              </th>
+
+              <th>
+                JOINED
+              </th>
+
+              <th>
+                ACCOUNT CONTROL
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+
+            <tr
+              *ngFor="let user of filteredUsers">
+
+
+              <!-- User -->
+
+              <td>
+
+                <div class="user-cell">
+
+                  <div class="user-avatar">
+
+                    {{ user.name.charAt(0) }}
+
+                  </div>
+
+
+                  <div class="user-info">
+
+                    <strong>
+                      {{ user.name }}
+                    </strong>
+
+                    <span>
+                      {{ user.email }}
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </td>
+
+
+              <!-- Role -->
+
+              <td>
+
+                <span
+                  class="role-pill"
+                  [class.seeker-role]="user.role === 'Job Seeker'"
+                  [class.employer-role]="user.role === 'Employer'">
+
+                  <span
+                    *ngIf="user.role === 'Job Seeker'">
+                    🧑‍💻
+                  </span>
+
+                  <span
+                    *ngIf="user.role === 'Employer'">
+                    🏢
+                  </span>
+
+                  {{ user.role }}
+
+                </span>
+
+              </td>
+
+
+              <!-- Status -->
+
+              <td>
+
+                <span
+                  class="status-pill"
+                  [class.status-active]="user.status === 'Active'"
+                  [class.status-inactive]="user.status === 'Inactive'">
+
+                  <span class="status-dot"></span>
+
+                  {{ user.status }}
+
+                </span>
+
+              </td>
+
+
+              <!-- Joined -->
+
+              <td>
+
+                <span class="joined-date">
+                  {{ user.joinedDate }}
+                </span>
+
+              </td>
+
+
+              <!-- Control -->
+
+              <td>
+
+                <button
+                  type="button"
+                  class="status-button"
+                  [class.deactivate-button]="user.status === 'Active'"
+                  [class.activate-button]="user.status === 'Inactive'"
+                  (click)="toggleUserStatus(user)">
+
+                  <span
+                    *ngIf="user.status === 'Active'">
+
+                    ⏸ Deactivate
+
+                  </span>
+
+                  <span
+                    *ngIf="user.status === 'Inactive'">
+
+                    ✓ Activate
+
+                  </span>
+
+                </button>
+
+              </td>
+
+
+            </tr>
+
+
+            <!-- =========================
+                 EMPTY SEARCH RESULT
+            ========================== -->
+
+            <tr
+              *ngIf="filteredUsers.length === 0">
+
+              <td
+                colspan="5"
+                class="empty-cell">
+
+                <div class="empty-state">
+
+                  <div class="empty-icon">
+                    🔍
+                  </div>
+
+                  <h3>
+                    No Users Found
+                  </h3>
+
+                  <p>
+                    No user accounts match your current search
+                    or filter settings.
+                  </p>
+
+                  <button
+                    type="button"
+                    class="clear-filter-button"
+                    (click)="resetFilters()">
+
+                    Clear Filters
+
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =========================
+         SECURITY NOTICE
+    ========================== -->
+
+    <section class="security-notice">
+
+      <div class="notice-icon">
+        🛡️
+      </div>
+
+
+      <div>
+
+        <strong>
+          Account Management Notice
+        </strong>
+
+        <p>
+          Only authorized administrators can activate or
+          deactivate user accounts. Changes to account status
+          should be reviewed carefully.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer class="admin-footer">
+
+      <span>
+        SmartRecruitment Platform
+      </span>
+
+      <span>
+        Admin Control Center • Secure Access
+      </span>
+
+    </footer>
+
+
+  </main>
+
+</div>
