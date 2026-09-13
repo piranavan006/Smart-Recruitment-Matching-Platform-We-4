@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.DTOs.Auth;
 using SmartRecruitment.API.Services.Interfaces;
 
@@ -77,20 +77,31 @@ namespace SmartRecruitment.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = await _authService.ForgotPasswordAsync(dto);
-
-            if (!result)
+            try
             {
-                return NotFound(new
+                var result = await _authService.ForgotPasswordAsync(dto);
+
+                if (!result)
                 {
-                    message = "User not found or account is inactive."
+                    return NotFound(new
+                    {
+                        message = "User not found or account is inactive."
+                    });
+                }
+
+                return Ok(new
+                {
+                    message = "OTP generated successfully."
                 });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                message = "OTP generated successfully."
-            });
+                return StatusCode(500, new
+                {
+                    message = "Failed to send OTP email. Please verify your email settings or try again later.",
+                    error = ex.Message
+                });
+            }
         }
 
         // ==========================================

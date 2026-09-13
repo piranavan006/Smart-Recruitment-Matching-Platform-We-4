@@ -8,6 +8,7 @@ using SmartRecruitment.API.Repositories;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services;
 using SmartRecruitment.API.Services.Interfaces;
+using SmartRecruitment.API.Settings;
 
 using System.Text;
 
@@ -39,6 +40,14 @@ namespace SmartRecruitment.API
             // ================================
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+
+
+            // ================================
+            // Email Settings & Service
+            // ================================
+            builder.Services.Configure<EmailSettings>(
+                builder.Configuration.GetSection("EmailSettings"));
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
 
             // ================================

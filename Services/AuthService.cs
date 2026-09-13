@@ -1,4 +1,4 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using SmartRecruitment.API.DTOs.Auth;
 using SmartRecruitment.API.Helpers;
 using SmartRecruitment.API.Models;
@@ -11,6 +11,7 @@ namespace SmartRecruitment.API.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly JwtHelper _jwtHelper;
+        private readonly IEmailService _emailService;
 
         // Temporary in-memory OTP storage
         private static readonly ConcurrentDictionary<string, OtpData> _otpStore
@@ -18,10 +19,12 @@ namespace SmartRecruitment.API.Services
 
         public AuthService(
             IUserRepository userRepository,
-            JwtHelper jwtHelper)
+            JwtHelper jwtHelper,
+            IEmailService emailService)
         {
             _userRepository = userRepository;
             _jwtHelper = jwtHelper;
+            _emailService = emailService;
         }
 
         // ==============================
@@ -124,8 +127,9 @@ namespace SmartRecruitment.API.Services
 
             _otpStore[dto.Email.ToLower()] = otpData;
 
-            // Email sending will be connected later.
-            // For now OTP is generated and stored securely in memory.
+            // Send real email via Gmail SMTP
+            await _emailService.SendOtpAsync(dto.Email, otp);
+
             Console.WriteLine(
                 $"Password Reset OTP for {dto.Email}: {otp}");
 
