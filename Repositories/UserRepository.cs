@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
@@ -52,6 +52,85 @@ namespace SmartRecruitment.API.Repositories
 
             if (user != null)
             {
+                // 1. Remove notifications
+                var notifications = await _context.Notifications
+                    .Where(n => n.UserId == userId)
+                    .ToListAsync();
+                if (notifications.Any())
+                {
+                    _context.Notifications.RemoveRange(notifications);
+                }
+
+                // 2. Remove contact requests (both sent and received)
+                var contactRequests = await _context.ContactRequests
+                    .Where(c => c.SenderId == userId || c.ReceiverId == userId)
+                    .ToListAsync();
+                if (contactRequests.Any())
+                {
+                    _context.ContactRequests.RemoveRange(contactRequests);
+                }
+
+                // 3. Remove seeker profile, skills, CVs, and applications if JobSeeker
+                var seekerProfile = await _context.JobSeekerProfiles
+                    .FirstOrDefaultAsync(p => p.UserId == userId);
+                if (seekerProfile != null)
+                {
+                    var apps = await _context.Applications
+                        .Where(a => a.JobSeekerId == userId || a.JobSeekerProfileId == seekerProfile.JobSeekerProfileId)
+                        .ToListAsync();
+                    if (apps.Any())
+                    {
+                        _context.Applications.RemoveRange(apps);
+                    }
+
+                    var seekerSkills = await _context.JobSeekerSkills
+                        .Where(s => s.JobSeekerProfileId == seekerProfile.JobSeekerProfileId)
+                        .ToListAsync();
+                    if (seekerSkills.Any())
+                    {
+                        _context.JobSeekerSkills.RemoveRange(seekerSkills);
+                    }
+
+                    var cvs = await _context.CVs
+                        .Where(c => c.UserId == userId)
+                        .ToListAsync();
+                    if (cvs.Any())
+                    {
+                        _context.CVs.RemoveRange(cvs);
+                    }
+
+                    _context.JobSeekerProfiles.Remove(seekerProfile);
+                }
+                else
+                {
+                    var apps = await _context.Applications
+                        .Where(a => a.JobSeekerId == userId)
+                        .ToListAsync();
+                    if (apps.Any())
+                    {
+                        _context.Applications.RemoveRange(apps);
+                    }
+
+                    var cvs = await _context.CVs
+                        .Where(c => c.UserId == userId)
+                        .ToListAsync();
+                    if (cvs.Any())
+                    {
+                        _context.CVs.RemoveRange(cvs);
+                    }
+                }
+
+                // 4. Remove employer profile, jobs, and job skills if Employer
+                var employerProfile = await _context.EmployerProfiles
+                    .Include(e => e.Jobs)
+                    .ThenInclude(j => j.JobSkills)
+                    .FirstOrDefaultAsync(e => e.UserId == userId.ToString());
+                if (employerProfile != null)
+                {
+                    _context.EmployerProfiles.Remove(employerProfile);
+                }
+
+                // 5. Remove the user entity
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }

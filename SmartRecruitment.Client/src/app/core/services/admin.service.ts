@@ -33,5 +33,9 @@ export class AdminService {
     const payload: UpdateApprovalRequest = { isApproved, status, reason };
     return this.http.put<{ message: string; employer: AdminEmployer }>(`${this.apiUrl}/employers/${employerProfileId}/approval`, payload);
   }
+
+  deleteUser(userId: number): Observable<{ message: string; userId?: number }> {
+    return this.http.delete<{ message: string; userId?: number }>(`${this.apiUrl}/users/${userId}`);
+  }
 }
 

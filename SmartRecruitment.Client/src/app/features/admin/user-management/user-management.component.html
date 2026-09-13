@@ -323,24 +323,22 @@
 
 
     <!-- Tab Switcher -->
-    <div class="tab-switcher" style="display: flex; gap: 12px; margin: 24px 0 16px 0;">
+    <div class="tab-switcher">
       <button
         type="button"
-        (click)="activeTab = 'users'"
-        [style.background]="activeTab === 'users' ? '#4f46e5' : '#1e293b'"
-        [style.color]="activeTab === 'users' ? '#ffffff' : '#94a3b8'"
-        style="padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        class="tab-btn"
+        [class.active]="activeTab === 'users'"
+        (click)="activeTab = 'users'">
         <span>👥</span> All Platform Users ({{ users.length }})
       </button>
 
       <button
         type="button"
-        (click)="activeTab = 'employers'"
-        [style.background]="activeTab === 'employers' ? '#4f46e5' : '#1e293b'"
-        [style.color]="activeTab === 'employers' ? '#ffffff' : '#94a3b8'"
-        style="padding: 12px 24px; border-radius: 8px; border: 1px solid #334155; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;">
+        class="tab-btn"
+        [class.active]="activeTab === 'employers'"
+        (click)="activeTab = 'employers'">
         <span>🏢</span> Employer Profile Approvals ({{ employers.length }})
-        <span *ngIf="getPendingEmployerApprovals() > 0" style="background: #f59e0b; color: #000; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px;">
+        <span *ngIf="getPendingEmployerApprovals() > 0" class="pending-chip">
           {{ getPendingEmployerApprovals() }} Pending
         </span>
       </button>
@@ -615,30 +613,30 @@
               <!-- Control -->
 
               <td>
+                <div class="user-actions-group">
+                  <button
+                    type="button"
+                    class="status-button"
+                    [class.deactivate-button]="user.status === 'Active'"
+                    [class.activate-button]="user.status === 'Inactive'"
+                    (click)="toggleUserStatus(user)">
+                    <span *ngIf="user.status === 'Active'">
+                      ⏸ Deactivate
+                    </span>
+                    <span *ngIf="user.status === 'Inactive'">
+                      ✓ Activate
+                    </span>
+                  </button>
 
-                <button
-                  type="button"
-                  class="status-button"
-                  [class.deactivate-button]="user.status === 'Active'"
-                  [class.activate-button]="user.status === 'Inactive'"
-                  (click)="toggleUserStatus(user)">
-
-                  <span
-                    *ngIf="user.status === 'Active'">
-
-                    ⏸ Deactivate
-
-                  </span>
-
-                  <span
-                    *ngIf="user.status === 'Inactive'">
-
-                    ✓ Activate
-
-                  </span>
-
-                </button>
-
+                  <button
+                    *ngIf="user.status === 'Inactive' && user.email.toLowerCase() !== 'admin@smartrecruitment.com'"
+                    type="button"
+                    class="delete-user-button"
+                    (click)="deleteUser(user)"
+                    title="Permanently Delete Deactivated User">
+                    🗑 Delete
+                  </button>
+                </div>
               </td>
 
 

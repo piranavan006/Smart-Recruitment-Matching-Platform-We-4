@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs.Users;
+using SmartRecruitment.API.DTOs.Users;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
 
@@ -105,6 +105,11 @@ namespace SmartRecruitment.API.Services
 
             if (user == null)
                 return false;
+
+            if (user.Email.Equals("admin@smartrecruitment.com", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Default platform administrator cannot be deleted.");
+            }
 
             await _userRepository.DeleteAsync(userId);
 

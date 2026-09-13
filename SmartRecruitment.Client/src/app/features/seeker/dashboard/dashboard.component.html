@@ -108,33 +108,93 @@
 
 
     <!-- ================================
-         RECOMMENDED JOBS
+         RECOMMENDED JOBS (AI MATCHING)
     ================================= -->
     <div class="section">
-      <div class="section-header">
-        <h2>Recommended Matches</h2>
-        <p>Jobs matched with your profile skills, experience, and education.</p>
+      <div class="section-header-row">
+        <div>
+          <div class="section-pill">
+            <span class="sparkle-icon">✨</span> AI MATCHING ENGINE
+          </div>
+          <h2>Recommended Matches</h2>
+          <p>Hand-picked opportunities precisely matched with your profile skills, experience, and career profile.</p>
+        </div>
+        <a routerLink="/seeker/jobs" class="view-all-jobs-link">
+          Explore All Jobs →
+        </a>
       </div>
 
       <div *ngIf="recommendedJobs.length > 0" class="recommended-grid">
         <div class="match-card" *ngFor="let match of recommendedJobs">
-          <div class="match-header">
-            <h3>{{ match.jobTitle || 'Job Position' }}</h3>
-            <span class="match-badge" [class.high]="match.matchScore >= 80" [class.medium]="match.matchScore >= 50 && match.matchScore < 80">
-              {{ match.matchScore | number:'1.0-0' }}% Match
+          <div class="match-card-top">
+            <div class="match-job-info">
+              <div class="job-badge-icon">💼</div>
+              <div>
+                <h3 class="job-match-title">{{ match.jobTitle || 'Job Position' }}</h3>
+                <span class="job-ref">Position #{{ match.jobId }}</span>
+              </div>
+            </div>
+
+            <div class="match-score-pill"
+                 [class.score-high]="match.matchScore >= 80"
+                 [class.score-medium]="match.matchScore >= 50 && match.matchScore < 80"
+                 [class.score-low]="match.matchScore < 50">
+              <span class="score-number">{{ match.matchScore | number:'1.0-0' }}%</span>
+              <span class="score-text">Match</span>
+            </div>
+          </div>
+
+          <!-- Match Score Progress Bar -->
+          <div class="score-bar-wrapper">
+            <div class="score-bar-track">
+              <div class="score-bar-fill"
+                   [class.score-high]="match.matchScore >= 80"
+                   [class.score-medium]="match.matchScore >= 50 && match.matchScore < 80"
+                   [class.score-low]="match.matchScore < 50"
+                   [style.width.%]="match.matchScore">
+              </div>
+            </div>
+          </div>
+
+          <!-- Match Criteria Tags -->
+          <div class="match-criteria">
+            <span *ngIf="match.skillsMatched" class="criterion-chip chip-success">
+              <span class="chip-dot"></span> Skills Aligned
+            </span>
+            <span *ngIf="match.experienceMatched" class="criterion-chip chip-info">
+              <span class="chip-dot"></span> Experience Fit
+            </span>
+            <span *ngIf="match.locationMatched" class="criterion-chip chip-accent">
+              <span class="chip-dot"></span> Location Matched
+            </span>
+            <span *ngIf="match.educationMatched" class="criterion-chip chip-primary">
+              <span class="chip-dot"></span> Education Fit
+            </span>
+            <span *ngIf="!match.skillsMatched && !match.experienceMatched && !match.locationMatched && !match.educationMatched" class="criterion-chip chip-neutral">
+              <span class="chip-dot"></span> Potential Fit
             </span>
           </div>
-          <div class="match-details">
-            <span *ngIf="match.skillsMatched" class="tag success">✓ Skills Matched</span>
-            <span *ngIf="match.experienceMatched" class="tag success">✓ Experience Matched</span>
-            <span *ngIf="match.locationMatched" class="tag success">✓ Location Matched</span>
+
+          <!-- Missing Skills If Any -->
+          <div *ngIf="match.missingSkills && match.missingSkills.length > 0" class="missing-skills-box">
+            <span class="missing-label">Skill Gap:</span>
+            <span class="missing-tag" *ngFor="let skill of match.missingSkills.slice(0, 2)">
+              + {{ skill }}
+            </span>
           </div>
-          <a [routerLink]="['/seeker/job-details', match.jobId]" class="btn-view-job">View Job Details →</a>
+
+          <!-- Action Footer -->
+          <div class="match-card-footer">
+            <a [routerLink]="['/seeker/job-details', match.jobId]" class="btn-match-details">
+              <span>View Job Details</span>
+              <span class="arrow-icon">→</span>
+            </a>
+          </div>
         </div>
       </div>
 
-      <div class="empty-state" *ngIf="recommendedJobs.length === 0">
-        <div class="empty-icon">🔍</div>
+      <div class="empty-state" *ngIf="recommendedJobs.length === 0 && !isLoading">
+        <div class="empty-icon">✨</div>
         <h3>No recommendations calculated yet</h3>
         <p>Complete your profile and add your skills to receive personalized AI matching recommendations.</p>
         <button type="button" routerLink="/seeker/profile">Complete Profile</button>
