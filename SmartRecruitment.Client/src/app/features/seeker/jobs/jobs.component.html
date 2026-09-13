@@ -66,34 +66,71 @@
       <div class="jobs-grid" *ngIf="!isLoading && jobs.length > 0">
         <div class="job-card" *ngFor="let job of jobs">
 
-          <div class="job-top">
-            <div class="company-icon">💼</div>
-            <div>
-              <h3>{{ job.title }}</h3>
-              <p class="company-name">{{ job.companyName || 'Verified Employer' }}</p>
+          <div class="job-card-body">
+            <!-- Header -->
+            <div class="job-top">
+              <div class="company-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+              </div>
+              <div class="job-header-text">
+                <h3 class="job-title" [title]="job.title">{{ job.title }}</h3>
+                <p class="company-name">{{ job.companyName || 'Verified Enterprise' }}</p>
+              </div>
+            </div>
+
+            <!-- Metadata Badges -->
+            <div class="job-details">
+              <span class="detail-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                {{ job.location || 'Flexible' }}
+              </span>
+              <span class="detail-pill">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                {{ job.minExperienceYears }} - {{ job.maxExperienceYears }} Yrs Exp
+              </span>
+              <span class="detail-pill salary-pill" *ngIf="formatSalary(job.salaryMin, job.salaryMax) !== 'Negotiable'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                {{ formatSalary(job.salaryMin, job.salaryMax) }}
+              </span>
+            </div>
+
+            <!-- Description -->
+            <p class="job-description">
+              {{ job.description }}
+            </p>
+
+            <!-- Skills Tags Area (uniform min-height so cards stay consistent) -->
+            <div class="skills-chips">
+              <span *ngFor="let skill of job.requiredSkills" class="skill-tag">
+                {{ skill.skillName }}
+              </span>
+              <span *ngIf="!job.requiredSkills || job.requiredSkills.length === 0" class="no-skills-tag">
+                General Profile Matching
+              </span>
             </div>
           </div>
 
-          <div class="job-details">
-            <span>📍 {{ job.location || 'Flexible' }}</span>
-            <span>💰 {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
-            <span>🕒 {{ job.minExperienceYears }} - {{ job.maxExperienceYears }} Yrs Exp</span>
+          <!-- Card Footer (Strictly pinned to bottom) -->
+          <div class="job-card-footer">
+            <a class="view-button" [routerLink]="['/seeker/job-details', job.id]">
+              <span>View Details & Apply</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </a>
           </div>
-
-          <p class="job-description">
-            {{ job.description }}
-          </p>
-
-          <!-- Skills tags -->
-          <div class="skills-chips" *ngIf="job.requiredSkills && job.requiredSkills.length > 0" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem;">
-            <span *ngFor="let skill of job.requiredSkills" style="background: #e0f2fe; color: #0284c7; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 6px;">
-              {{ skill.skillName }}
-            </span>
-          </div>
-
-          <a class="view-button" [routerLink]="['/seeker/job-details', job.id]" style="text-align: center; text-decoration: none; display: block;">
-            View Details & Apply
-          </a>
 
         </div>
       </div>

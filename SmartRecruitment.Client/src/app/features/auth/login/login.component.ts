@@ -1,8 +1,9 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { User } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginData = {
     email: '',
     password: ''
@@ -23,12 +24,36 @@ export class LoginComponent {
 
   isLoading = false;
   errorMessage = '';
+  loggedInUser: User | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
+
+  ngOnInit(): void {
+    this.loggedInUser = this.authService.getCurrentUser();
+  }
+
+  goToDashboard(): void {
+    if (!this.loggedInUser) return;
+    const role = (this.loggedInUser.role || '').toLowerCase();
+    if (role === 'admin' || role === 'administrator') {
+      this.router.navigate(['/admin']);
+    } else if (role === 'employer') {
+      this.router.navigate(['/employer']);
+    } else {
+      this.router.navigate(['/seeker']);
+    }
+  }
+
+  switchAccount(): void {
+    this.authService.logout();
+    this.loggedInUser = null;
+    this.loginData.email = '';
+    this.loginData.password = '';
+  }
 
   onLogin(form: NgForm): void {
     if (form.invalid) {

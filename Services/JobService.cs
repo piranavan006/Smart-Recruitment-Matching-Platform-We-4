@@ -50,10 +50,10 @@ namespace SmartRecruitment.API.Services
                     "Employer profile not found. Please complete your company profile first.");
             }
 
-            if (!employer.IsApproved)
+            if (!employer.IsApproved || !string.Equals(employer.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidOperationException(
-                    "Your company profile is pending administrator approval. Vacancy creation is locked until an administrator approves your profile.");
+                    "Your company profile must be verified and approved by an administrator before you can publish job vacancies.");
             }
 
             var job = new Job

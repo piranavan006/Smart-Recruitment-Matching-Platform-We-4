@@ -9,13 +9,19 @@ namespace SmartRecruitment.API.Services
     {
         private readonly IApplicationRepository _repository;
         private readonly IJobSeekerRepository _jobSeekerRepository;
+        private readonly IJobRepository _jobRepository;
+        private readonly IMatchingService? _matchingService;
 
         public ApplicationService(
             IApplicationRepository repository,
-            IJobSeekerRepository jobSeekerRepository)
+            IJobSeekerRepository jobSeekerRepository,
+            IJobRepository jobRepository,
+            IMatchingService? matchingService = null)
         {
             _repository = repository;
             _jobSeekerRepository = jobSeekerRepository;
+            _jobRepository = jobRepository;
+            _matchingService = matchingService;
         }
 
         public async Task<ApplicationResponseDto>
@@ -29,9 +35,34 @@ namespace SmartRecruitment.API.Services
                     "Invalid Job ID.");
             }
 
+            var job = await _jobRepository.GetByIdAsync(dto.JobId);
+            if (job == null)
+            {
+                throw new ArgumentException("The specified job vacancy does not exist.");
+            }
+
+            if (job.IsClosed)
+            {
+                throw new InvalidOperationException("This job vacancy has been closed and is no longer accepting applications.");
+            }
+
+            var profile = await _jobSeekerRepository.GetByUserIdAsync(jobSeekerId);
+            if (profile == null)
+            {
+                profile = await _jobSeekerRepository.AddAsync(new JobSeekerProfile
+                {
+                    UserId = jobSeekerId,
+                    Summary = "Registered Candidate",
+                    Skills = string.Empty,
+                    Experience = string.Empty,
+                    Education = string.Empty,
+                    Location = string.Empty
+                });
+            }
+
             bool alreadyApplied =
                 await _repository.ExistsAsync(
-                    jobSeekerId,
+                    profile.JobSeekerProfileId,
                     dto.JobId);
 
             if (alreadyApplied)
@@ -40,26 +71,36 @@ namespace SmartRecruitment.API.Services
                     "You have already applied for this job.");
             }
 
-            var profile = await _jobSeekerRepository.GetByUserIdAsync(jobSeekerId);
-            if (profile == null)
+            decimal? computedScore = null;
+            if (_matchingService != null)
             {
-                profile = await _jobSeekerRepository.AddAsync(new JobSeekerProfile
+                try
                 {
-                    UserId = jobSeekerId
-                });
+                    var matches = await _matchingService.GetMatchesForJobSeekerAsync(profile.JobSeekerProfileId);
+                    var match = matches.FirstOrDefault(m => m.JobId == dto.JobId);
+                    if (match != null)
+                    {
+                        computedScore = (decimal)match.MatchScore;
+                    }
+                }
+                catch
+                {
+                    // Gracefully continue without pre-computed match score if unavailable
+                }
             }
 
             var application = new Application
             {
                 JobId = dto.JobId,
 
-                JobSeekerId = jobSeekerId,
+                // In the database schema, both JobSeekerId and JobSeekerProfileId are foreign keys to JobSeekerProfiles(JobSeekerProfileId)
+                JobSeekerId = profile.JobSeekerProfileId,
 
                 JobSeekerProfileId = profile.JobSeekerProfileId,
 
                 Status = "Pending",
 
-                MatchScore = null,
+                MatchScore = computedScore,
 
                 AppliedAt = DateTime.UtcNow,
 
@@ -90,9 +131,12 @@ namespace SmartRecruitment.API.Services
         public async Task<List<ApplicationResponseDto>>
             GetMyApplicationsAsync(int jobSeekerId)
         {
+            var profile = await _jobSeekerRepository.GetByUserIdAsync(jobSeekerId);
+            int lookupId = profile?.JobSeekerProfileId ?? jobSeekerId;
+
             var applications =
                 await _repository.GetByJobSeekerIdAsync(
-                    jobSeekerId);
+                    lookupId);
 
             return applications
                 .Select(MapToDto)

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.DTOs.Applications;
 using SmartRecruitment.API.Services.Interfaces;
@@ -21,7 +21,7 @@ namespace SmartRecruitment.API.Controllers
 
         // Job Seeker applies for a job
         [HttpPost]
-        [Authorize(Roles = "JobSeeker")]
+        [Authorize(Roles = "JobSeeker,Seeker,jobseeker,Jobseeker")]
         public async Task<IActionResult> Apply(
             ApplicationCreateDto dto)
         {
@@ -56,11 +56,18 @@ namespace SmartRecruitment.API.Controllers
                     message = ex.Message
                 });
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = ex.InnerException?.Message ?? ex.Message
+                });
+            }
         }
 
         // Job seeker views own applications
         [HttpGet("my")]
-        [Authorize(Roles = "JobSeeker")]
+        [Authorize(Roles = "JobSeeker,Seeker,jobseeker,Jobseeker")]
         public async Task<IActionResult>
             GetMyApplications()
         {

@@ -1,169 +1,454 @@
-<div class="dashboard-page">
+<div class="employer-dashboard-page">
+  <div class="dashboard-container">
 
-  <!-- Header -->
-  <header class="dashboard-header">
-    <div class="header-left">
-      <div class="brand-icon">💼</div>
-      <div>
-        <h1>SmartRecruitment</h1>
-        <span>Employer Portal</span>
-      </div>
-    </div>
-
-    <div class="header-right">
-      <span class="role-badge">EMPLOYER</span>
-      <div class="profile-box">
-        <div class="profile-avatar">EM</div>
-        <div>
-          <strong>{{ companyName || 'Company' }}</strong>
-          <small *ngIf="isApproved" style="color: #10b981; font-weight: 600;">✓ Verified Employer</small>
-          <small *ngIf="!isApproved && hasProfile && approvalStatus === 'Rejected'" style="color: #ef4444; font-weight: 600;">✕ Verification Rejected</small>
-          <small *ngIf="!isApproved && hasProfile && approvalStatus !== 'Rejected'" style="color: #f59e0b; font-weight: 600;">⏳ Verification Pending</small>
-          <small *ngIf="!hasProfile" style="color: #94a3b8;">Profile Incomplete</small>
+    <!-- Executive Header / Welcome Banner -->
+    <header class="executive-header">
+      <div class="header-content">
+        <div class="header-badge-row">
+          <span class="page-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            </svg>
+            EMPLOYER TALENT CONSOLE
+          </span>
         </div>
+        <h1>Welcome back, {{ companyName || fullName }}! 👋</h1>
+        <p>Manage job vacancies, track candidate pipelines, and review AI matching scores in real time.</p>
       </div>
-    </div>
-  </header>
 
-
-  <!-- Main Content -->
-  <main class="dashboard-content">
-
-    <!-- Approval Status Alerts: Rejected -->
-    <div *ngIf="hasProfile && !isApproved && approvalStatus === 'Rejected'" class="alert-box reject-alert" style="background: rgba(239, 68, 68, 0.12); border: 1px solid #ef4444; color: #b91c1c; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 1.5rem;">✕</span>
-        <div>
-          <strong style="display: block; font-size: 1rem; color: #dc2626;">Company Profile Verification Rejected</strong>
-          <span style="font-size: 0.9rem; color: #991b1b;">Your profile details did not meet platform verification criteria. Please update your company profile details to request re-evaluation.</span>
+      <div class="header-actions">
+        <!-- Verification Status Pill -->
+        <div *ngIf="isApproved" class="status-chip verified" title="Your company profile is verified">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Verified Employer</span>
         </div>
+
+        <div *ngIf="!isApproved && hasProfile && approvalStatus === 'Rejected'" class="status-chip rejected" title="Verification rejected by admin">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>Verification Rejected</span>
+        </div>
+
+        <div *ngIf="!isApproved && hasProfile && approvalStatus !== 'Rejected'" class="status-chip pending" title="Under administrative review">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>Verification Pending</span>
+        </div>
+
+        <div *ngIf="!hasProfile" class="status-chip incomplete" title="Please complete your company profile">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>Profile Incomplete</span>
+        </div>
+
+        <!-- Primary Action Button -->
+        <button
+          routerLink="/employer/create-vacancy"
+          [disabled]="!isApproved"
+          class="btn-post-vacancy"
+          [class.disabled]="!isApproved"
+          [title]="isApproved ? 'Post a new vacancy' : 'Profile verification required to post vacancies'">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>{{ isApproved ? 'Post New Vacancy' : 'Post Vacancy (Locked)' }}</span>
+        </button>
       </div>
-      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #dc2626; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
-        Update Profile
+    </header>
+
+    <!-- Contextual Status Alerts -->
+    <div *ngIf="hasProfile && !isApproved && approvalStatus === 'Rejected'" class="dashboard-banner banner-reject">
+      <div class="banner-icon-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      </div>
+      <div class="banner-text">
+        <strong>Company Profile Verification Rejected</strong>
+        <p>Your profile details did not satisfy platform verification criteria. Please update your corporate details to request re-evaluation.</p>
+      </div>
+      <a routerLink="/employer/company-profile" class="banner-action btn-danger">
+        Update Profile →
       </a>
     </div>
 
-    <!-- Approval Status Alerts: Pending -->
-    <div *ngIf="hasProfile && !isApproved && approvalStatus !== 'Rejected'" class="alert-box pending-alert" style="background: rgba(245, 158, 11, 0.12); border: 1px solid #f59e0b; color: #b45309; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 1.5rem;">⏳</span>
-        <div>
-          <strong style="display: block; font-size: 1rem; color: #d97706;">Company Profile Pending Admin Approval</strong>
-          <span style="font-size: 0.9rem; color: #78350f;">Your company profile is under administrative review. Once approved, vacancy posting and candidate outreach will be unlocked automatically.</span>
-        </div>
+    <div *ngIf="hasProfile && !isApproved && approvalStatus !== 'Rejected'" class="dashboard-banner banner-pending">
+      <div class="banner-icon-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
       </div>
-      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #f59e0b; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
-        Review Profile
+      <div class="banner-text">
+        <strong>Company Profile Pending Administrative Review</strong>
+        <p>Your corporate profile is undergoing administrator verification. Job posting and candidate outreach will unlock automatically upon approval.</p>
+      </div>
+      <a routerLink="/employer/company-profile" class="banner-action btn-warning">
+        Review Profile →
       </a>
     </div>
 
-    <div *ngIf="!hasProfile" class="alert-box info-alert" style="background: rgba(99, 102, 241, 0.12); border: 1px solid #6366f1; color: #4338ca; padding: 16px 20px; border-radius: 10px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <span style="font-size: 1.5rem;">🏢</span>
-        <div>
-          <strong style="display: block; font-size: 1rem; color: #4f46e5;">Complete Your Company Profile</strong>
-          <span style="font-size: 0.9rem; color: #3730a3;">Submit your company details for administrator verification to unlock job posting capabilities.</span>
-        </div>
+    <div *ngIf="!hasProfile" class="dashboard-banner banner-info">
+      <div class="banner-icon-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
       </div>
-      <a routerLink="/employer/company-profile" style="white-space: nowrap; padding: 8px 16px; background: #6366f1; color: white; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">
+      <div class="banner-text">
+        <strong>Complete Your Company Identity</strong>
+        <p>Submit company registration, website, and industry details for verification to unlock job posting privileges.</p>
+      </div>
+      <a routerLink="/employer/company-profile" class="banner-action btn-indigo">
         Complete Profile →
       </a>
     </div>
 
-    <!-- Welcome -->
-    <section class="welcome-section">
-      <div>
-        <p class="welcome-label">EMPLOYER DASHBOARD</p>
-        <h2>Welcome back, {{ fullName }}! 👋</h2>
-        <p>Manage job vacancies, review applicant matching scores, and connect with top candidates.</p>
-      </div>
-
-      <button
-        routerLink="/employer/create-vacancy"
-        [disabled]="!isApproved"
-        [style.opacity]="isApproved ? '1' : '0.6'"
-        [style.cursor]="isApproved ? 'pointer' : 'not-allowed'"
-        [title]="isApproved ? 'Post a new vacancy' : 'Profile verification required to post vacancies'"
-        style="background: #2563eb; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; font-weight: 600;">
-        {{ isApproved ? '+ Post New Vacancy' : '🔒 Post Vacancy (Verification Required)' }}
-      </button>
-    </section>
-
-
-    <!-- Statistics -->
-    <section class="stats-grid">
+    <!-- Executive KPI Metric Cards -->
+    <section class="kpi-grid">
       <!-- Total Vacancies -->
-      <div class="stat-card">
-        <div class="stat-icon">📋</div>
-        <div>
-          <h3>Total Vacancies</h3>
-          <strong>{{ totalVacancies }}</strong>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper icon-blue">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Vacancies</span>
+          <div class="kpi-value-row">
+            <span class="kpi-number">{{ totalVacancies }}</span>
+            <span class="kpi-badge badge-blue">All Time</span>
+          </div>
+          <span class="kpi-subtext">{{ activeVacancies }} active openings</span>
         </div>
       </div>
 
       <!-- Active Vacancies -->
-      <div class="stat-card">
-        <div class="stat-icon">🟢</div>
-        <div>
-          <h3>Active Vacancies</h3>
-          <strong>{{ activeVacancies }}</strong>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper icon-green">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Active Vacancies</span>
+          <div class="kpi-value-row">
+            <span class="kpi-number">{{ activeVacancies }}</span>
+            <span class="kpi-badge badge-green">Live Now</span>
+          </div>
+          <span class="kpi-subtext">Accepting applications</span>
         </div>
       </div>
 
       <!-- Total Applicants -->
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div>
-          <h3>Total Applicants</h3>
-          <strong>{{ totalApplicants }}</strong>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper icon-purple">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Total Applicants</span>
+          <div class="kpi-value-row">
+            <span class="kpi-number">{{ totalApplicants }}</span>
+            <span class="kpi-badge badge-purple">AI Scored</span>
+          </div>
+          <span class="kpi-subtext">Candidate submissions</span>
         </div>
       </div>
 
       <!-- Pending Contact Requests -->
-      <div class="stat-card">
-        <div class="stat-icon">💬</div>
-        <div>
-          <h3>Pending Requests</h3>
-          <strong>{{ pendingRequests }}</strong>
+      <div class="kpi-card">
+        <div class="kpi-icon-wrapper icon-amber">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Pending Requests</span>
+          <div class="kpi-value-row">
+            <span class="kpi-number">{{ pendingRequests }}</span>
+            <span class="kpi-badge badge-amber">Action Req.</span>
+          </div>
+          <span class="kpi-subtext">Awaiting candidate reply</span>
         </div>
       </div>
     </section>
 
+    <!-- Operational Main Content (Two Columns) -->
+    <div class="dashboard-operational-grid">
 
-    <!-- Quick Actions -->
-    <section class="quick-actions-section" style="margin-top: 2rem;">
-      <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Quick Actions</h3>
+      <!-- Left Column (Primary 68%) -->
+      <div class="operational-main">
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
-        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📝</div>
-          <h4 style="margin: 0 0 0.5rem 0;">Post a Job Vacancy</h4>
-          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Create and publish a vacancy with weighted skill requirements.</p>
-          <a routerLink="/employer/create-vacancy" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Create Vacancy →</a>
-        </div>
+        <!-- Active Vacancies & Pipeline Panel -->
+        <section class="panel-container">
+          <div class="panel-header">
+            <div>
+              <h2>Recent Job Vacancies</h2>
+              <p>Active recruitment postings and candidate pipelines</p>
+            </div>
+            <a routerLink="/employer/vacancies" class="panel-link">
+              View All Vacancies ({{ totalVacancies }}) →
+            </a>
+          </div>
 
-        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
-          <h4 style="margin: 0 0 0.5rem 0;">Manage Vacancies</h4>
-          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">View, close, or update your published job openings.</p>
-          <a routerLink="/employer/vacancies" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">View Vacancies →</a>
-        </div>
+          <!-- If Vacancies Exist -->
+          <div *ngIf="recentJobs.length > 0" class="job-list-wrapper">
+            <div *ngFor="let job of recentJobs" class="job-item-card">
+              <div class="job-item-main">
+                <div class="job-title-row">
+                  <h3 class="job-title">{{ job.title }}</h3>
+                  <span class="status-tag" [class.active]="!job.isClosed" [class.closed]="job.isClosed">
+                    {{ job.isClosed ? 'Closed' : 'Active' }}
+                  </span>
+                </div>
 
-        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">👥</div>
-          <h4 style="margin: 0 0 0.5rem 0;">Review Applicants</h4>
-          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Inspect candidate applications and AI matching scores.</p>
-          <a routerLink="/employer/applicants" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Review Candidates →</a>
-        </div>
+                <div class="job-meta-row">
+                  <span class="meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                    {{ job.employmentType || 'Full Time' }}
+                  </span>
+                  <span class="meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ job.location || 'Colombo / Hybrid' }}
+                  </span>
+                  <span class="meta-item">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    {{ job.minExperienceYears }} - {{ job.maxExperienceYears }} yrs exp
+                  </span>
+                </div>
 
-        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem;">
-          <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🏢</div>
-          <h4 style="margin: 0 0 0.5rem 0;">Company Profile</h4>
-          <p style="color: #64748b; font-size: 0.875rem; margin-bottom: 1rem;">Update company overview, website, and industry details.</p>
-          <a routerLink="/employer/company-profile" style="color: #2563eb; font-weight: 600; text-decoration: none; font-size: 0.9rem;">Edit Profile →</a>
-        </div>
+                <!-- Required Skills Tags -->
+                <div *ngIf="job.requiredSkills && job.requiredSkills.length > 0" class="skills-preview-row">
+                  <span *ngFor="let s of job.requiredSkills.slice(0, 4)" class="skill-weight-chip">
+                    {{ s.skillName }} <small>{{ s.weight }}%</small>
+                  </span>
+                  <span *ngIf="job.requiredSkills.length > 4" class="skill-more-tag">
+                    +{{ job.requiredSkills.length - 4 }} more
+                  </span>
+                </div>
+              </div>
+
+              <div class="job-item-side">
+                <div class="applicant-badge-box">
+                  <span class="applicant-count">{{ jobApplicantCounts[job.id] || 0 }}</span>
+                  <span class="applicant-label">Applicants</span>
+                </div>
+
+                <div class="job-action-buttons">
+                  <a routerLink="/employer/applicants" class="btn-action-primary">
+                    Candidates
+                  </a>
+                  <a routerLink="/employer/vacancies" class="btn-action-secondary">
+                    Manage
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- If No Vacancies Yet -->
+          <div *ngIf="recentJobs.length === 0" class="empty-vacancies-state">
+            <div class="empty-icon-circle">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+              </svg>
+            </div>
+            <h3>No Active Vacancies Posted</h3>
+            <p>Publish your job vacancy with weighted skill requirements to leverage our automated AI candidate matching system.</p>
+            <button
+              routerLink="/employer/create-vacancy"
+              [disabled]="!isApproved"
+              class="btn-empty-action">
+              + Create Your First Vacancy
+            </button>
+          </div>
+        </section>
+
+        <!-- Quick Platform Workflows Panel -->
+        <section class="panel-container workflows-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Quick Actions</h2>
+              <p>Common operational workflows and recruitment shortcuts</p>
+            </div>
+          </div>
+
+          <div class="workflow-cards-grid">
+            <div class="workflow-card">
+              <div class="workflow-icon icon-blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+              </div>
+              <div class="workflow-content">
+                <h4>Post a Job Vacancy</h4>
+                <p>Define role criteria and assign skill weights for precision AI candidate scoring.</p>
+              </div>
+              <a routerLink="/employer/create-vacancy" class="workflow-link">
+                Create Vacancy →
+              </a>
+            </div>
+
+            <div class="workflow-card">
+              <div class="workflow-icon icon-purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <div class="workflow-content">
+                <h4>Review AI Applicants</h4>
+                <p>Inspect ranked candidate applications sorted by multi-factor matching algorithms.</p>
+              </div>
+              <a routerLink="/employer/applicants" class="workflow-link">
+                Review Candidates →
+              </a>
+            </div>
+
+            <div class="workflow-card">
+              <div class="workflow-icon icon-emerald">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="workflow-content">
+                <h4>Contact Requests</h4>
+                <p>Communicate directly with candidates and manage interview outreach threads.</p>
+              </div>
+              <a routerLink="/employer/contact-requests" class="workflow-link">
+                View Requests →
+              </a>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </section>
 
-  </main>
+      <!-- Right Column (Sidebar 32%) -->
+      <aside class="operational-sidebar">
+
+        <!-- Company Identity Card -->
+        <div class="panel-container company-identity-card">
+          <div class="company-card-header">
+            <div class="company-avatar">
+              {{ (companyName ? companyName.charAt(0) : 'E').toUpperCase() }}
+            </div>
+            <div class="company-card-titles">
+              <h3>{{ companyName || 'Company Name' }}</h3>
+              <span *ngIf="isApproved" class="verified-tag">✓ Verified Enterprise</span>
+              <span *ngIf="!isApproved" class="pending-tag">⏳ Verification Pending</span>
+            </div>
+          </div>
+
+          <div class="company-details-list">
+            <div class="company-detail-item">
+              <span class="detail-label">Industry</span>
+              <span class="detail-value">{{ employerProfile?.industry || 'Technology & Software' }}</span>
+            </div>
+            <div class="company-detail-item">
+              <span class="detail-label">Location</span>
+              <span class="detail-value">{{ employerProfile?.location || 'Colombo, Sri Lanka' }}</span>
+            </div>
+            <div class="company-detail-item" *ngIf="employerProfile?.website">
+              <span class="detail-label">Website</span>
+              <a [href]="employerProfile?.website" target="_blank" class="detail-link">
+                {{ employerProfile?.website }}
+              </a>
+            </div>
+            <div class="company-detail-item" *ngIf="employerProfile?.companySize">
+              <span class="detail-label">Company Size</span>
+              <span class="detail-value">{{ employerProfile?.companySize }} Employees</span>
+            </div>
+          </div>
+
+          <a routerLink="/employer/company-profile" class="btn-manage-profile">
+            Manage Company Profile →
+          </a>
+        </div>
+
+        <!-- AI Matching Intelligence Tip Box -->
+        <div class="panel-container ai-tips-card">
+          <div class="ai-tips-header">
+            <span class="ai-sparkle-badge">✨ AI MATCHING INTELLIGENCE</span>
+          </div>
+          <h4>Optimize Your Matching Accuracy</h4>
+          <p class="ai-tip-desc">Our intelligent algorithm matches candidates using a multi-factor scoring model:</p>
+          
+          <ul class="ai-tips-list">
+            <li>
+              <strong>Calibrate Skill Weights:</strong> Allocate higher percentage weights (25-30%) to your non-negotiable core technologies.
+            </li>
+            <li>
+              <strong>Clear Experience Ranges:</strong> Defining specific min/max years ensures candidates with appropriate seniority receive bonus score weight.
+            </li>
+            <li>
+              <strong>Rapid Candidate Outreach:</strong> Candidates contacted within 48 hours show a 75% higher interview attendance rate.
+            </li>
+          </ul>
+        </div>
+
+        <!-- Direct Portal Navigation Hub -->
+        <div class="panel-container nav-shortcuts-card">
+          <h4>Portal Shortcuts</h4>
+          <div class="shortcuts-list">
+            <a routerLink="/employer/vacancies" class="shortcut-item">
+              <span class="shortcut-icon">📋</span>
+              <span class="shortcut-text">All Published Vacancies</span>
+              <span class="shortcut-arrow">→</span>
+            </a>
+            <a routerLink="/employer/applicants" class="shortcut-item">
+              <span class="shortcut-icon">👥</span>
+              <span class="shortcut-text">Applicant Pipeline</span>
+              <span class="shortcut-arrow">→</span>
+            </a>
+            <a routerLink="/employer/notifications" class="shortcut-item">
+              <span class="shortcut-icon">🔔</span>
+              <span class="shortcut-text">Notifications Center</span>
+              <span class="shortcut-arrow">→</span>
+            </a>
+            <a routerLink="/employer/company-profile" class="shortcut-item">
+              <span class="shortcut-icon">🏢</span>
+              <span class="shortcut-text">Public Brand Appearance</span>
+              <span class="shortcut-arrow">→</span>
+            </a>
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
 </div>

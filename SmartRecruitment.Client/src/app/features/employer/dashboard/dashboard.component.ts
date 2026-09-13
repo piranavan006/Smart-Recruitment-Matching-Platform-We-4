@@ -32,6 +32,11 @@ export class DashboardComponent implements OnInit {
   isApproved = false;
   approvalStatus = 'Pending';
   isLoading = true;
+  jobApplicantCounts: { [jobId: number]: number } = {};
+
+  get recentJobs(): JobResponse[] {
+    return this.myJobs.slice(0, 4);
+  }
 
   constructor(
     private authService: AuthService,
@@ -91,7 +96,8 @@ export class DashboardComponent implements OnInit {
         jobs.forEach(j => {
           this.applicationService.getApplicationsByJob(j.id).subscribe({
             next: (apps) => {
-              count += apps.length;
+              this.jobApplicantCounts[j.id] = apps ? apps.length : 0;
+              count += apps ? apps.length : 0;
               completed++;
               if (completed === jobs.length) {
                 this.totalApplicants = count;
@@ -99,6 +105,7 @@ export class DashboardComponent implements OnInit {
               }
             },
             error: () => {
+              this.jobApplicantCounts[j.id] = 0;
               completed++;
               if (completed === jobs.length) {
                 this.totalApplicants = count;
