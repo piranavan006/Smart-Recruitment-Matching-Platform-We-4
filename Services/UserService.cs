@@ -7,10 +7,17 @@ namespace SmartRecruitment.API.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IEmployerRepository _employerRepository;
+        private readonly IJobRepository _jobRepository;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(
+            IUserRepository userRepository,
+            IEmployerRepository employerRepository,
+            IJobRepository jobRepository)
         {
             _userRepository = userRepository;
+            _employerRepository = employerRepository;
+            _jobRepository = jobRepository;
         }
 
         // ==========================================
@@ -92,6 +99,26 @@ namespace SmartRecruitment.API.Services
             user.IsActive = isActive;
 
             await _userRepository.UpdateAsync(user);
+
+            // If an employer user is deactivated, automatically close all their active vacancies
+            if (!isActive)
+            {
+                var employer = await _employerRepository.GetByUserIdAsync(userId.ToString());
+                if (employer != null)
+                {
+                    var jobs = await _jobRepository.GetByEmployerIdAsync(employer.EmployerProfileId);
+                    foreach (var job in jobs)
+                    {
+                        if (!job.IsClosed)
+                        {
+                            job.IsClosed = true;
+                            job.Status = "Closed";
+                            job.UpdatedAt = DateTime.UtcNow;
+                            await _jobRepository.UpdateAsync(job);
+                        }
+                    }
+                }
+            }
 
             return true;
         }

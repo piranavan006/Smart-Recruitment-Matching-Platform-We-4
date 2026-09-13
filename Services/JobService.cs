@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using SmartRecruitment.API.Data;
 using SmartRecruitment.API.DTOs;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
@@ -10,15 +12,18 @@ namespace SmartRecruitment.API.Services
         private readonly IJobRepository _jobRepository;
         private readonly IEmployerRepository _employerRepository;
         private readonly ISkillRepository _skillRepository;
+        private readonly ApplicationDbContext _context;
 
         public JobService(
             IJobRepository jobRepository,
             IEmployerRepository employerRepository,
-            ISkillRepository skillRepository)
+            ISkillRepository skillRepository,
+            ApplicationDbContext context)
         {
             _jobRepository = jobRepository;
             _employerRepository = employerRepository;
             _skillRepository = skillRepository;
+            _context = context;
         }
 
         // =========================================================
@@ -434,6 +439,73 @@ namespace SmartRecruitment.API.Services
             return jobs
                 .Select(MapToDto)
                 .ToList();
+        }
+
+        // =========================================================
+        // GET ALL JOBS (FOR ADMIN)
+        // =========================================================
+        public async Task<List<JobResponseDto>> GetAllAsync()
+        {
+            var jobs = await _jobRepository.GetAllAsync();
+
+            var activeUserIds = await _context.Users
+                .Where(u => u.IsActive)
+                .Select(u => u.UserId.ToString())
+                .ToListAsync();
+
+            var appCounts = await _context.Applications
+                .GroupBy(a => a.JobId)
+                .Select(g => new { JobId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.JobId, x => x.Count);
+
+            return jobs.Select(job =>
+            {
+                var dto = MapToDto(job);
+                dto.ApplicantCount = appCounts.TryGetValue(job.Id, out var count) ? count : 0;
+                dto.IsEmployerActive = job.EmployerProfile != null && activeUserIds.Contains(job.EmployerProfile.UserId);
+                dto.EmployerApprovalStatus = job.EmployerProfile?.ApprovalStatus;
+                if (!dto.IsEmployerActive)
+                {
+                    dto.IsClosed = true;
+                }
+                return dto;
+            }).ToList();
+        }
+
+        // =========================================================
+        // DELETE JOB
+        // =========================================================
+        public async Task<bool> DeleteAsync(
+            int id,
+            string? userId = null,
+            bool isAdmin = false)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("Invalid job ID.");
+            }
+
+            var job = await _jobRepository.GetByIdAsync(id);
+            if (job == null)
+            {
+                return false;
+            }
+
+            if (!isAdmin)
+            {
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    throw new UnauthorizedAccessException("User ID is required.");
+                }
+
+                var employer = await _employerRepository.GetByUserIdAsync(userId);
+                if (employer == null || job.EmployerProfileId != employer.EmployerProfileId)
+                {
+                    throw new UnauthorizedAccessException("You are not authorized to delete this job.");
+                }
+            }
+
+            return await _jobRepository.DeleteAsync(id);
         }
 
         // =========================================================

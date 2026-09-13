@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs;
+using SmartRecruitment.API.DTOs;
 
 namespace SmartRecruitment.API.Services.Interfaces
 {
@@ -25,5 +25,12 @@ namespace SmartRecruitment.API.Services.Interfaces
 
         Task<List<JobResponseDto>> SearchAsync(
             JobSearchDto dto);
+
+        Task<List<JobResponseDto>> GetAllAsync();
+
+        Task<bool> DeleteAsync(
+            int id,
+            string? userId = null,
+            bool isAdmin = false);
     }
 }

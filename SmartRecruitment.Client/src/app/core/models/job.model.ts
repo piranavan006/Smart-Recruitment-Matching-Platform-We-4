@@ -19,6 +19,9 @@ export interface JobResponse {
   salaryMax?: number;
   applicationDeadline: string;
   isClosed: boolean;
+  applicantCount?: number;
+  isEmployerActive?: boolean;
+  employerApprovalStatus?: string;
   requiredSkills: JobSkill[];
   createdAt: string;
   updatedAt: string;

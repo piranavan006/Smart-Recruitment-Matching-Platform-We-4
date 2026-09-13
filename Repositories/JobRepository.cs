@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
@@ -26,9 +26,35 @@ namespace SmartRecruitment.API.Repositories
         // Get All Jobs
         public async Task<List<Job>> GetAllAsync()
         {
+            // Auto-close any dangling open jobs for deactivated employers
+            var inactiveUserIds = await _context.Users
+                .Where(u => !u.IsActive)
+                .Select(u => u.UserId.ToString())
+                .ToListAsync();
+
+            if (inactiveUserIds.Any())
+            {
+                var danglingJobs = await _context.Jobs
+                    .Include(j => j.EmployerProfile)
+                    .Where(j => !j.IsClosed && j.EmployerProfile != null && inactiveUserIds.Contains(j.EmployerProfile.UserId))
+                    .ToListAsync();
+
+                if (danglingJobs.Any())
+                {
+                    foreach (var dj in danglingJobs)
+                    {
+                        dj.IsClosed = true;
+                        dj.Status = "Closed";
+                        dj.UpdatedAt = DateTime.UtcNow;
+                    }
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return await _context.Jobs
                 .Include(j => j.EmployerProfile)
                 .Include(j => j.JobSkills)
+                .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
         }
 
@@ -48,10 +74,15 @@ namespace SmartRecruitment.API.Repositories
         // Get Active Jobs
         public async Task<List<Job>> GetActiveJobsAsync()
         {
+            var activeUserIds = await _context.Users
+                .Where(u => u.IsActive)
+                .Select(u => u.UserId.ToString())
+                .ToListAsync();
+
             return await _context.Jobs
                 .Include(j => j.EmployerProfile)
                 .Include(j => j.JobSkills)
-                .Where(j => !j.IsClosed)
+                .Where(j => !j.IsClosed && j.EmployerProfile != null && activeUserIds.Contains(j.EmployerProfile.UserId))
                 .OrderByDescending(j => j.CreatedAt)
                 .ToListAsync();
         }
@@ -66,13 +97,18 @@ namespace SmartRecruitment.API.Repositories
             decimal? salaryMin,
             decimal? salaryMax)
         {
+            var activeUserIds = await _context.Users
+                .Where(u => u.IsActive)
+                .Select(u => u.UserId.ToString())
+                .ToListAsync();
+
             var query = _context.Jobs
                 .Include(j => j.EmployerProfile)
                 .Include(j => j.JobSkills)
                 .AsQueryable();
 
-            // Active jobs only
-            query = query.Where(j => !j.IsClosed);
+            // Active jobs only belonging to active employers
+            query = query.Where(j => !j.IsClosed && j.EmployerProfile != null && activeUserIds.Contains(j.EmployerProfile.UserId));
 
             // Keyword search
             if (!string.IsNullOrWhiteSpace(keyword))
@@ -162,17 +198,28 @@ namespace SmartRecruitment.API.Repositories
         }
 
         // Delete Job
-        public async Task DeleteAsync(int jobId)
+        public async Task<bool> DeleteAsync(int jobId)
         {
             var job = await _context.Jobs
+                .Include(j => j.JobSkills)
                 .FirstOrDefaultAsync(j => j.Id == jobId);
 
             if (job == null)
-                return;
+                return false;
+
+            var applications = await _context.Applications
+                .Where(a => a.JobId == jobId)
+                .ToListAsync();
+
+            if (applications.Any())
+            {
+                _context.Applications.RemoveRange(applications);
+            }
 
             _context.Jobs.Remove(job);
 
             await _context.SaveChangesAsync();
+            return true;
         }
 
         // Check Job Exists

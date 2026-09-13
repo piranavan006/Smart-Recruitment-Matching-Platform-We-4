@@ -253,6 +253,47 @@ namespace SmartRecruitment.API.Controllers
             }
         }
 
+        // DELETE: api/jobs/5
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Administrator,Admin,Employer")]
+        public async Task<IActionResult> DeleteJob(int id)
+        {
+            try
+            {
+                var userId = GetUserId();
+                bool isAdmin = User.IsInRole("Administrator") || User.IsInRole("Admin");
+
+                var deleted = await _jobService.DeleteAsync(id, userId, isAdmin);
+                if (!deleted)
+                {
+                    return NotFound(new
+                    {
+                        message = "Job vacancy not found."
+                    });
+                }
+
+                return Ok(new
+                {
+                    message = "Job vacancy deleted successfully.",
+                    jobId = id
+                });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+        }
+
         private string GetUserId()
         {
             var userId =
