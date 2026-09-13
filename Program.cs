@@ -233,11 +233,11 @@ namespace SmartRecruitment.API
             // Controllers
             app.MapControllers();
 
-            // Seed Default Admin User
+            // Seed Default Admin User, Core Skills, Sample Employers & Weighted Vacancies
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                DbInitializer.SeedAdminUser(dbContext);
+                DbSeeder.Seed(dbContext);
             }
 
             // Run Application

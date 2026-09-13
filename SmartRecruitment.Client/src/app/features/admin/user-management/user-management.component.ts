@@ -213,6 +213,33 @@ export class UserManagementComponent implements OnInit {
     });
   }
 
+  deleteUser(user: DisplayUser): void {
+    if (user.email.toLowerCase() === 'admin@smartrecruitment.com') {
+      alert('The primary platform administrator cannot be deleted.');
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to permanently delete user '${user.name}' (${user.email})? This action cannot be undone.`
+    );
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.adminService.deleteUser(user.userId).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.userId !== user.userId);
+        this.successMessage = `User '${user.name}' has been permanently deleted.`;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to delete user account.';
+      }
+    });
+  }
+
   resetFilters(): void {
     this.searchTerm = '';
     this.selectedRole = 'All';

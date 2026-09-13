@@ -169,5 +169,42 @@ namespace SmartRecruitment.API.Controllers
                 isActive = dto.IsActive
             });
         }
+
+        // DELETE: api/Admin/users/{id}
+        [HttpDelete("users/{id:int}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var deleted = await _userService.DeleteUserAsync(id);
+                if (!deleted)
+                {
+                    return NotFound(new
+                    {
+                        message = "User not found."
+                    });
+                }
+
+                return Ok(new
+                {
+                    message = "User deleted successfully.",
+                    userId = id
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    message = "Failed to delete user: " + ex.Message
+                });
+            }
+        }
     }
 }
