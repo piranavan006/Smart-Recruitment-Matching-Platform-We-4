@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { JobService } from '../../../core/services/job.service';
+import { Job } from '../../../core/models/job.model';
 
-interface AdminJob {
+export interface AdminJob {
   id: number;
   title: string;
   company: string;
@@ -25,84 +27,48 @@ interface AdminJob {
   templateUrl: './job-management.component.html',
   styleUrl: './job-management.component.css'
 })
-export class JobManagementComponent {
-
+export class JobManagementComponent implements OnInit {
   searchTerm = '';
   selectedStatus = 'All';
   selectedType = 'All';
 
-  jobs: AdminJob[] = [
-    {
-      id: 1,
-      title: 'Software Engineer',
-      company: 'Tech Solutions',
-      location: 'Colombo',
-      type: 'Full Time',
-      applicants: 12,
-      postedDate: '08 Sep 2026',
-      status: 'Active'
-    },
-    {
-      id: 2,
-      title: 'Frontend Developer',
-      company: 'Digital Innovations',
-      location: 'Jaffna',
-      type: 'Full Time',
-      applicants: 8,
-      postedDate: '07 Sep 2026',
-      status: 'Active'
-    },
-    {
-      id: 3,
-      title: 'Junior Web Developer',
-      company: 'Creative Labs',
-      location: 'Remote',
-      type: 'Full Time',
-      applicants: 5,
-      postedDate: '05 Sep 2026',
-      status: 'Closed'
-    },
-    {
-      id: 4,
-      title: 'Backend Developer',
-      company: 'Tech Lanka',
-      location: 'Kandy',
-      type: 'Full Time',
-      applicants: 9,
-      postedDate: '03 Sep 2026',
-      status: 'Active'
-    },
-    {
-      id: 5,
-      title: 'UI/UX Designer',
-      company: 'Creative Labs',
-      location: 'Colombo',
-      type: 'Part Time',
-      applicants: 6,
-      postedDate: '01 Sep 2026',
-      status: 'Closed'
-    },
-    {
-      id: 6,
-      title: 'Angular Developer',
-      company: 'Digital Innovations',
-      location: 'Remote',
-      type: 'Full Time',
-      applicants: 11,
-      postedDate: '30 Aug 2026',
-      status: 'Active'
-    }
-  ];
+  jobs: AdminJob[] = [];
+  isLoading = true;
+  errorMessage = '';
 
+  constructor(private jobService: JobService) {}
 
-  // Filter jobs
+  ngOnInit(): void {
+    this.loadJobs();
+  }
+
+  loadJobs(): void {
+    this.isLoading = true;
+    this.jobService.searchJobs().subscribe({
+      next: (res: Job[]) => {
+        const rawItems = Array.isArray(res) ? res : [];
+        this.jobs = rawItems.map((j: Job) => ({
+          id: j.id || 0,
+          title: j.title || 'Untitled Vacancy',
+          company: j.companyName || 'Company',
+          location: j.location || 'Not Specified',
+          type: j.employmentType || 'Full Time',
+          applicants: 0,
+          postedDate: j.createdAt ? new Date(j.createdAt).toLocaleDateString() : 'Recent',
+          status: j.isClosed ? 'Closed' : 'Active'
+        }));
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to load platform vacancies.';
+        this.isLoading = false;
+      }
+    });
+  }
+
   get filteredJobs(): AdminJob[] {
-
     return this.jobs.filter(job => {
-
-      const search =
-        this.searchTerm.toLowerCase().trim();
-
+      const search = this.searchTerm.toLowerCase().trim();
       const matchesSearch =
         job.title.toLowerCase().includes(search) ||
         job.company.toLowerCase().includes(search) ||
@@ -110,95 +76,39 @@ export class JobManagementComponent {
 
       const matchesStatus =
         this.selectedStatus === 'All' ||
-        job.status === this.selectedStatus;
+        job.status.toLowerCase() === this.selectedStatus.toLowerCase();
 
       const matchesType =
         this.selectedType === 'All' ||
-        job.type === this.selectedType;
+        job.type.toLowerCase().includes(this.selectedType.toLowerCase());
 
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesType
-      );
-
+      return matchesSearch && matchesStatus && matchesType;
     });
-
   }
 
-
-  // Total jobs
   getTotalJobs(): number {
-
     return this.jobs.length;
-
   }
 
-
-  // Active jobs
   getActiveJobs(): number {
-
-    return this.jobs.filter(
-      job => job.status === 'Active'
-    ).length;
-
+    return this.jobs.filter(job => job.status.toLowerCase() === 'active').length;
   }
 
-
-  // Closed jobs
   getClosedJobs(): number {
-
-    return this.jobs.filter(
-      job => job.status === 'Closed'
-    ).length;
-
+    return this.jobs.filter(job => job.status.toLowerCase() === 'closed').length;
   }
 
-
-  // Total applicants
   getTotalApplicants(): number {
-
-    return this.jobs.reduce(
-      (total, job) => total + job.applicants,
-      0
-    );
-
+    return this.jobs.reduce((total, job) => total + (job.applicants || 0), 0);
   }
 
-
-  // Full-time jobs
   getFullTimeJobs(): number {
-
-    return this.jobs.filter(
-      job => job.type === 'Full Time'
-    ).length;
-
+    return this.jobs.filter(job => job.type.toLowerCase().includes('full')).length;
   }
 
-
-  // Close a job
-  closeJob(job: AdminJob): void {
-
-    job.status = 'Closed';
-
-  }
-
-
-  // Re-open a closed job
-  activateJob(job: AdminJob): void {
-
-    job.status = 'Active';
-
-  }
-
-
-  // Reset filters
   resetFilters(): void {
-
     this.searchTerm = '';
     this.selectedStatus = 'All';
     this.selectedType = 'All';
-
   }
-
-}
+}

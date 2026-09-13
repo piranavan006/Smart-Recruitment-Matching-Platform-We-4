@@ -8,6 +8,11 @@ import {
   Validators
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { JobService } from '../../../core/services/job.service';
+import { CreateJobRequest } from '../../../core/models/job.model';
+
+import { OnInit } from '@angular/core';
+import { EmployerService } from '../../../core/services/employer.service';
 
 @Component({
   selector: 'app-create-vacancy',
@@ -20,16 +25,20 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './create-vacancy.component.html',
   styleUrl: './create-vacancy.component.css'
 })
-export class CreateVacancyComponent {
+export class CreateVacancyComponent implements OnInit {
 
   vacancyForm: FormGroup;
   isSubmitting = false;
+  isApproved = false;
+  isLoadingProfile = true;
   successMessage = '';
   errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private jobService: JobService,
+    private employerService: EmployerService
   ) {
 
     this.vacancyForm = this.fb.group({
@@ -101,6 +110,24 @@ export class CreateVacancyComponent {
         this.createSkill()
       ])
 
+    });
+  }
+
+  ngOnInit(): void {
+    this.checkApproval();
+  }
+
+  checkApproval(): void {
+    this.isLoadingProfile = true;
+    this.employerService.getProfile().subscribe({
+      next: (profile) => {
+        this.isApproved = !!profile?.isApproved;
+        this.isLoadingProfile = false;
+      },
+      error: () => {
+        this.isApproved = false;
+        this.isLoadingProfile = false;
+      }
     });
   }
 
@@ -210,6 +237,11 @@ export class CreateVacancyComponent {
     this.successMessage = '';
     this.errorMessage = '';
 
+    if (!this.isApproved) {
+      this.errorMessage = 'Your company profile has not been approved by an administrator yet. Vacancy posting is locked until your profile is verified.';
+      return;
+    }
+
     if (this.vacancyForm.invalid) {
 
       this.vacancyForm.markAllAsTouched();
@@ -250,32 +282,36 @@ export class CreateVacancyComponent {
 
     this.isSubmitting = true;
 
+    const formVal = this.vacancyForm.value;
+    const createDto: CreateJobRequest = {
+      title: formVal.title.trim(),
+      description: formVal.description.trim(),
+      location: formVal.location ? formVal.location.trim() : undefined,
+      education: 'Bachelor Degree or Equivalent',
+      minExperienceYears: Number(formVal.experienceMin) || 0,
+      maxExperienceYears: Number(formVal.experienceMax) || 0,
+      salaryMin: formVal.salaryMin ? Number(formVal.salaryMin) : undefined,
+      salaryMax: formVal.salaryMax ? Number(formVal.salaryMax) : undefined,
+      applicationDeadline: new Date(formVal.applicationDeadline).toISOString(),
+      requiredSkills: (formVal.requiredSkills || []).map((s: any) => ({
+        skillName: s.skill?.trim() || '',
+        weight: Number(s.weight) || 1
+      }))
+    };
 
-    // Temporary frontend test
-    console.log(
-      'Vacancy Data:',
-      this.vacancyForm.value
-    );
-
-
-    setTimeout(() => {
-
-      this.isSubmitting = false;
-
-      this.successMessage =
-        'Vacancy created successfully!';
-
-      this.vacancyForm.reset({
-
-        jobType: 'Full Time',
-
-        experienceMin: 0,
-
-        experienceMax: 0
-
-      });
-
-    }, 800);
+    this.jobService.createJob(createDto).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.successMessage = 'Vacancy created successfully! Redirecting to vacancies list...';
+        setTimeout(() => {
+          this.router.navigate(['/employer/vacancies']);
+        }, 1200);
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.errorMessage = err.error?.message || 'Failed to create vacancy. Please check details and try again.';
+      }
+    });
 
   }
 

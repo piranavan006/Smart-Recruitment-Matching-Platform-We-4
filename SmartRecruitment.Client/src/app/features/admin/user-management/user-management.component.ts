@@ -1,14 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AdminService } from '../../../core/services/admin.service';
+import { AdminEmployer, AdminUser } from '../../../core/models/admin.model';
 
-interface AdminUser {
-  id: number;
+export interface DisplayUser {
+  userId: number;
   name: string;
   email: string;
   role: string;
-  status: string;
+  status: 'Active' | 'Inactive';
+  isActive: boolean;
   joinedDate: string;
 }
 
@@ -23,171 +26,196 @@ interface AdminUser {
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.css'
 })
-export class UserManagementComponent {
+export class UserManagementComponent implements OnInit {
+  activeTab: 'users' | 'employers' = 'users';
 
   searchTerm = '';
   selectedRole = 'All';
   selectedStatus = 'All';
 
-  users: AdminUser[] = [
-    {
-      id: 1,
-      name: 'Arun Kumar',
-      email: 'arun@example.com',
-      role: 'Job Seeker',
-      status: 'Active',
-      joinedDate: '05 Sep 2026'
-    },
-    {
-      id: 2,
-      name: 'Sathya Priya',
-      email: 'sathya@example.com',
-      role: 'Job Seeker',
-      status: 'Active',
-      joinedDate: '04 Sep 2026'
-    },
-    {
-      id: 3,
-      name: 'Tech Solutions',
-      email: 'hr@techsolutions.com',
-      role: 'Employer',
-      status: 'Active',
-      joinedDate: '02 Sep 2026'
-    },
-    {
-      id: 4,
-      name: 'Ravi Kumar',
-      email: 'ravi@example.com',
-      role: 'Job Seeker',
-      status: 'Inactive',
-      joinedDate: '01 Sep 2026'
-    },
-    {
-      id: 5,
-      name: 'Digital Innovations',
-      email: 'admin@digitalinnovations.com',
-      role: 'Employer',
-      status: 'Active',
-      joinedDate: '30 Aug 2026'
-    },
-    {
-      id: 6,
-      name: 'Nimal Perera',
-      email: 'nimal@example.com',
-      role: 'Job Seeker',
-      status: 'Inactive',
-      joinedDate: '28 Aug 2026'
+  users: DisplayUser[] = [];
+  employers: AdminEmployer[] = [];
+
+  isLoading = true;
+  isLoadingEmployers = false;
+  errorMessage = '';
+  successMessage = '';
+
+  constructor(private adminService: AdminService) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
+    this.loadEmployers();
+  }
+
+  loadUsers(): void {
+    this.isLoading = true;
+    this.adminService.getUsers().subscribe({
+      next: (data) => {
+        this.users = (data || []).map(u => ({
+          userId: u.userId,
+          name: u.fullName || u.email,
+          email: u.email,
+          role: this.normalizeRole(u.role),
+          status: u.isActive ? 'Active' : 'Inactive',
+          isActive: u.isActive,
+          joinedDate: 'Registered'
+        }));
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to load user directory.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadEmployers(): void {
+    this.isLoadingEmployers = true;
+    this.adminService.getEmployers().subscribe({
+      next: (data) => {
+        this.employers = data || [];
+        this.isLoadingEmployers = false;
+      },
+      error: () => {
+        this.isLoadingEmployers = false;
+      }
+    });
+  }
+
+  approveEmployer(emp: AdminEmployer): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.adminService.updateEmployerApproval(emp.id, true, 'Approved').subscribe({
+      next: () => {
+        emp.isApproved = true;
+        emp.approvalStatus = 'Approved';
+        this.successMessage = `Company '${emp.companyName}' has been approved successfully!`;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to approve company profile.';
+      }
+    });
+  }
+
+  rejectEmployer(emp: AdminEmployer): void {
+    const reason = window.prompt(`Enter rejection reason for '${emp.companyName}' (optional):`, 'Profile details do not meet platform verification criteria.');
+    if (reason === null) {
+      return; // Admin clicked cancel
     }
-  ];
 
+    this.successMessage = '';
+    this.errorMessage = '';
 
-  // Filter users
-  get filteredUsers(): AdminUser[] {
+    this.adminService.updateEmployerApproval(emp.id, false, 'Rejected', reason).subscribe({
+      next: () => {
+        emp.isApproved = false;
+        emp.approvalStatus = 'Rejected';
+        this.successMessage = `Company '${emp.companyName}' profile has been rejected.`;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to reject company profile.';
+      }
+    });
+  }
 
+  revokeEmployerApproval(emp: AdminEmployer): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.adminService.updateEmployerApproval(emp.id, false, 'Pending').subscribe({
+      next: () => {
+        emp.isApproved = false;
+        emp.approvalStatus = 'Pending';
+        this.successMessage = `Company '${emp.companyName}' approval has been revoked.`;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to revoke company approval.';
+      }
+    });
+  }
+
+  getPendingEmployerApprovals(): number {
+    return this.employers.filter(e => !e.isApproved && e.approvalStatus !== 'Rejected').length;
+  }
+
+  get filteredEmployers(): AdminEmployer[] {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) return this.employers;
+    return this.employers.filter(e =>
+      e.companyName.toLowerCase().includes(term) ||
+      (e.industry && e.industry.toLowerCase().includes(term)) ||
+      (e.location && e.location.toLowerCase().includes(term))
+    );
+  }
+
+  private normalizeRole(role: string): string {
+    if (!role) return 'Job Seeker';
+    const lower = role.toLowerCase();
+    if (lower.includes('admin')) return 'Administrator';
+    if (lower.includes('employer')) return 'Employer';
+    return 'Job Seeker';
+  }
+
+  get filteredUsers(): DisplayUser[] {
     return this.users.filter(user => {
-
       const matchesSearch =
-        user.name
-          .toLowerCase()
-          .includes(this.searchTerm.toLowerCase()) ||
-
-        user.email
-          .toLowerCase()
-          .includes(this.searchTerm.toLowerCase());
-
+        user.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(this.searchTerm.toLowerCase());
 
       const matchesRole =
         this.selectedRole === 'All' ||
         user.role === this.selectedRole;
 
-
       const matchesStatus =
         this.selectedStatus === 'All' ||
         user.status === this.selectedStatus;
 
-
-      return (
-        matchesSearch &&
-        matchesRole &&
-        matchesStatus
-      );
-
+      return matchesSearch && matchesRole && matchesStatus;
     });
-
   }
 
-
-  // Total users
   getTotalUsers(): number {
-
     return this.users.length;
-
   }
 
-
-  // Active users
   getActiveUsers(): number {
-
-    return this.users.filter(
-      user => user.status === 'Active'
-    ).length;
-
+    return this.users.filter(user => user.isActive).length;
   }
 
-
-  // Inactive users
   getInactiveUsers(): number {
-
-    return this.users.filter(
-      user => user.status === 'Inactive'
-    ).length;
-
+    return this.users.filter(user => !user.isActive).length;
   }
 
-
-  // Job seekers
   getJobSeekers(): number {
-
-    return this.users.filter(
-      user => user.role === 'Job Seeker'
-    ).length;
-
+    return this.users.filter(user => user.role === 'Job Seeker').length;
   }
 
-
-  // Employers
   getEmployers(): number {
-
-    return this.users.filter(
-      user => user.role === 'Employer'
-    ).length;
-
+    return this.users.filter(user => user.role === 'Employer').length;
   }
 
+  toggleUserStatus(user: DisplayUser): void {
+    const targetStatus = !user.isActive;
+    this.successMessage = '';
+    this.errorMessage = '';
 
-  // Activate / deactivate user
-  toggleUserStatus(user: AdminUser): void {
-
-    if (user.status === 'Active') {
-
-      user.status = 'Inactive';
-
-    } else {
-
-      user.status = 'Active';
-
-    }
-
+    this.adminService.updateUserStatus(user.userId, targetStatus).subscribe({
+      next: () => {
+        user.isActive = targetStatus;
+        user.status = targetStatus ? 'Active' : 'Inactive';
+        this.successMessage = `User ${user.name} is now ${user.status}.`;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to update user status.';
+      }
+    });
   }
 
-
-  // Reset filters
   resetFilters(): void {
-
     this.searchTerm = '';
     this.selectedRole = 'All';
     this.selectedStatus = 'All';
-
   }
-
-}
+}

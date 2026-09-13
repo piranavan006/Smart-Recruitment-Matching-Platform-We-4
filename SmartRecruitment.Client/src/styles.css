@@ -1,1 +1,121 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================================================
+   SMART RECRUITMENT - GLOBAL DESIGN SYSTEM & TOKENS
+   ========================================================= */
+
+:root {
+  /* Font Family */
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  /* Tier 1: Admin Obsidian / Cyber-Slate Palette */
+  --admin-bg-base: #090d16;
+  --admin-bg-surface: #0f172a;
+  --admin-bg-card: #151f38;
+  --admin-border: rgba(99, 102, 241, 0.18);
+  --admin-border-hover: rgba(129, 140, 248, 0.35);
+  --admin-glow: rgba(99, 102, 241, 0.25);
+  --admin-accent: #6366f1;
+  --admin-accent-hover: #4f46e5;
+  --admin-text-primary: #f8fafc;
+  --admin-text-secondary: #94a3b8;
+  --admin-text-muted: #64748b;
+
+  /* Tier 2: Employer Enterprise Corporate Palette */
+  --emp-bg-canvas: #f8fafc;
+  --emp-bg-surface: #ffffff;
+  --emp-primary: #2563eb;
+  --emp-primary-hover: #1d4ed8;
+  --emp-primary-light: #eff6ff;
+  --emp-slate-900: #0f172a;
+  --emp-slate-800: #1e293b;
+  --emp-slate-700: #334155;
+  --emp-border: #e2e8f0;
+  --emp-border-subtle: #cbd5e1;
+
+  /* Tier 3: Seeker Talent & Career Hub Palette */
+  --seeker-canvas: #f4f6fb;
+  --seeker-surface: #ffffff;
+  --seeker-primary: #6366f1;
+  --seeker-primary-hover: #4f46e5;
+  --seeker-violet: #8b5cf6;
+  --seeker-emerald: #10b981;
+  --seeker-amber: #f59e0b;
+
+  /* Semantic Status Colors */
+  --color-success: #10b981;
+  --color-success-bg: rgba(16, 185, 129, 0.12);
+  --color-success-border: rgba(16, 185, 129, 0.3);
+
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245, 158, 11, 0.12);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.12);
+  --color-danger-border: rgba(239, 68, 68, 0.3);
+
+  --color-info: #3b82f6;
+  --color-info-bg: rgba(59, 130, 246, 0.12);
+  --color-info-border: rgba(59, 130, 246, 0.3);
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 35px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+  --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.22);
+}
+
+/* Global Reset & Typography */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  color: #1e293b;
+  background-color: #f8fafc;
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+}
+
+/* Custom Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Common Interactive Utilities */
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+.card-lift {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}

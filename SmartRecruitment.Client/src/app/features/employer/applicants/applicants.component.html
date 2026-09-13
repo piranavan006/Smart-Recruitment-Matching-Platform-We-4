@@ -4,224 +4,176 @@
 
     <!-- Header -->
     <div class="applicants-header">
-
       <div>
         <span class="page-badge">EMPLOYER</span>
-
-        <h1>Applicants</h1>
-
-        <p>
-          Review candidates ranked by their matching score.
-        </p>
+        <h1>Applicant Management</h1>
+        <p>Review candidate applications and AI matching scores.</p>
       </div>
 
-      <a
-        routerLink="/employer"
-        class="back-button">
+      <a routerLink="/employer" class="back-button">
         ← Dashboard
       </a>
-
     </div>
 
-    <!-- Summary -->
-    <div class="stats-grid">
+    <!-- Feedback messages -->
+    <div *ngIf="successMessage" style="background: #dcfce7; border: 1px solid #86efac; color: #15803d; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ✓ {{ successMessage }}
+    </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
+    <div *ngIf="errorMessage" style="background: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: 500;">
+      ⚠ {{ errorMessage }}
+    </div>
 
-        <div>
-          <span>Total Applicants</span>
+    <!-- Filter Section -->
+    <div class="filter-card">
+      <div class="filter-group">
+        <label>Select Job Vacancy</label>
+        <select [(ngModel)]="selectedJobId" (change)="onJobChange()" [disabled]="vacancies.length === 0">
+          <option [ngValue]="null" disabled>-- Select a Vacancy --</option>
+          <option *ngFor="let job of vacancies" [ngValue]="job.id">
+            {{ job.title }} ({{ job.location || 'Location Flexible' }})
+          </option>
+        </select>
+      </div>
+
+      <div class="stats-mini">
+        <div class="stat-pill">
+          <span>Total:</span>
           <strong>{{ applicants.length }}</strong>
         </div>
-      </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">⭐</div>
-
-        <div>
-          <span>Top Match</span>
+        <div class="stat-pill">
+          <span>Top Match:</span>
           <strong>{{ getTopMatch() }}%</strong>
         </div>
-      </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-
-        <div>
-          <span>Pending</span>
+        <div class="stat-pill">
+          <span>Pending:</span>
           <strong>{{ getCount('Pending') }}</strong>
         </div>
-      </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">✅</div>
-
-        <div>
-          <span>Accepted</span>
+        <div class="stat-pill">
+          <span>Accepted:</span>
           <strong>{{ getCount('Accepted') }}</strong>
         </div>
       </div>
-
     </div>
 
-    <!-- Applicants Section -->
-    <div class="applicants-section">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" style="text-align: center; padding: 3rem; color: #64748b;">
+      Loading candidates and calculating match rankings...
+    </div>
 
-      <div class="section-header">
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && applicants.length === 0" style="text-align: center; padding: 3rem; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 1.5rem;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">👥</div>
+      <h3>No applicants yet for this vacancy</h3>
+      <p style="color: #64748b;">Applicants who submit their profile will appear ranked by their match score here.</p>
+    </div>
 
-        <div>
-          <h2>Ranked Applicants</h2>
+    <!-- Applicants List -->
+    <div class="applicants-section" *ngIf="!isLoading && applicants.length > 0">
+      <div class="applicants-grid">
 
-          <p>
-            Candidates are displayed according to the match score
-            returned by the system.
-          </p>
-        </div>
+        <div class="applicant-card" *ngFor="let applicant of applicants">
 
-        <select
-          class="job-select"
-          [(ngModel)]="selectedJob">
-
-          <option value="">All Vacancies</option>
-          <option value="Software Engineer">
-            Software Engineer
-          </option>
-          <option value="Frontend Developer">
-            Frontend Developer
-          </option>
-
-        </select>
-
-      </div>
-
-      <!-- Applicant List -->
-      <div class="applicants-list">
-
-        <div
-          class="applicant-card"
-          *ngFor="let applicant of applicants">
-
-          <div class="rank-number">
+          <div class="rank-badge">
             #{{ applicant.rank }}
           </div>
 
-          <div class="candidate-avatar">
-            {{ applicant.initials }}
+          <div class="applicant-avatar">
+            👤
           </div>
 
-          <div class="candidate-info">
-
-            <h3>{{ applicant.name }}</h3>
-
-            <p class="candidate-role">
-              {{ applicant.jobTitle }}
-            </p>
-
-            <div class="candidate-details">
-
-              <span>
-                📍 {{ applicant.location }}
-              </span>
-
-              <span>
-                💼 {{ applicant.experience }} years experience
-              </span>
-
-              <span>
-                📅 Applied {{ applicant.appliedDate }}
-              </span>
-
-            </div>
-
-            <div class="skills-list">
-
+          <div class="applicant-info">
+            <div class="applicant-header">
+              <h3>{{ applicant.candidateName }}</h3>
               <span
-                class="skill-tag"
-                *ngFor="let skill of applicant.skills">
-                {{ skill }}
+                class="status-tag"
+                [class.pending]="applicant.status.toLowerCase() === 'pending'"
+                [class.accepted]="applicant.status.toLowerCase() === 'accepted'"
+                [class.rejected]="applicant.status.toLowerCase() === 'rejected'">
+                {{ applicant.status }}
               </span>
-
             </div>
 
+            <div class="applicant-meta">
+              <span>📅 Applied: {{ applicant.appliedAt | date:'mediumDate' }}</span>
+              <span>Candidate ID: #{{ applicant.jobSeekerId }}</span>
+            </div>
+
+            <!-- Missing Skills notice -->
+            <div *ngIf="applicant.missingSkills && applicant.missingSkills.length > 0" style="margin-top: 0.5rem; font-size: 0.8rem; color: #64748b;">
+              Missing required skills: <span style="color: #dc2626;">{{ applicant.missingSkills.join(', ') }}</span>
+            </div>
           </div>
 
           <!-- Match Score -->
-          <div class="match-section">
-
-            <span class="match-label">
-              Match Score
-            </span>
-
-            <strong>
-              {{ applicant.matchScore }}%
-            </strong>
-
-            <div class="score-bar">
-              <div
-                class="score-progress"
-                [ngStyle]="{
-                  width: applicant.matchScore + '%'
-                }">
-              </div>
+          <div class="match-score-box">
+            <div class="score-circle">
+              <strong>{{ applicant.matchScoreVal }}%</strong>
+              <small>Match</small>
             </div>
-
           </div>
 
-          <!-- Status -->
-          <div class="applicant-actions">
-
-            <span
-              class="status-badge"
-              [ngClass]="applicant.status.toLowerCase()">
-              {{ applicant.status }}
-            </span>
-
-            <select
-              class="status-select"
-              [(ngModel)]="applicant.status">
-
-              <option value="Pending">Pending</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Rejected">Rejected</option>
-
-            </select>
-
+          <!-- Action Controls -->
+          <div class="applicant-actions" style="display: flex; flex-direction: column; gap: 0.4rem; justify-content: center;">
             <button
               type="button"
-              class="view-button">
-              View Profile
+              (click)="updateStatus(applicant, 'Accepted')"
+              style="background: #10b981; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+              ✓ Accept
             </button>
 
             <button
               type="button"
-              class="contact-button">
-              Contact
+              (click)="updateStatus(applicant, 'Under Review')"
+              style="background: #f59e0b; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+              Review
             </button>
 
+            <button
+              type="button"
+              (click)="updateStatus(applicant, 'Rejected')"
+              style="background: #ef4444; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+              ✕ Reject
+            </button>
+
+            <button
+              type="button"
+              (click)="openContactModal(applicant)"
+              style="background: #3b82f6; color: white; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+              💬 Contact
+            </button>
           </div>
 
         </div>
 
       </div>
+    </div>
 
-      <!-- Empty State -->
-      <div
-        class="empty-state"
-        *ngIf="applicants.length === 0">
+    <!-- Contact Request Modal -->
+    <div *ngIf="contactingApplicant" style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 2000;">
+      <div style="background: white; border-radius: 12px; padding: 1.5rem; max-width: 480px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+        <h3 style="margin-top: 0; color: #1e293b;">Send Contact Request</h3>
+        <p style="color: #64748b; font-size: 0.9rem;">Send an interview invitation or inquiry to <strong>{{ contactingApplicant.candidateName }}</strong>.</p>
 
-        <div class="empty-icon">
-          👥
+        <textarea
+          [(ngModel)]="contactMessage"
+          rows="4"
+          style="width: 100%; box-sizing: border-box; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-family: inherit; font-size: 0.9rem;"
+          placeholder="Enter your message..."></textarea>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+          <button type="button" (click)="closeContactModal()" style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="button" (click)="sendContactMessage()" [disabled]="isSendingMessage" style="background: #2563eb; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer;">
+            <span *ngIf="isSendingMessage">Sending...</span>
+            <span *ngIf="!isSendingMessage">Send Request</span>
+          </button>
         </div>
-
-        <h3>No applicants yet</h3>
-
-        <p>
-          Applicants will appear here when candidates apply
-          for your vacancies.
-        </p>
-
       </div>
-
     </div>
 
   </div>

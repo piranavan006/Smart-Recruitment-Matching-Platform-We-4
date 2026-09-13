@@ -1,149 +1,143 @@
 <div class="login-page">
 
-  <div class="login-card">
+  <div class="auth-container">
 
-    <div class="login-header">
-      <h1>Welcome Back</h1>
-      <p>Login to Smart Recruitment</p>
+    <!-- Left Brand Hero Section -->
+    <div class="auth-hero">
+      <div class="hero-brand">
+        <div class="brand-badge">⚡</div>
+        <div class="brand-text">
+          <h2>SmartRecruit</h2>
+          <span>INTELLIGENT MATCHING</span>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <h1>Accelerate Your Career & Hiring with AI Precision</h1>
+        <p>The unified recruitment platform connecting elite candidates with verified enterprise employers through skill-weighted matching algorithms.</p>
+
+        <div class="feature-pills">
+          <div class="feature-item">
+            <div class="feature-icon">🎯</div>
+            <div>
+              <strong>Skill-Weighted Matching</strong>
+              <small>Objective qualification scoring</small>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">🏢</div>
+            <div>
+              <strong>Verified Employers</strong>
+              <small>Admin-approved organizational profiles</small>
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon">🔒</div>
+            <div>
+              <strong>Role-Secured Portals</strong>
+              <small>Dedicated environments for all users</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-footer">
+        <div class="trust-indicator">
+          <span class="live-pulse"></span>
+          <span>Platform Active • Matching Candidates & Vacancies</span>
+        </div>
+      </div>
     </div>
 
-
-    <form
-      #loginForm="ngForm"
-      (ngSubmit)="onLogin(loginForm)"
-      novalidate>
-
-
-      <!-- Email -->
-      <div class="form-group">
-
-        <label for="email">
-          Email Address
-        </label>
-
-        <input
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Enter your email"
-          [(ngModel)]="loginData.email"
-          #email="ngModel"
-          required
-          email
-          [class.input-error]="
-            email.invalid &&
-            (email.touched || loginForm.submitted)
-          "
-        />
-
-        <small
-          class="field-error"
-          *ngIf="
-            email.invalid &&
-            (email.touched || loginForm.submitted)
-          ">
-
-          <span *ngIf="email.errors?.['required']">
-            Email address is required.
-          </span>
-
-          <span *ngIf="email.errors?.['email']">
-            Please enter a valid email address.
-          </span>
-
-        </small>
-
+    <!-- Right Login Form Section -->
+    <div class="auth-form-card">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p>Sign in to access your personalized recruitment dashboard</p>
       </div>
 
+      <form
+        #loginForm="ngForm"
+        (ngSubmit)="onLogin(loginForm)"
+        novalidate>
 
-      <!-- Password -->
-      <div class="form-group">
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="name@company.com"
+              [(ngModel)]="loginData.email"
+              #email="ngModel"
+              required
+              email
+              [class.input-error]="email.invalid && (email.touched || loginForm.submitted)"
+            />
+          </div>
 
-        <label for="password">
-          Password
-        </label>
+          <small class="field-error" *ngIf="email.invalid && (email.touched || loginForm.submitted)">
+            <span *ngIf="email.errors?.['required']">Email address is required.</span>
+            <span *ngIf="email.errors?.['email']">Please enter a valid email address.</span>
+          </small>
+        </div>
 
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Enter your password"
-          [(ngModel)]="loginData.password"
-          #password="ngModel"
-          required
-          minlength="6"
-          [class.input-error]="
-            password.invalid &&
-            (password.touched || loginForm.submitted)
-          "
-        />
+        <!-- Password -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password">Password</label>
+            <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+          </div>
 
-        <small
-          class="field-error"
-          *ngIf="
-            password.invalid &&
-            (password.touched || loginForm.submitted)
-          ">
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              [(ngModel)]="loginData.password"
+              #password="ngModel"
+              required
+              minlength="6"
+              [class.input-error]="password.invalid && (password.touched || loginForm.submitted)"
+            />
+          </div>
 
-          <span *ngIf="password.errors?.['required']">
-            Password is required.
-          </span>
+          <small class="field-error" *ngIf="password.invalid && (password.touched || loginForm.submitted)">
+            <span *ngIf="password.errors?.['required']">Password is required.</span>
+            <span *ngIf="password.errors?.['minlength']">Password must contain at least 6 characters.</span>
+          </small>
+        </div>
 
-          <span *ngIf="password.errors?.['minlength']">
-            Password must contain at least 6 characters.
-          </span>
+        <!-- Feedback Error Banner -->
+        <div class="error-banner" *ngIf="errorMessage">
+          <span>⚠</span>
+          <p>{{ errorMessage }}</p>
+        </div>
 
-        </small>
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="isLoading" class="btn-spinner"></span>
+          <span>{{ isLoading ? 'Authenticating...' : 'Sign In to Account →' }}</span>
+        </button>
+      </form>
 
+      <!-- Registration Route -->
+      <div class="form-footer">
+        <p>
+          Don't have an account yet?
+          <a routerLink="/register">Create an account</a>
+        </p>
       </div>
-
-
-      <!-- Forgot Password -->
-      <div class="forgot-password">
-
-        <a routerLink="/forgot-password">
-          Forgot Password?
-        </a>
-
-      </div>
-
-
-      <!-- Error -->
-      <div
-        class="error-message"
-        *ngIf="errorMessage">
-
-        {{ errorMessage }}
-
-      </div>
-
-
-      <!-- Login Button -->
-      <button
-        type="submit"
-        [disabled]="loginForm.invalid || isLoading">
-
-        {{ isLoading ? 'Logging in...' : 'Login' }}
-
-      </button>
-
-
-    </form>
-
-
-    <!-- Register -->
-    <div class="register-link">
-
-      <p>
-
-        Don't have an account?
-
-        <a routerLink="/register">
-          Create an account
-        </a>
-
-      </p>
-
     </div>
 
   </div>

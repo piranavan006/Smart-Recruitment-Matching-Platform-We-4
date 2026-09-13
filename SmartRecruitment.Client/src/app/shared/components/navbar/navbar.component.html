@@ -1,0 +1,63 @@
+<nav class="navbar" *ngIf="isLoggedIn">
+  <div class="navbar-container">
+    <!-- Brand Logo -->
+    <a class="brand" [routerLink]="isJobSeeker ? '/seeker' : (isEmployer ? '/employer' : '/admin')" (click)="closeMobileMenu()">
+      <span class="brand-badge">⚡</span>
+      <span class="brand-text">Smart<strong>Recruit</strong></span>
+    </a>
+
+    <!-- Hamburger Toggle for Mobile -->
+    <button class="mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Nav Links based on Role -->
+    <div class="nav-menu" [class.active]="mobileMenuOpen">
+      <!-- Seeker Navigation -->
+      <ng-container *ngIf="isJobSeeker">
+        <a routerLink="/seeker" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/seeker/jobs" routerLinkActive="active" (click)="closeMobileMenu()">Find Jobs</a>
+        <a routerLink="/seeker/applications" routerLinkActive="active" (click)="closeMobileMenu()">My Applications</a>
+        <a routerLink="/seeker/profile" routerLinkActive="active" (click)="closeMobileMenu()">My Profile</a>
+        <a routerLink="/seeker/notifications" routerLinkActive="active" (click)="closeMobileMenu()">Notifications</a>
+      </ng-container>
+
+      <!-- Employer Navigation -->
+      <ng-container *ngIf="isEmployer">
+        <a routerLink="/employer" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/employer/create-vacancy" routerLinkActive="active" (click)="closeMobileMenu()">Post Vacancy</a>
+        <a routerLink="/employer/vacancies" routerLinkActive="active" (click)="closeMobileMenu()">My Vacancies</a>
+        <a routerLink="/employer/applicants" routerLinkActive="active" (click)="closeMobileMenu()">Applicants</a>
+        <a routerLink="/employer/company-profile" routerLinkActive="active" (click)="closeMobileMenu()">Company Profile</a>
+        <a routerLink="/employer/contact-requests" routerLinkActive="active" (click)="closeMobileMenu()">Contact Requests</a>
+        <a routerLink="/employer/notifications" routerLinkActive="active" (click)="closeMobileMenu()">Notifications</a>
+      </ng-container>
+
+      <!-- Admin Navigation -->
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMobileMenu()">Dashboard</a>
+        <a routerLink="/admin/user-management" routerLinkActive="active" (click)="closeMobileMenu()">Users</a>
+        <a routerLink="/admin/job-management" routerLinkActive="active" (click)="closeMobileMenu()">Jobs</a>
+        <a routerLink="/admin/analytics" routerLinkActive="active" (click)="closeMobileMenu()">Analytics</a>
+        <a routerLink="/admin/notifications" routerLinkActive="active" (click)="closeMobileMenu()">Notifications</a>
+      </ng-container>
+
+      <!-- User Profile & Logout -->
+      <div class="user-section">
+        <div class="user-badge-pill">
+          <span class="user-avatar">👤</span>
+          <div class="user-details">
+            <span class="user-name">{{ currentUser?.fullName }}</span>
+            <span class="role-tag" [ngClass]="currentUser?.role?.toLowerCase()">{{ currentUser?.role }}</span>
+          </div>
+        </div>
+        <button class="logout-btn" (click)="logout()" title="Logout">
+          <span>Logout</span>
+          <span class="logout-icon">↪</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

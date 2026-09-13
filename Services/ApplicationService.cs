@@ -1,4 +1,4 @@
-﻿using SmartRecruitment.API.DTOs.Applications;
+using SmartRecruitment.API.DTOs.Applications;
 using SmartRecruitment.API.Models;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
@@ -8,11 +8,14 @@ namespace SmartRecruitment.API.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IApplicationRepository _repository;
+        private readonly IJobSeekerRepository _jobSeekerRepository;
 
         public ApplicationService(
-            IApplicationRepository repository)
+            IApplicationRepository repository,
+            IJobSeekerRepository jobSeekerRepository)
         {
             _repository = repository;
+            _jobSeekerRepository = jobSeekerRepository;
         }
 
         public async Task<ApplicationResponseDto>
@@ -37,11 +40,22 @@ namespace SmartRecruitment.API.Services
                     "You have already applied for this job.");
             }
 
+            var profile = await _jobSeekerRepository.GetByUserIdAsync(jobSeekerId);
+            if (profile == null)
+            {
+                profile = await _jobSeekerRepository.AddAsync(new JobSeekerProfile
+                {
+                    UserId = jobSeekerId
+                });
+            }
+
             var application = new Application
             {
                 JobId = dto.JobId,
 
                 JobSeekerId = jobSeekerId,
+
+                JobSeekerProfileId = profile.JobSeekerProfileId,
 
                 Status = "Pending",
 

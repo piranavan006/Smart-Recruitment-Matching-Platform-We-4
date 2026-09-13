@@ -2,180 +2,223 @@
 
   <div class="company-profile-container">
 
-    <!-- Header -->
+    <!-- Top Navigation Header -->
     <div class="profile-header">
-
       <div>
-        <span class="page-badge">EMPLOYER</span>
-
-        <h1>Company Profile</h1>
-
-        <p>
-          Manage your company information and employer profile.
-        </p>
+        <span class="page-badge">EMPLOYER CONSOLE</span>
+        <h1>Company Profile & Identity</h1>
+        <p>Manage your corporate identity, organization credentials, and public brand appearance.</p>
       </div>
 
-      <a
-        routerLink="/employer"
-        class="back-button">
-        ← Dashboard
+      <a routerLink="/employer" class="back-button">
+        <span>←</span>
+        <span>Return to Dashboard</span>
       </a>
-
     </div>
 
-    <!-- Company Information -->
-    <div class="profile-card">
-
-      <div class="card-title">
-
-        <div class="title-icon">🏢</div>
-
-        <div>
-          <h2>Company Information</h2>
-
-          <p>
-            Provide accurate information about your company.
-          </p>
-        </div>
-
+    <!-- Feedback Alerts -->
+    <div *ngIf="successMessage" class="feedback-alert success-alert">
+      <span class="alert-icon">✓</span>
+      <div>
+        <strong>Success</strong>
+        <p>{{ successMessage }}</p>
       </div>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label>Company Name</label>
-
-          <input
-            type="text"
-            placeholder="Enter company name">
-        </div>
-
-        <div class="form-group">
-          <label>Business Email</label>
-
-          <input
-            type="email"
-            placeholder="Enter business email">
-        </div>
-
-        <div class="form-group">
-          <label>Phone Number</label>
-
-          <input
-            type="tel"
-            placeholder="Enter company phone number">
-        </div>
-
-        <div class="form-group">
-          <label>Industry</label>
-
-          <input
-            type="text"
-            placeholder="e.g. Information Technology">
-        </div>
-
-        <div class="form-group">
-          <label>Company Website</label>
-
-          <input
-            type="url"
-            placeholder="https://example.com">
-        </div>
-
-        <div class="form-group">
-          <label>Company Location</label>
-
-          <input
-            type="text"
-            placeholder="Enter company location">
-        </div>
-
-      </div>
-
     </div>
 
-    <!-- About Company -->
-    <div class="profile-card">
-
-      <div class="card-title">
-
-        <div class="title-icon">📝</div>
-
-        <div>
-          <h2>About Company</h2>
-
-          <p>
-            Tell job seekers about your organization.
-          </p>
-        </div>
-
+    <div *ngIf="errorMessage" class="feedback-alert error-alert">
+      <span class="alert-icon">⚠</span>
+      <div>
+        <strong>Error</strong>
+        <p>{{ errorMessage }}</p>
       </div>
-
-      <div class="form-group full-width">
-
-        <label>Company Description</label>
-
-        <textarea
-          rows="6"
-          placeholder="Write a short description about your company...">
-        </textarea>
-
-      </div>
-
     </div>
 
-    <!-- Company Details -->
-    <div class="profile-card">
-
-      <div class="card-title">
-
-        <div class="title-icon">📊</div>
-
-        <div>
-          <h2>Company Details</h2>
-
-          <p>
-            Add additional information about your organization.
-          </p>
-        </div>
-
-      </div>
-
-      <div class="form-grid">
-
-        <div class="form-group">
-          <label>Company Size</label>
-
-          <select>
-            <option value="">Select company size</option>
-            <option>1 - 10 Employees</option>
-            <option>11 - 50 Employees</option>
-            <option>51 - 200 Employees</option>
-            <option>201 - 500 Employees</option>
-            <option>500+ Employees</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Founded Year</label>
-
-          <input
-            type="number"
-            placeholder="e.g. 2015">
-        </div>
-
-      </div>
-
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading enterprise organization profile...</p>
     </div>
 
-    <!-- Save -->
-    <div class="save-section">
+    <div *ngIf="!isLoading">
 
-      <button
-        type="button"
-        class="save-button">
-        Save Company Profile
-      </button>
+      <!-- Executive Company Hero Card -->
+      <div class="company-hero-card">
+        <div class="company-brand-avatar">
+          {{ (profile.companyName ? profile.companyName.charAt(0) : 'E').toUpperCase() }}
+        </div>
+
+        <div class="company-hero-info">
+          <div class="company-hero-title-row">
+            <h2>{{ profile.companyName || 'Your Organization Name' }}</h2>
+            <span *ngIf="profile.isApproved" class="status-badge approved">
+              ✓ Verified Employer
+            </span>
+            <span *ngIf="!profile.isApproved" class="status-badge pending">
+              ⏳ Verification Pending
+            </span>
+          </div>
+
+          <div class="company-meta-pills">
+            <span class="meta-pill" *ngIf="profile.industry">
+              🏷️ {{ profile.industry }}
+            </span>
+            <span class="meta-pill" *ngIf="profile.location">
+              📍 {{ profile.location }}
+            </span>
+            <span class="meta-pill" *ngIf="profile.companySize">
+              👥 {{ profile.companySize }}
+            </span>
+            <span class="meta-pill" *ngIf="profile.foundedYear">
+              🏛️ Est. {{ profile.foundedYear }}
+            </span>
+            <a *ngIf="profile.website" [href]="profile.website" target="_blank" class="meta-pill link-pill">
+              🌐 {{ profile.website }} ↗
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 1: Organization Identity -->
+      <div class="profile-card">
+        <div class="card-title">
+          <div class="title-icon">🏢</div>
+          <div>
+            <h2>Organization Identity</h2>
+            <p>Official legal entity details displayed on your job vacancy postings.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Company Legal Name *</label>
+            <input
+              type="text"
+              name="companyName"
+              [(ngModel)]="profile.companyName"
+              placeholder="e.g. Acme Technologies Inc."
+              required>
+          </div>
+
+          <div class="form-group">
+            <label>Registered Business Email</label>
+            <input
+              type="email"
+              name="businessEmail"
+              [(ngModel)]="businessEmail"
+              placeholder="Enter business email"
+              readonly
+              class="input-readonly">
+            <small class="helper-text">Linked to your authentication account.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Industry Sector</label>
+            <input
+              type="text"
+              name="industry"
+              [(ngModel)]="profile.industry"
+              placeholder="e.g. Software Engineering & AI">
+          </div>
+
+          <div class="form-group">
+            <label>Direct Phone Contact</label>
+            <input
+              type="tel"
+              name="phone"
+              [(ngModel)]="profile.phone"
+              placeholder="+94 11 234 5678">
+          </div>
+
+          <div class="form-group">
+            <label>Corporate Website URL</label>
+            <input
+              type="url"
+              name="website"
+              [(ngModel)]="profile.website"
+              placeholder="https://company.com">
+          </div>
+
+          <div class="form-group">
+            <label>Primary Office Location</label>
+            <input
+              type="text"
+              name="location"
+              [(ngModel)]="profile.location"
+              placeholder="e.g. Colombo, Western Province">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: About & Corporate Mission -->
+      <div class="profile-card">
+        <div class="card-title">
+          <div class="title-icon">📝</div>
+          <div>
+            <h2>About Organization & Culture</h2>
+            <p>Describe your mission, values, work culture, and what makes your team unique.</p>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Company Overview & Bio</label>
+          <textarea
+            rows="6"
+            name="description"
+            [(ngModel)]="profile.description"
+            placeholder="Introduce your company culture, technology stack, vision, and opportunities for prospective candidates...">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Section 3: Operational Scale -->
+      <div class="profile-card">
+        <div class="card-title">
+          <div class="title-icon">📊</div>
+          <div>
+            <h2>Operational Scale & Timeline</h2>
+            <p>Key demographics that provide candidates insight into company maturity.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Workforce Size</label>
+            <select name="companySize" [(ngModel)]="profile.companySize">
+              <option value="">Select workforce size</option>
+              <option value="1 - 10 Employees">1 - 10 Employees (Seed / Early)</option>
+              <option value="11 - 50 Employees">11 - 50 Employees (Growth / Scale)</option>
+              <option value="51 - 200 Employees">51 - 200 Employees (Mid-Market)</option>
+              <option value="201 - 500 Employees">201 - 500 Employees (Large Enterprise)</option>
+              <option value="500+ Employees">500+ Employees (Global Enterprise)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Year Founded</label>
+            <input
+              type="number"
+              name="foundedYear"
+              [(ngModel)]="profile.foundedYear"
+              placeholder="e.g. 2018">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="save-bar">
+        <div class="save-bar-info">
+          <p>Changes are updated immediately and reflected across all active vacancy posts.</p>
+        </div>
+
+        <button
+          type="button"
+          class="save-button"
+          [disabled]="isSaving"
+          (click)="saveProfile()">
+          <span *ngIf="!isSaving">Save Company Profile</span>
+          <span *ngIf="isSaving">Saving Changes...</span>
+        </button>
+      </div>
 
     </div>
 

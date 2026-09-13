@@ -135,6 +135,11 @@ namespace SmartRecruitment.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmployerProfileId"));
 
+                    b.Property<string>("ApprovalStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("CompanyDescription")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -150,6 +155,9 @@ namespace SmartRecruitment.API.Migrations
                     b.Property<string>("Industry")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Location")
                         .HasMaxLength(150)

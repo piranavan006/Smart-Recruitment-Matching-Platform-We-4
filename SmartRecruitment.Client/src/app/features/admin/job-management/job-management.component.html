@@ -227,12 +227,19 @@
 
     </section>
 
+    <!-- Feedback Alerts -->
+    <div *ngIf="errorMessage" class="alert alert-danger" style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px 16px; border-radius: 8px; margin: 20px 0;">
+      ⚠ {{ errorMessage }}
+    </div>
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 40px; color: #94a3b8;">
+      Loading platform vacancies...
+    </div>
 
     <!-- =========================
          STATISTICS
     ========================== -->
-
-    <section class="job-stats">
+    <section class="job-stats" *ngIf="!isLoading">
 
 
       <div class="stat-card">
@@ -649,30 +656,12 @@
               <!-- Control -->
 
               <td>
-
-
-                <button
-                  *ngIf="job.status === 'Active'"
-                  type="button"
-                  class="control-button close-button"
-                  (click)="closeJob(job)">
-
-                  ⏸ Close
-
-                </button>
-
-
-                <button
-                  *ngIf="job.status === 'Closed'"
-                  type="button"
-                  class="control-button activate-button"
-                  (click)="activateJob(job)">
-
-                  ✓ Activate
-
-                </button>
-
-
+                <a
+                  [routerLink]="['/seeker/job-details', job.id]"
+                  class="control-button"
+                  style="text-decoration: none; display: inline-block; padding: 6px 12px; margin-right: 6px; background: rgba(99, 102, 241, 0.15); color: #818cf8; border-radius: 6px; font-size: 0.85rem; font-weight: 500;">
+                  👁 View
+                </a>
               </td>
 
 

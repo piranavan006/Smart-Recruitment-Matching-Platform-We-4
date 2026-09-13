@@ -6,7 +6,7 @@
     <div class="jobs-header">
       <div>
         <h1>Find Jobs</h1>
-        <p>Discover opportunities that match your skills and interests.</p>
+        <p>Discover opportunities that match your skills and career interests.</p>
       </div>
 
       <button class="back-button" routerLink="/seeker">
@@ -17,107 +17,86 @@
 
     <!-- Search Section -->
     <div class="search-card">
-
       <div class="search-group">
-        <label>Job Title</label>
-
+        <label>Keyword / Title</label>
         <input
           type="text"
-          placeholder="Search by job title..."
+          placeholder="Search by job title, keywords..."
           [(ngModel)]="searchTitle"
+          (keyup.enter)="searchJobs()"
         />
       </div>
 
       <div class="search-group">
         <label>Location</label>
-
         <input
           type="text"
-          placeholder="Enter location..."
+          placeholder="Colombo, Jaffna, Remote..."
           [(ngModel)]="searchLocation"
+          (keyup.enter)="searchJobs()"
         />
       </div>
 
       <button class="search-button" (click)="searchJobs()">
         🔍 Search Jobs
       </button>
-
     </div>
 
 
     <!-- Jobs Section -->
     <div class="jobs-section">
-
       <div class="section-title">
-        <h2>Available Jobs</h2>
-        <span>{{ jobs.length }} Jobs</span>
+        <h2>Available Opportunities</h2>
+        <span>{{ jobs.length }} Jobs Found</span>
       </div>
 
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-box" style="text-align: center; padding: 2rem; color: #64748b;">
+        <p>Loading available jobs...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && jobs.length === 0" class="empty-state" style="text-align: center; padding: 3rem; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+        <h3>No jobs found</h3>
+        <p style="color: #64748b;">Try adjusting your search filters or check back later.</p>
+      </div>
 
       <!-- Job Cards -->
-      <div class="jobs-grid">
-
+      <div class="jobs-grid" *ngIf="!isLoading && jobs.length > 0">
         <div class="job-card" *ngFor="let job of jobs">
 
           <div class="job-top">
-
-            <div class="company-icon">
-              💼
-            </div>
-
+            <div class="company-icon">💼</div>
             <div>
               <h3>{{ job.title }}</h3>
-              <p class="company-name">
-                {{ job.company }}
-              </p>
+              <p class="company-name">{{ job.companyName || 'Verified Employer' }}</p>
             </div>
-
           </div>
-
 
           <div class="job-details">
-
-            <span>📍 {{ job.location }}</span>
-
-            <span>💰 {{ job.salary }}</span>
-
-            <span>🕒 {{ job.type }}</span>
-
+            <span>📍 {{ job.location || 'Flexible' }}</span>
+            <span>💰 {{ formatSalary(job.salaryMin, job.salaryMax) }}</span>
+            <span>🕒 {{ job.minExperienceYears }} - {{ job.maxExperienceYears }} Yrs Exp</span>
           </div>
-
 
           <p class="job-description">
             {{ job.description }}
           </p>
 
+          <!-- Skills tags -->
+          <div class="skills-chips" *ngIf="job.requiredSkills && job.requiredSkills.length > 0" style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem;">
+            <span *ngFor="let skill of job.requiredSkills" style="background: #e0f2fe; color: #0284c7; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 6px;">
+              {{ skill.skillName }}
+            </span>
+          </div>
 
-          <button
-             class="view-button"
-             routerLink="/seeker/job-details">
-            View Details
-          </button>
+          <a class="view-button" [routerLink]="['/seeker/job-details', job.id]" style="text-align: center; text-decoration: none; display: block;">
+            View Details & Apply
+          </a>
 
         </div>
-
       </div>
-
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="jobs.length === 0">
-
-        <div class="empty-icon">
-          🔍
-        </div>
-
-        <h3>No jobs found</h3>
-
-        <p>
-          We couldn't find any jobs matching your search.
-          Try different keywords or locations.
-        </p>
-
-      </div>
-
     </div>
 
   </div>

@@ -1,251 +1,212 @@
 <div class="register-page">
 
-  <div class="register-card">
+  <div class="auth-container">
 
-    <h1>Create Account</h1>
-
-    <p>Join Smart Recruitment</p>
-
-    <form #registerForm="ngForm"
-          (ngSubmit)="onRegister(registerForm)"
-          novalidate>
-
-      <!-- Full Name -->
-      <div class="form-group">
-
-        <label>Full Name</label>
-
-        <input
-          type="text"
-          name="fullName"
-          [(ngModel)]="registerData.fullName"
-          #fullName="ngModel"
-          placeholder="Enter your full name"
-          required
-          minlength="2"
-          maxlength="100"
-          [class.input-error]="fullName.invalid && (fullName.touched || registerForm.submitted)"
-        />
-
-        <small
-          class="field-error"
-          *ngIf="fullName.invalid && (fullName.touched || registerForm.submitted)">
-
-          <span *ngIf="fullName.errors?.['required']">
-            Full name is required.
-          </span>
-
-          <span *ngIf="fullName.errors?.['minlength']">
-            Full name must contain at least 2 characters.
-          </span>
-
-          <span *ngIf="fullName.errors?.['maxlength']">
-            Full name cannot exceed 100 characters.
-          </span>
-
-        </small>
-
+    <!-- Left Brand Hero Section -->
+    <div class="auth-hero">
+      <div class="hero-brand">
+        <div class="brand-badge">⚡</div>
+        <div class="brand-text">
+          <h2>SmartRecruit</h2>
+          <span>INTELLIGENT MATCHING</span>
+        </div>
       </div>
 
+      <div class="hero-body">
+        <h1>Join the Future of Talent Discovery & Recruitment</h1>
+        <p>Whether you're an ambitious candidate seeking your next high-impact career move or an organization building world-class teams, SmartRecruit delivers precision AI matching.</p>
 
-      <!-- Email -->
-      <div class="form-group">
+        <div class="feature-pills">
+          <div class="feature-item">
+            <div class="feature-icon">🧑‍💻</div>
+            <div>
+              <strong>For Job Seekers</strong>
+              <small>CV intelligence, auto-matching, and direct outreach</small>
+            </div>
+          </div>
 
-        <label>Email Address</label>
+          <div class="feature-item">
+            <div class="feature-icon">🏢</div>
+            <div>
+              <strong>For Enterprise Employers</strong>
+              <small>Verified postings, applicant pipelines & skill weighting</small>
+            </div>
+          </div>
 
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="registerData.email"
-          #email="ngModel"
-          placeholder="Enter your email"
-          required
-          email
-          [class.input-error]="email.invalid && (email.touched || registerForm.submitted)"
-        />
-
-        <small
-          class="field-error"
-          *ngIf="email.invalid && (email.touched || registerForm.submitted)">
-
-          <span *ngIf="email.errors?.['required']">
-            Email address is required.
-          </span>
-
-          <span *ngIf="email.errors?.['email']">
-            Please enter a valid email address.
-          </span>
-
-        </small>
-
+          <div class="feature-item">
+            <div class="feature-icon">🛡️</div>
+            <div>
+              <strong>Verified & Compliant</strong>
+              <small>Protected data privacy & administrative oversight</small>
+            </div>
+          </div>
+        </div>
       </div>
 
+      <div class="hero-footer">
+        <div class="trust-indicator">
+          <span class="live-pulse"></span>
+          <span>Fast-track registration • Instant platform access</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- Password -->
-      <div class="form-group">
-
-        <label>Password</label>
-
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="registerData.password"
-          #password="ngModel"
-          placeholder="Enter your password"
-          required
-          minlength="6"
-          maxlength="100"
-          [class.input-error]="password.invalid && (password.touched || registerForm.submitted)"
-        />
-
-        <small
-          class="field-error"
-          *ngIf="password.invalid && (password.touched || registerForm.submitted)">
-
-          <span *ngIf="password.errors?.['required']">
-            Password is required.
-          </span>
-
-          <span *ngIf="password.errors?.['minlength']">
-            Password must contain at least 6 characters.
-          </span>
-
-          <span *ngIf="password.errors?.['maxlength']">
-            Password cannot exceed 100 characters.
-          </span>
-
-        </small>
-
+    <!-- Right Register Form Section -->
+    <div class="auth-form-card">
+      <div class="form-header">
+        <h2>Create Account</h2>
+        <p>Get started in under 2 minutes with SmartRecruit</p>
       </div>
 
+      <form
+        #registerForm="ngForm"
+        (ngSubmit)="onRegister(registerForm)"
+        novalidate>
 
-      <!-- Confirm Password -->
-      <div class="form-group">
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👤</span>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              [(ngModel)]="registerData.fullName"
+              #fullName="ngModel"
+              placeholder="e.g. John Doe"
+              required
+              minlength="2"
+              maxlength="100"
+              [class.input-error]="fullName.invalid && (fullName.touched || registerForm.submitted)"
+            />
+          </div>
 
-        <label>Confirm Password</label>
+          <small class="field-error" *ngIf="fullName.invalid && (fullName.touched || registerForm.submitted)">
+            <span *ngIf="fullName.errors?.['required']">Full name is required.</span>
+            <span *ngIf="fullName.errors?.['minlength']">Must be at least 2 characters.</span>
+          </small>
+        </div>
 
-        <input
-          type="password"
-          name="confirmPassword"
-          [(ngModel)]="registerData.confirmPassword"
-          #confirmPassword="ngModel"
-          placeholder="Confirm your password"
-          required
-          [class.input-error]="
-            confirmPassword.invalid &&
-            (confirmPassword.touched || registerForm.submitted)
-          "
-        />
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉️</span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="registerData.email"
+              #email="ngModel"
+              placeholder="name@example.com"
+              required
+              email
+              [class.input-error]="email.invalid && (email.touched || registerForm.submitted)"
+            />
+          </div>
 
-        <small
-          class="field-error"
-          *ngIf="
-            confirmPassword.invalid &&
-            (confirmPassword.touched || registerForm.submitted)
-          ">
+          <small class="field-error" *ngIf="email.invalid && (email.touched || registerForm.submitted)">
+            <span *ngIf="email.errors?.['required']">Email is required.</span>
+            <span *ngIf="email.errors?.['email']">Please enter a valid email address.</span>
+          </small>
+        </div>
 
-          Confirm password is required.
+        <!-- Password Grid -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                [(ngModel)]="registerData.password"
+                #password="ngModel"
+                placeholder="Min. 6 chars"
+                required
+                minlength="6"
+                [class.input-error]="password.invalid && (password.touched || registerForm.submitted)"
+              />
+            </div>
+            <small class="field-error" *ngIf="password.invalid && (password.touched || registerForm.submitted)">
+              <span *ngIf="password.errors?.['required']">Password required.</span>
+              <span *ngIf="password.errors?.['minlength']">At least 6 chars.</span>
+            </small>
+          </div>
 
-        </small>
+          <div class="form-group">
+            <label for="confirmPassword">Confirm</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔐</span>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                [(ngModel)]="registerData.confirmPassword"
+                #confirmPassword="ngModel"
+                placeholder="Confirm password"
+                required
+                [class.input-error]="confirmPassword.invalid && (confirmPassword.touched || registerForm.submitted)"
+              />
+            </div>
+            <small class="field-error" *ngIf="registerData.confirmPassword && registerData.password !== registerData.confirmPassword && (confirmPassword.touched || registerForm.submitted)">
+              Passwords do not match.
+            </small>
+          </div>
+        </div>
 
-        <small
-          class="field-error"
-          *ngIf="
-            registerData.confirmPassword &&
-            registerData.password !== registerData.confirmPassword &&
-            (confirmPassword.touched || registerForm.submitted)
-          ">
+        <!-- Role Selector -->
+        <div class="form-group">
+          <label for="role">Select Account Type</label>
+          <div class="input-wrapper">
+            <span class="input-icon">👥</span>
+            <select
+              id="role"
+              name="role"
+              [(ngModel)]="registerData.role"
+              #role="ngModel"
+              required
+              [class.input-error]="role.invalid && (role.touched || registerForm.submitted)">
+              <option value="">-- Choose Account Type --</option>
+              <option value="JobSeeker">🧑‍💻 Job Seeker (Explore Careers & Apply)</option>
+              <option value="Employer">🏢 Employer (Hire Talent & Post Vacancies)</option>
+            </select>
+          </div>
+          <small class="field-error" *ngIf="role.invalid && (role.touched || registerForm.submitted)">
+            Account type is required.
+          </small>
+        </div>
 
-          Passwords do not match.
+        <!-- Feedback Banners -->
+        <div class="error-banner" *ngIf="errorMessage">
+          <span>⚠</span>
+          <p>{{ errorMessage }}</p>
+        </div>
 
-        </small>
+        <div class="success-banner" *ngIf="successMessage">
+          <span>✓</span>
+          <p>{{ successMessage }}</p>
+        </div>
 
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="registerForm.invalid || isLoading">
+          <span *ngIf="isLoading" class="btn-spinner"></span>
+          <span>{{ isLoading ? 'Creating Account...' : 'Complete Registration →' }}</span>
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <div class="form-footer">
+        <p>
+          Already have an account?
+          <a routerLink="/login">Sign in</a>
+        </p>
       </div>
-
-
-      <!-- Role -->
-      <div class="form-group">
-
-        <label>Account Type</label>
-
-        <select
-          name="role"
-          [(ngModel)]="registerData.role"
-          #role="ngModel"
-          required
-          [class.input-error]="role.invalid && (role.touched || registerForm.submitted)"
-        >
-
-          <option value="">
-            Select account type
-          </option>
-
-          <option value="JobSeeker">
-            Job Seeker
-          </option>
-
-          <option value="Employer">
-            Employer
-          </option>
-
-        </select>
-
-        <small
-          class="field-error"
-          *ngIf="role.invalid && (role.touched || registerForm.submitted)">
-
-          Account type is required.
-
-        </small>
-
-      </div>
-
-
-      <!-- Error -->
-      <div
-        class="error-message"
-        *ngIf="errorMessage">
-
-        {{ errorMessage }}
-
-      </div>
-
-
-      <!-- Success -->
-      <div
-        class="success-message"
-        *ngIf="successMessage">
-
-        {{ successMessage }}
-
-      </div>
-
-
-      <!-- Button -->
-      <button
-        type="submit"
-        [disabled]="registerForm.invalid || isLoading">
-
-        {{ isLoading ? 'Creating account...' : 'Create Account' }}
-
-      </button>
-
-    </form>
-
-
-    <!-- Login -->
-    <div class="login-link">
-
-      <p>
-
-        Already have an account?
-
-        <a routerLink="/login">
-          Login
-        </a>
-
-      </p>
-
     </div>
 
   </div>
